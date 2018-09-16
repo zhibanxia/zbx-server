@@ -1,0 +1,48 @@
+buildscript {
+	ext {
+		springBootVersion = '2.0.5.RELEASE'
+	}
+	repositories {
+		mavenLocal()
+		maven { url "http://maven.aliyun.com/nexus/content/groups/public/"}
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'cn.zhibanxia'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenLocal()
+	maven { url "http://maven.aliyun.com/nexus/content/groups/public/"}
+	mavenCentral()
+}
+
+configurations {
+	all*.exclude group: 'org.hamcrest', module: 'hamcrest-core'
+	all*.exclude group: 'com.zaxxer', module:'HikariCP'
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-data-redis')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.2')
+	runtime('mysql:mysql-connector-java')
+
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-dbcp2
+	compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.5.0'
+	// https://mvnrepository.com/artifact/com.alibaba/fastjson
+	compile group: 'com.alibaba', name: 'fastjson', version: '1.2.49'
+
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
