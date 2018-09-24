@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="cn.zhibanxia.zbxserver.dao.impl.UserAddressDaoImpl">
+
+    <resultMap id="UserAddressEntityMapper"
+               type="cn.zhibanxia.zbxserver.entity.UserAddressEntity">
+        <result column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="biz_type" property="bizType"/>
+        <result column="province_id" property="provinceId"/>
+        <result column="city_id" property="cityId"/>
+        <result column="area_id" property="areaId"/>
+        <result column="subdistrict_id" property="subdistrictId"/>
+        <result column="area_detail" property="areaDetail"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+    </resultMap>
+
+    <sql id="all_column">
+        id, user_id, biz_type, province_id, city_id, area_id, subdistrict_id, area_detail,
+        gmt_create, gmt_modified
+    </sql>
+
+    <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.UserAddressEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into tb_user_address (user_id, biz_type, province_id, city_id, area_id, subdistrict_id, area_detail)
+        values
+        (#{userId}, #{bizType}, #{provinceId}, #{cityId},
+        #{areaId}, #{subdistrictId}, #{areaDetail})
+    </insert>
+
+    <select id="findAddrs" parameterType="Map" resultMap="UserAddressEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_user_address
+        where user_id=#{userId}
+        and biz_type=#{bizType}
+    </select>
+
+</mapper>

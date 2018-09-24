@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="cn.zhibanxia.zbxserver.dao.impl.UserDaoImpl">
+
+    <resultMap id="UserEntityMapper"
+               type="cn.zhibanxia.zbxserver.entity.UserEntity">
+        <result column="id" property="id"/>
+        <result column="user_type" property="userType"/>
+        <result column="wx_open_id" property="wxOpenId"/>
+        <result column="wx_nick_name" property="wxNickName"/>
+        <result column="wx_logo" property="wxLogo"/>
+        <result column="wx_id" property="wxId"/>
+        <result column="user_status" property="userStatus"/>
+        <result column="mobile_phone" property="mobilePhone"/>
+        <result column="verify_logo" property="verifyLogo"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+    </resultMap>
+
+    <sql id="all_column">
+        id, user_type, wx_open_id, wx_nick_name, wx_logo, wx_id, user_status, mobile_phone,
+        verify_logo, gmt_create, gmt_modified
+    </sql>
+
+    <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.UserEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into tb_user (user_type, wx_open_id, wx_nick_name, wx_logo, wx_id, user_status, mobile_phone,
+        verify_logo)
+        values
+        (#{userType}, #{wxOpenId}, #{wxNickName}, #{wxLogo},
+        #{wxId}, #{userStatus}, #{mobilePhone}, #{verifyLogo})
+    </insert>
+
+    <update id="updateUserStatus" parameterType="Integer">
+        update tb_user
+        set user_status=#{userStatus}
+        where id=#{id}
+    </update>
+
+    <select id="selectUsersByOpenIdOrType" parameterType="Map" resultMap="UserEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_user
+        where wx_open_id=#{wxOpenId}
+        <if test="userType!=null">
+            and user_type=#{userType}
+        </if>
+    </select>
+
+</mapper>
