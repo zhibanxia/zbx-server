@@ -9,6 +9,44 @@ import java.util.Date;
  */
 public class UserEntity {
     /**
+     * 用户类型：业主
+     */
+    public static final int USER_TYPE_YEZHU = 1;
+    /**
+     * 用户类型：回收人员
+     */
+    public static final int USER_TYPE_HUISHOU = 2;
+    /**
+     * 管理员
+     */
+    public static final int USER_TYPE_ADMIN = 3;
+
+    /**
+     * 正常
+     */
+    public static final int USER_STATUS_NORMAL = 1;
+    /**
+     * 回收人员：待激活
+     */
+    public static final int USER_STATUS_NEED_ACTIVE = 2;
+    /**
+     * 回收人员：审核不通过
+     */
+    public static final int USER_STATUS_NOT_PERMIT = 3;
+
+    /**
+     * 回收人员：审核中
+     */
+    public static final int USER_STATUS_PERMIT_PROCESS = 4;
+    /**
+     * 回收人员：禁用
+     */
+    public static final int USER_STATUS_FORBIDDEN = 5;
+    /**
+     * 注销
+     */
+    public static final int USER_STATUS_OFF = 6;
+    /**
      * 主键id
      */
     private Long id;

@@ -22,6 +22,11 @@ public class UserDaoImpl extends BaseDao implements UserDao {
     }
 
     @Override
+    public UserEntity selectById(Long id) {
+        return selectOne("selectById", id);
+    }
+
+    @Override
     public UserEntity selectUserByOpenIdAndType(String wxOpenId, Integer type) {
         List<UserEntity> list = selectUsersByOpenIdOrType(wxOpenId, type);
         return CollectionUtils.isEmpty(list) ? null : list.get(0);

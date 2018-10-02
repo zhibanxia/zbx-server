@@ -19,7 +19,7 @@ public class UserAddressDaoImpl extends BaseDao implements UserAddressDao {
         insert("insert", userAddressEntity);
         return userAddressEntity.getId();
     }
-
+    
     @Override
     public List<UserAddressEntity> findAddrs(Long userId, int bizType) {
         Map<String, Object> params = new HashMap<>();

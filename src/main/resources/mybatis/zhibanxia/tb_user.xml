@@ -32,6 +32,13 @@
         #{wxId}, #{userStatus}, #{mobilePhone}, #{verifyLogo})
     </insert>
 
+    <select id="selectById" parameterType="Long" resultMap="UserEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_user
+        where id=#{id}
+    </select>
+
     <update id="updateUserStatus" parameterType="Integer">
         update tb_user
         set user_status=#{userStatus}

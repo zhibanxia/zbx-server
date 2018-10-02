@@ -8,6 +8,24 @@ import java.util.Date;
  * Created by zzy on  2018/09/24 15:58
  */
 public class RecyleRequestEntity {
+
+    /**
+     * 发布
+     */
+    public static final int RES_STATUS_PUBLISH = 1;
+    /**
+     * 确认回收
+     */
+    public static final int RES_STATUS_CONFIRM = 2;
+    /**
+     * 回收完成
+     */
+    public static final int RES_STATUS_COMPLETE = 3;
+    /**
+     * 取消
+     */
+    public static final int RES_STATUS_CANCEL = 4;
+
     private Long id;
     /**
      * 发布人id
@@ -29,7 +47,7 @@ public class RecyleRequestEntity {
      * 1.已发布
      * 2.已确认待回收
      * 3.已确认已回收
-     * 4.删除
+     * 4.取消
      */
     private Integer resStatus;
     /**
@@ -48,11 +66,11 @@ public class RecyleRequestEntity {
     /**
      * 是否帮忙带垃圾
      */
-    private boolean takeGarbageFlag;
+    private Boolean takeGarbageFlag;
     /**
      * 是否免费回收
      */
-    private boolean freeTakeFlag;
+    private Boolean freeTakeFlag;
     /**
      * 备注说明
      */

@@ -16,6 +16,14 @@ public interface UserDao {
     Long insertUser(UserEntity userEntity);
 
     /**
+     * 根据主键id查询
+     *
+     * @param id
+     * @return
+     */
+    UserEntity selectById(Long id);
+
+    /**
      * 根据wOpenId和类型查找用户
      *
      * @param wxOpenId

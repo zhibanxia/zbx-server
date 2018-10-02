@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="cn.zhibanxia.zbxserver.dao.impl.RecyleRequestDaoImpl">
+
+    <resultMap id="RecyleRequestEntityMapper"
+               type="cn.zhibanxia.zbxserver.entity.RecyleRequestEntity">
+        <result column="id" property="id"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="recyle_user_id" property="recyleUserId"/>
+        <result column="res_type" property="resType"/>
+        <result column="res_status" property="resStatus"/>
+        <result column="res_amount" property="resAmount"/>
+        <result column="res_images" property="resImages"/>
+        <result column="take_garbage_flag" property="takeGarbageFlag"/>
+        <result column="free_take_flag" property="freeTakeFlag"/>
+        <result column="res_note" property="resNote"/>
+        <result column="door_serv_start_time" property="doorServStartTime"/>
+        <result column="door_serv_end_time" property="doorServEndTime"/>
+        <result column="province_id" property="provinceId"/>
+        <result column="city_id" property="cityId"/>
+        <result column="area_id" property="areaId"/>
+        <result column="subdistrict_id" property="subDistrictId"/>
+        <result column="area_detail" property="areaDetail"/>
+        <result column="publish_time" property="publishTime"/>
+        <result column="comfirm_recyle_time" property="comfirmRecyleTime"/>
+        <result column="complete_recyle_time" property="completeRecyleTime"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+    </resultMap>
+
+    <sql id="all_column">
+        id, create_user_id, recyle_user_id, res_type, res_status, res_amount, res_images, take_garbage_flag,
+        free_take_flag, res_note, door_serv_start_time, door_serv_end_time, province_id, city_id, area_id,
+        subdistrict_id, area_detail, publish_time, comfirm_recyle_time, complete_recyle_time, gmt_create, gmt_modified
+    </sql>
+
+    <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.RecyleRequestEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into tb_recyle_request (create_user_id, recyle_user_id, res_type, res_status, res_amount, res_images,
+        take_garbage_flag, free_take_flag, res_note, door_serv_start_time, door_serv_end_time, province_id, city_id,
+        area_id, subdistrict_id, area_detail, publish_time, comfirm_recyle_time, complete_recyle_time)
+        values
+        (#{createUserId}, #{recyleUserId}, #{resType}, #{resStatus}, #{resAmount}, #{resImages}, #{takeGarbageFlag},
+        #{freeTakeFlag}, #{resNote}, #{doorServStartTime}, #{doorServEndTime}, #{provinceId}, #{cityId}, #{areaId},
+        #{subDistrictId}, #{areaDetail}, #{publishTime}, #{comfirmRecyleTime}, #{completeRecyleTime})
+    </insert>
+
+    <select id="findById" parameterType="Long" resultMap="RecyleRequestEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_recyle_request
+        where id=#{id}
+    </select>
+
+    <update id="confirmRecyle" parameterType="Map">
+        update tb_recyle_request
+        set res_status=#{resStatus}, recyle_user_id=#{recyleUserId}, comfirm_recyle_time = now()
+        where id=#{id}
+    </update>
+
+    <update id="completeRecyle" parameterType="Map">
+        update tb_recyle_request
+        set res_status=#{resStatus}, complete_recyle_time = now()
+        where id=#{id}
+    </update>
+
+    <update id="update" parameterType="cn.zhibanxia.zbxserver.entity.RecyleRequestEntity">
+        update tb_recyle_request
+        set
+        <if test="resType!=null">
+            res_type=#{resType},
+        </if>
+        <if test="resAmount!=null">
+            res_amount=#{resAmount},
+        </if>
+        <if test="resImages!=null">
+            res_images=#{resImages},
+        </if>
+        <if test="takeGarbageFlag!=null">
+            take_garbage_flag=#{takeGarbageFlag},
+        </if>
+        <if test="freeTakeFlag!=null">
+            free_take_flag=#{freeTakeFlag},
+        </if>
+        <if test="resNote!=null">
+            res_note=#{resNote},
+        </if>
+        <if test="doorServStartTime!=null">
+            door_serv_start_time=#{doorServStartTime},
+        </if>
+        <if test="doorServEndTime!=null">
+            door_serv_end_time=#{doorServEndTime},
+        </if>
+        <if test="provinceId!=null">
+            province_id=#{provinceId},
+        </if>
+        <if test="cityId!=null">
+            city_id=#{cityId},
+        </if>
+        <if test="areaId!=null">
+            area_id=#{areaId},
+        </if>
+        <if test="subDistrictId!=null">
+            sub_district_id=#{subDistrictId},
+        </if>
+        <if test="areaDetail!=null">
+            area_detail=#{areaDetail},
+        </if>
+        gmt_modified = now()
+        where id=#{id}
+    </update>
+
+
+</mapper>
