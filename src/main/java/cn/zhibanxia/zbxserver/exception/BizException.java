@@ -1,29 +1,24 @@
 package cn.zhibanxia.zbxserver.exception;
 
+import cn.zhibanxia.zbxserver.constant.ErrorCode;
+
 /**
  * Created by zzy on  2018/10/02 12:07
  */
 public class BizException extends Exception {
-    private final String code;
-    private final String msg;
+    private final ErrorCode errorCode;
 
-    public BizException(String code, String msg) {
-        super("code=" + code + ", msg={}" + msg);
-        this.code = code;
-        this.msg = msg;
+    public BizException(ErrorCode errorCode) {
+        super(errorCode.getCode() + ", " + errorCode.getMsg());
+        this.errorCode = errorCode;
     }
 
-    public BizException(String code, String msg, Throwable cause) {
-        super(code + ", " + msg, cause);
-        this.code = code;
-        this.msg = msg;
+    public BizException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode.getCode() + ", " + errorCode.getMsg(), cause);
+        this.errorCode = errorCode;
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public String getMsg() {
-        return msg;
+    public ErrorCode getErrorCode() {
+        return errorCode;
     }
 }

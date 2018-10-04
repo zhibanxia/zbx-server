@@ -1,10 +1,12 @@
 package cn.zhibanxia.zbxserver.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by zzy on  2018/10/02 11:11
  */
+@Component
 @ConfigurationProperties(prefix = "wx.config")
 public class WxPropConfig {
     private String appId;

@@ -54,7 +54,10 @@ dependencies {
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.6'
 	// https://mvnrepository.com/artifact/commons-io/commons-io
 	compile group: 'commons-io', name: 'commons-io', version: '2.6'
-
+	// https://mvnrepository.com/artifact/com.google.guava/guava
+	compile group: 'com.google.guava', name: 'guava', version: '26.0-jre'
+	// aliyun oss
+	compile 'com.aliyun.oss:aliyun-sdk-oss:3.1.0'
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

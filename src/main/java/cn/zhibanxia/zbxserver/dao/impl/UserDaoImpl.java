@@ -52,6 +52,16 @@ public class UserDaoImpl extends BaseDao implements UserDao {
         return ret >= 1;
     }
 
+    @Override
+    public boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        params.put("mobilePhone", mobilePhone);
+        params.put("verifyLogo", verifyLogo);
+        int ret = update("addMobileAndVerify", params);
+        return ret >= 1;
+    }
+
     private List<UserEntity> selectUsersByOpenIdOrType(String wxOpenId, Integer userType) {
         Map<String, Object> params = new HashMap<>();
         params.put("wxOpenId", wxOpenId);

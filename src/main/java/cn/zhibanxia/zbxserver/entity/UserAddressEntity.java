@@ -8,6 +8,19 @@ import java.util.Date;
  * Created by zzy on  2018/09/23 11:50
  */
 public class UserAddressEntity {
+    /**
+     * 业主默认地址
+     */
+    public static final int BIZ_TYPE_YEZHU = 1;
+    /**
+     * 回收人员默认住处
+     */
+    public static final int BIZ_TYPE_HUISHOU = 2;
+    /**
+     * 回收人员关注的小区地址
+     */
+    public static final int BIZ_TYPE_HUISHOU_FOCUS = 3;
+
     private Long id;
     /**
      * 用户id

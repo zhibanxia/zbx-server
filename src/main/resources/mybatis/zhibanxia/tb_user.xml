@@ -55,4 +55,17 @@
         </if>
     </select>
 
+    <update id="addMobileAndVerify" parameterType="Map">
+        update tb_user
+        set
+        <if test="mobilePhone!=null">
+            mobile_phone=#{mobilePhone},
+        </if>
+        <if test="verifyLogo!=null">
+            verify_logo=#{verifyLogo},
+        </if>
+        gmt_modified=now()
+        where id=#{id}
+    </update>
+
 </mapper>

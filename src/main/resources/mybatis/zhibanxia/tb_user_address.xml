@@ -30,6 +30,15 @@
         #{areaId}, #{subdistrictId}, #{areaDetail})
     </insert>
 
+    <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_user_address (user_id, biz_type, province_id, city_id, area_id, subdistrict_id, area_detail)
+        values
+        <foreach collection="list" item="addr" separator=",">
+            (#{addr.userId}, #{addr.bizType}, #{addr.provinceId}, #{addr.cityId}, #{addr.areaId}, #{addr.subdistrictId},
+            #{addr.areaDetail})
+        </foreach>
+    </insert>
+
     <select id="findAddrs" parameterType="Map" resultMap="UserAddressEntityMapper">
         select
         <include refid="all_column"/>
@@ -37,5 +46,27 @@
         where user_id=#{userId}
         and biz_type=#{bizType}
     </select>
+
+    <update id="update" parameterType="cn.zhibanxia.zbxserver.entity.UserAddressEntity">
+        update tb_user_address
+        set
+        <if test="provinceId!=null">
+            province_id=#{provinceId},
+        </if>
+        <if test="cityId!=null">
+            city_id=#{cityId},
+        </if>
+        <if test="areaId!=null">
+            area_id=#{areaId},
+        </if>
+        <if test="subDistrictId!=null">
+            subdistrict_id=#{subDistrictId},
+        </if>
+        <if test="areaDetail!=null">
+            area_detail=#{areaDetail},
+        </if>
+        gmt_modified=now()
+        where id=#{id}
+    </update>
 
 </mapper>

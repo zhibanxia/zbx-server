@@ -22,6 +22,7 @@
         <result column="area_id" property="areaId"/>
         <result column="subdistrict_id" property="subDistrictId"/>
         <result column="area_detail" property="areaDetail"/>
+        <result column="mobile_phone" property="mobilePhone"/>
         <result column="publish_time" property="publishTime"/>
         <result column="comfirm_recyle_time" property="comfirmRecyleTime"/>
         <result column="complete_recyle_time" property="completeRecyleTime"/>
@@ -32,18 +33,19 @@
     <sql id="all_column">
         id, create_user_id, recyle_user_id, res_type, res_status, res_amount, res_images, take_garbage_flag,
         free_take_flag, res_note, door_serv_start_time, door_serv_end_time, province_id, city_id, area_id,
-        subdistrict_id, area_detail, publish_time, comfirm_recyle_time, complete_recyle_time, gmt_create, gmt_modified
+        subdistrict_id, area_detail, mobile_phone, publish_time, comfirm_recyle_time, complete_recyle_time, gmt_create,
+        gmt_modified
     </sql>
 
     <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.RecyleRequestEntity"
             useGeneratedKeys="true" keyProperty="id">
         insert into tb_recyle_request (create_user_id, recyle_user_id, res_type, res_status, res_amount, res_images,
         take_garbage_flag, free_take_flag, res_note, door_serv_start_time, door_serv_end_time, province_id, city_id,
-        area_id, subdistrict_id, area_detail, publish_time, comfirm_recyle_time, complete_recyle_time)
+        area_id, subdistrict_id, area_detail, mobile_phone, publish_time, comfirm_recyle_time, complete_recyle_time)
         values
         (#{createUserId}, #{recyleUserId}, #{resType}, #{resStatus}, #{resAmount}, #{resImages}, #{takeGarbageFlag},
         #{freeTakeFlag}, #{resNote}, #{doorServStartTime}, #{doorServEndTime}, #{provinceId}, #{cityId}, #{areaId},
-        #{subDistrictId}, #{areaDetail}, #{publishTime}, #{comfirmRecyleTime}, #{completeRecyleTime})
+        #{subDistrictId}, #{areaDetail}, #{mobilePhone}, #{publishTime}, #{comfirmRecyleTime}, #{completeRecyleTime})
     </insert>
 
     <select id="findById" parameterType="Long" resultMap="RecyleRequestEntityMapper">
@@ -107,9 +109,58 @@
         <if test="areaDetail!=null">
             area_detail=#{areaDetail},
         </if>
+        <if test="mobilePhone!=null">
+            mobile_phone=#{mobilePhone},
+        </if>
         gmt_modified = now()
         where id=#{id}
     </update>
+
+    <select id="list" parameterType="cn.zhibanxia.zbxserver.service.RecyleRequestService.ListReq"
+            resultMap="RecyleRequestEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_recyle_request
+        where 1=1
+        <if test="createUserId!=null">
+            and create_user_id=#{createUserId}
+        </if>
+        <if test="recyleUserId!=null">
+            and recyle_user_id=#{recyleUserId}
+        </if>
+        <if test="resStatus!=null">
+            and res_status=#{resStatus}
+        </if>
+        <if test="start!=null">
+            and gmt_create &gt;= #{start}
+        </if>
+        <if test="end!=null">
+            and gmt_create &lt; #{end}
+        </if>
+        limit #{startPage}, #{endPage}
+    </select>
+
+    <select id="count" parameterType="cn.zhibanxia.zbxserver.service.RecyleRequestService.ListReq"
+            resultType="Integer">
+        select count(1)
+        from tb_recyle_request
+        where 1=1
+        <if test="createUserId!=null">
+            and create_user_id=#{createUserId}
+        </if>
+        <if test="recyleUserId!=null">
+            and recyle_user_id=#{recyleUserId}
+        </if>
+        <if test="resStatus!=null">
+            and res_status=#{resStatus}
+        </if>
+        <if test="start!=null">
+            and gmt_create &gt;= #{start}
+        </if>
+        <if test="end!=null">
+            and gmt_create &lt; #{end}
+        </if>
+    </select>
 
 
 </mapper>

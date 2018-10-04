@@ -28,4 +28,9 @@ public class UserServiceImpl implements UserService {
     public UserEntity findById(Long uid) {
         return userDao.selectById(uid);
     }
+
+    @Override
+    public boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo) {
+        return userDao.addMobileAndVerify(id, mobilePhone, verifyLogo);
+    }
 }

@@ -19,12 +19,24 @@ public class UserAddressDaoImpl extends BaseDao implements UserAddressDao {
         insert("insert", userAddressEntity);
         return userAddressEntity.getId();
     }
-    
+
     @Override
     public List<UserAddressEntity> findAddrs(Long userId, int bizType) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         params.put("bizType", bizType);
         return selectList("findAddrs", params);
+    }
+
+    @Override
+    public boolean batchInsert(List<UserAddressEntity> userAddressEntityList) {
+        int ret = insert("batchInsert", userAddressEntityList);
+        return ret == userAddressEntityList.size();
+    }
+
+    @Override
+    public boolean update(UserAddressEntity userAddressEntity) {
+        int ret = update("update", userAddressEntity);
+        return ret == 1;
     }
 }

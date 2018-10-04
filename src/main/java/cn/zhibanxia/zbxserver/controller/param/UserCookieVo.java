@@ -1,4 +1,4 @@
-package cn.zhibanxia.zbxserver.vo;
+package cn.zhibanxia.zbxserver.controller.param;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>貌似出了点状况</title>
+</head>
+<body>
+<div>出错了</div>
+<div>$code</div>
+<div>$msg</div>
+</body>
+</html>

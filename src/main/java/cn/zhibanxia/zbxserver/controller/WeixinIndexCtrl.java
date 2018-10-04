@@ -1,18 +1,18 @@
 package cn.zhibanxia.zbxserver.controller;
 
+import cn.zhibanxia.zbxserver.annotation.NotLoginCanAccess;
 import cn.zhibanxia.zbxserver.bo.WxUserAuthBo;
 import cn.zhibanxia.zbxserver.bo.WxUserInfoBo;
 import cn.zhibanxia.zbxserver.config.WxPropConfig;
-import cn.zhibanxia.zbxserver.constant.CookieConstant;
-import cn.zhibanxia.zbxserver.constant.ErrorCodeConstant;
+import cn.zhibanxia.zbxserver.config.ZbxConfig;
+import cn.zhibanxia.zbxserver.constant.ErrorCode;
+import cn.zhibanxia.zbxserver.constant.UrlConstant;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.service.UserService;
 import cn.zhibanxia.zbxserver.service.WxApiService;
-import cn.zhibanxia.zbxserver.util.RequestUtil;
-import cn.zhibanxia.zbxserver.vo.UserCookieVo;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang3.StringUtils;
+import cn.zhibanxia.zbxserver.util.UserCookieUtil;
+import cn.zhibanxia.zbxserver.controller.param.UserCookieVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -31,6 +32,7 @@ import java.util.Objects;
  * Created by zzy on  2018/10/02 09:34
  */
 @RestController("/weixin")
+@NotLoginCanAccess
 public class WeixinIndexCtrl {
 
     private static Logger logger = LoggerFactory.getLogger(WeixinIndexCtrl.class);
@@ -40,40 +42,77 @@ public class WeixinIndexCtrl {
     private UserService userService;
     @Autowired
     private WxPropConfig wxPropConfig;
+    @Autowired
+    private ZbxConfig zbxConfig;
 
     /**
      * 重定向到业主页
      *
      * @param code
-     * @param state
+     * @param type
      * @return
      */
     @GetMapping(value = "redirectIndex")
-    public ModelAndView redirectYezhuIndex(@RequestParam("code") String code, @RequestParam("state") String state) {
+    public ModelAndView redirectYezhuIndex(@RequestParam("code") String code, @RequestParam("state") Integer type, HttpServletResponse response) {
         try {
             WxUserAuthBo wxUserAuthBo = wxApiService.userAuth(code);
-            UserEntity userEntity = userService.findUserByOpenId(wxUserAuthBo.getOpenId(), UserEntity.USER_TYPE_YEZHU);
-            if (userEntity == null) {
-                WxUserInfoBo wxUserInfoBo = wxApiService.getUserInfo(wxUserAuthBo.getAccessToken(), wxUserAuthBo.getOpenId());
-                userEntity = new UserEntity();
-                userEntity.setUserType(UserEntity.USER_TYPE_YEZHU);
-                userEntity.setWxLogo(wxUserInfoBo.getHeadimgurl());
-                userEntity.setWxOpenId(wxUserAuthBo.getOpenId());
-                userEntity.setWxNickName(wxUserInfoBo.getNickName());
-                userEntity.setUserStatus(UserEntity.USER_STATUS_NORMAL);
-                Long id = userService.createUser(userEntity);
+            if (type == null || (type != UserEntity.USER_TYPE_YEZHU && type != UserEntity.USER_TYPE_HUISHOU)) {
+                ModelAndView modelAndView = new ModelAndView("/error");
+                modelAndView.addObject("code", ErrorCode.CODE_UNKONWN_ERROR.getCode());
+                modelAndView.addObject("msg", "state参数不合法");
+                return modelAndView;
+            }
+            if (type == UserEntity.USER_TYPE_YEZHU) {
+                UserEntity userEntity = userService.findUserByOpenId(wxUserAuthBo.getOpenId(), UserEntity.USER_TYPE_YEZHU);
+                Long id;
+                if (userEntity == null) {
+                    WxUserInfoBo wxUserInfoBo = wxApiService.getUserInfo(wxUserAuthBo.getAccessToken(), wxUserAuthBo.getOpenId());
+                    userEntity = new UserEntity();
+                    userEntity.setUserType(UserEntity.USER_TYPE_YEZHU);
+                    userEntity.setWxLogo(wxUserInfoBo.getHeadimgurl());
+                    userEntity.setWxOpenId(wxUserAuthBo.getOpenId());
+                    userEntity.setWxNickName(wxUserInfoBo.getNickName());
+                    userEntity.setUserStatus(UserEntity.USER_STATUS_NORMAL);
+                    id = userService.createUser(userEntity);
+                } else {
+                    id = userEntity.getId();
+                }
+                UserCookieUtil.addCookie(response, UserEntity.USER_TYPE_YEZHU, id, zbxConfig.getEncryptKey());
+                // 新增回收请求
+                response.sendRedirect(UrlConstant.YEZHU_ADD_RECYLE_REQUEST);
+                return null;
+            } else if (type == UserEntity.USER_TYPE_YEZHU) {
+                UserEntity userEntity = userService.findUserByOpenId(wxUserAuthBo.getOpenId(), UserEntity.USER_TYPE_HUISHOU);
+                Long id;
+                Integer userStatus;
+                if (userEntity == null) {
+                    WxUserInfoBo wxUserInfoBo = wxApiService.getUserInfo(wxUserAuthBo.getAccessToken(), wxUserAuthBo.getOpenId());
+                    userEntity = new UserEntity();
+                    userEntity.setUserType(UserEntity.USER_TYPE_HUISHOU);
+                    userEntity.setWxLogo(wxUserInfoBo.getHeadimgurl());
+                    userEntity.setWxOpenId(wxUserAuthBo.getOpenId());
+                    userEntity.setWxNickName(wxUserInfoBo.getNickName());
+                    userEntity.setUserStatus(UserEntity.USER_STATUS_NEED_ACTIVE);
+                    id = userService.createUser(userEntity);
+                    userStatus = UserEntity.USER_STATUS_NEED_ACTIVE;
+                } else {
+                    id = userEntity.getId();
+                    userStatus = userEntity.getUserStatus();
+                }
+                UserCookieUtil.addCookie(response, UserEntity.USER_TYPE_HUISHOU, id, zbxConfig.getEncryptKey());
+                return judgeHuishouUser(response, userStatus);
             }
             return null;
         } catch (BizException e) {
             logger.warn("", e);
             ModelAndView modelAndView = new ModelAndView("/error");
-            modelAndView.addObject("code", e.getCode());
-            modelAndView.addObject("msg", e.getMsg());
+            modelAndView.addObject("code", e.getErrorCode().getCode());
+            modelAndView.addObject("msg", e.getErrorCode().getCode());
             return modelAndView;
         } catch (Exception e) {
             logger.warn("", e);
             ModelAndView modelAndView = new ModelAndView("/error");
-            modelAndView.addObject("code", ErrorCodeConstant.CODE_UNKONWN_ERROR);
+            modelAndView.addObject("code", ErrorCode.CODE_UNKONWN_ERROR.getCode());
             modelAndView.addObject("msg", e.getMessage());
             return modelAndView;
         }
@@ -83,16 +122,9 @@ public class WeixinIndexCtrl {
     public ModelAndView index(@RequestParam("type") Integer type, HttpServletRequest request, HttpServletResponse response) {
         try {
             if (Objects.equals(UserEntity.USER_TYPE_YEZHU, type)) {
-                String cookieValue = RequestUtil.getCookie(request, CookieConstant.COOKIE_KEY_YEZHU_USER);
-                if (StringUtils.isEmpty(cookieValue)) {
-                    // 没有cookie，走微信授权
-                    String authUrl = MessageFormat.format(WxApiService.AUTH_REDIRECT_URL, wxPropConfig.getAppId(), URLEncoder.encode("https://www.zhibanxia.cn/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_YEZHU);
-                    response.sendRedirect(authUrl);
-                    return null;
-                }
                 UserCookieVo userCookieVo;
                 try {
-                    userCookieVo = JSONObject.parseObject(cookieValue, UserCookieVo.class);
+                    userCookieVo = UserCookieUtil.parserCookie(request, UserEntity.USER_TYPE_YEZHU, zbxConfig.getEncryptKey());
                 } catch (Exception e) {
                     logger.warn("", e);
                     // cookie解析报错，走微信授权
@@ -100,17 +132,13 @@ public class WeixinIndexCtrl {
                     response.sendRedirect(authUrl);
                     return null;
                 }
-            } else if (Objects.equals(UserEntity.USER_TYPE_YEZHU, type)) {
-                String cookieValue = RequestUtil.getCookie(request, CookieConstant.COOKIE_KEY_HUISHOU_USER);
-                if (StringUtils.isEmpty(cookieValue)) {
-                    // 没有cookie，走微信授权
-                    String authUrl = MessageFormat.format(WxApiService.AUTH_REDIRECT_URL, wxPropConfig.getAppId(), URLEncoder.encode("https://www.zhibanxia.cn/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_HUISHOU);
-                    response.sendRedirect(authUrl);
-                    return null;
-                }
+                // 解密正常，跳转添加页面
+                response.sendRedirect(UrlConstant.YEZHU_ADD_RECYLE_REQUEST);
+                return null;
+            } else if (Objects.equals(UserEntity.USER_TYPE_HUISHOU, type)) {
                 UserCookieVo userCookieVo;
                 try {
-                    userCookieVo = JSONObject.parseObject(cookieValue, UserCookieVo.class);
+                    userCookieVo = UserCookieUtil.parserCookie(request, UserEntity.USER_TYPE_HUISHOU, zbxConfig.getEncryptKey());
                 } catch (Exception e) {
                     logger.warn("", e);
                     // cookie解析报错，走微信授权
@@ -126,37 +154,53 @@ public class WeixinIndexCtrl {
                     response.sendRedirect(authUrl);
                     return null;
                 }
-                // 正常，跳转回收列表页面
-                if (Objects.equals(UserEntity.USER_STATUS_NORMAL, userEntity.getUserStatus())) {
-                    String recyleListUrl = "https://www.zhibanxia.cn/recyle/list?bizType=1";
-                    response.sendRedirect(recyleListUrl);
-                    return null;
-                }
-                // 审核中,跳转审核中等待页
-                else if (Objects.equals(UserEntity.USER_STATUS_PERMIT_PROCESS, userEntity.getUserStatus())) {
-                    ModelAndView modelAndView = new ModelAndView("/user/permit_process");
-                    return modelAndView;
-                }
-                // 还没提交审核，提醒用户提交头像审核
-                else if (Objects.equals(UserEntity.USER_STATUS_NEED_ACTIVE, userEntity.getUserStatus())) {
-                    return null;
-                }
-                // 审核不通过，重新提交
-                else if (Objects.equals(UserEntity.USER_STATUS_NOT_PERMIT, userEntity.getUserStatus())) {
-                    return null;
-                }
-                // 禁用或者注销,跳转状态异常页面
-                else {
-                    ModelAndView modelAndView = new ModelAndView("/user/problem");
-                    return modelAndView;
-                }
+                return judgeHuishouUser(response, userEntity.getUserStatus());
             }
             return null;
         } catch (Exception e) {
             logger.warn("", e);
             ModelAndView modelAndView = new ModelAndView("/error");
-            modelAndView.addObject("code", ErrorCodeConstant.CODE_UNKONWN_ERROR);
+            modelAndView.addObject("code", ErrorCode.CODE_UNKONWN_ERROR.getCode());
             modelAndView.addObject("msg", e.getMessage());
+            return modelAndView;
+        }
+    }
+
+    /**
+     * 回收人员，根据用户状态跳转不同页面
+     *
+     * @param response
+     * @param userStatus
+     * @return
+     * @throws IOException
+     */
+    private ModelAndView judgeHuishouUser(HttpServletResponse response, Integer userStatus) throws IOException {
+        // 正常，跳转回收列表页面
+        if (Objects.equals(UserEntity.USER_STATUS_NORMAL, userStatus)) {
+            String recyleListUrl = UrlConstant.RECYLE_REQUEST_LIST + "?bizType=1";
+            response.sendRedirect(recyleListUrl);
+            return null;
+        }
+        // 审核中,跳转审核中等待页
+        else if (Objects.equals(UserEntity.USER_STATUS_PERMIT_PROCESS, userStatus)) {
+            ModelAndView modelAndView = new ModelAndView("/user/permit_process");
+            return modelAndView;
+        }
+        // 还没提交审核，提醒用户提交头像审核
+        else if (Objects.equals(UserEntity.USER_STATUS_NEED_ACTIVE, userStatus)) {
+            String recyleListUrl = UrlConstant.USER_DETAIL + "?status=2";
+            response.sendRedirect(recyleListUrl);
+            return null;
+        }
+        // 审核不通过，重新提交
+        else if (Objects.equals(UserEntity.USER_STATUS_NOT_PERMIT, userStatus)) {
+            String recyleListUrl = UrlConstant.PERFIM_REFUSE + "?status=2";
+            response.sendRedirect(recyleListUrl);
+            return null;
+        }
+        // 禁用或者注销,跳转状态异常页面
+        else {
+            ModelAndView modelAndView = new ModelAndView("/user/problem");
             return modelAndView;
         }
     }

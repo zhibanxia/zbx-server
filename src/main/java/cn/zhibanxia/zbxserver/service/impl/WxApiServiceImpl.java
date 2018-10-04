@@ -3,7 +3,7 @@ package cn.zhibanxia.zbxserver.service.impl;
 import cn.zhibanxia.zbxserver.bo.WxUserAuthBo;
 import cn.zhibanxia.zbxserver.bo.WxUserInfoBo;
 import cn.zhibanxia.zbxserver.config.WxPropConfig;
-import cn.zhibanxia.zbxserver.constant.ErrorCodeConstant;
+import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.service.WxApiService;
 import cn.zhibanxia.zbxserver.util.HttpClientUtil;
@@ -34,7 +34,7 @@ public class WxApiServiceImpl implements WxApiService {
             jsonObject = JSONObject.parseObject(body);
         } catch (Exception e) {
             logger.warn("", e);
-            throw new BizException(ErrorCodeConstant.CODE_JSON_PASER_ERROR, e.getMessage(), e);
+            throw new BizException(ErrorCode.CODE_JSON_PASER_ERROR, e);
         }
         WxUserAuthBo wxUserAuthBo = new WxUserAuthBo();
         wxUserAuthBo.setAccessToken(jsonObject.getString("access_token"));
@@ -53,7 +53,7 @@ public class WxApiServiceImpl implements WxApiService {
             jsonObject = JSONObject.parseObject(body);
         } catch (Exception e) {
             logger.warn("", e);
-            throw new BizException(ErrorCodeConstant.CODE_JSON_PASER_ERROR, e.getMessage(), e);
+            throw new BizException(ErrorCode.CODE_JSON_PASER_ERROR, e);
         }
         WxUserInfoBo wxUserInfoBo = new WxUserInfoBo();
         wxUserInfoBo.setOpenId(jsonObject.getString("openid"));

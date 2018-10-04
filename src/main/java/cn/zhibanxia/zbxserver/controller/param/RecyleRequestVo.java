@@ -1,31 +1,15 @@
-package cn.zhibanxia.zbxserver.entity;
+package cn.zhibanxia.zbxserver.controller.param;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import java.util.Date;
+import java.io.Serializable;
 
 /**
- * Created by zzy on  2018/09/24 15:58
+ * 回收请求列表数据
+ * Created by zzy on  2018/10/04 21:42
  */
-public class RecyleRequestEntity {
-
-    /**
-     * 发布
-     */
-    public static final int RES_STATUS_PUBLISH = 1;
-    /**
-     * 确认回收
-     */
-    public static final int RES_STATUS_CONFIRM = 2;
-    /**
-     * 回收完成
-     */
-    public static final int RES_STATUS_COMPLETE = 3;
-    /**
-     * 取消
-     */
-    public static final int RES_STATUS_CANCEL = 4;
-
+public class RecyleRequestVo implements Serializable {
+    private static final long serialVersionUID = -8492753300547953307L;
     private Long id;
     /**
      * 发布人id
@@ -66,11 +50,11 @@ public class RecyleRequestEntity {
     /**
      * 是否帮忙带垃圾
      */
-    private Boolean takeGarbageFlag;
+    private boolean takeGarbageFlag;
     /**
      * 是否免费回收
      */
-    private Boolean freeTakeFlag;
+    private boolean freeTakeFlag;
     /**
      * 备注说明
      */
@@ -78,11 +62,11 @@ public class RecyleRequestEntity {
     /**
      * 上门时间段：起始
      */
-    private Date doorServStartTime;
+    private String doorServStartTime;
     /**
      * 上门时间段：截止
      */
-    private Date doorServEndTime;
+    private String doorServEndTime;
     /**
      * 省id
      */
@@ -108,20 +92,19 @@ public class RecyleRequestEntity {
      * 业主手机号码，用于回收人员联系使用
      */
     private String mobilePhone;
+
     /**
      * 发布时间
      */
-    private Date publishTime;
+    private String publishTime;
     /**
      * 确认回收时间
      */
-    private Date comfirmRecyleTime;
+    private String comfirmRecyleTime;
     /**
      * 完成回收时间
      */
-    private Date completeRecyleTime;
-    private Date gmtCreate;
-    private Date gmtModified;
+    private String completeRecyleTime;
 
     public Long getId() {
         return id;
@@ -179,28 +162,20 @@ public class RecyleRequestEntity {
         this.resImages = resImages;
     }
 
-    public boolean isFreeTakeFlag() {
-        return freeTakeFlag;
-    }
-
-    public void setFreeTakeFlag(boolean freeTakeFlag) {
-        this.freeTakeFlag = freeTakeFlag;
-    }
-
-    public Date getCompleteRecyleTime() {
-        return completeRecyleTime;
-    }
-
-    public void setCompleteRecyleTime(Date completeRecyleTime) {
-        this.completeRecyleTime = completeRecyleTime;
-    }
-
     public boolean isTakeGarbageFlag() {
         return takeGarbageFlag;
     }
 
     public void setTakeGarbageFlag(boolean takeGarbageFlag) {
         this.takeGarbageFlag = takeGarbageFlag;
+    }
+
+    public boolean isFreeTakeFlag() {
+        return freeTakeFlag;
+    }
+
+    public void setFreeTakeFlag(boolean freeTakeFlag) {
+        this.freeTakeFlag = freeTakeFlag;
     }
 
     public String getResNote() {
@@ -211,19 +186,19 @@ public class RecyleRequestEntity {
         this.resNote = resNote;
     }
 
-    public Date getDoorServStartTime() {
+    public String getDoorServStartTime() {
         return doorServStartTime;
     }
 
-    public void setDoorServStartTime(Date doorServStartTime) {
+    public void setDoorServStartTime(String doorServStartTime) {
         this.doorServStartTime = doorServStartTime;
     }
 
-    public Date getDoorServEndTime() {
+    public String getDoorServEndTime() {
         return doorServEndTime;
     }
 
-    public void setDoorServEndTime(Date doorServEndTime) {
+    public void setDoorServEndTime(String doorServEndTime) {
         this.doorServEndTime = doorServEndTime;
     }
 
@@ -275,36 +250,28 @@ public class RecyleRequestEntity {
         this.mobilePhone = mobilePhone;
     }
 
-    public Date getPublishTime() {
+    public String getPublishTime() {
         return publishTime;
     }
 
-    public void setPublishTime(Date publishTime) {
+    public void setPublishTime(String publishTime) {
         this.publishTime = publishTime;
     }
 
-    public Date getComfirmRecyleTime() {
+    public String getComfirmRecyleTime() {
         return comfirmRecyleTime;
     }
 
-    public void setComfirmRecyleTime(Date comfirmRecyleTime) {
+    public void setComfirmRecyleTime(String comfirmRecyleTime) {
         this.comfirmRecyleTime = comfirmRecyleTime;
     }
 
-    public Date getGmtCreate() {
-        return gmtCreate;
+    public String getCompleteRecyleTime() {
+        return completeRecyleTime;
     }
 
-    public void setGmtCreate(Date gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
-    public Date getGmtModified() {
-        return gmtModified;
-    }
-
-    public void setGmtModified(Date gmtModified) {
-        this.gmtModified = gmtModified;
+    public void setCompleteRecyleTime(String completeRecyleTime) {
+        this.completeRecyleTime = completeRecyleTime;
     }
 
     @Override

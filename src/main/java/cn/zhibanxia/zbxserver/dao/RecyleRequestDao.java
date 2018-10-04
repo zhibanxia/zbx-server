@@ -1,6 +1,9 @@
 package cn.zhibanxia.zbxserver.dao;
 
 import cn.zhibanxia.zbxserver.entity.RecyleRequestEntity;
+import cn.zhibanxia.zbxserver.service.RecyleRequestService;
+
+import java.util.List;
 
 /**
  * Created by zzy on  2018/10/01 09:52
@@ -46,4 +49,19 @@ public interface RecyleRequestDao {
      * @return
      */
     boolean update(RecyleRequestEntity recyleRequestEntity);
+
+    /**
+     * 分页查询列表
+     *
+     * @param listReq 分页请求
+     * @return
+     */
+    List<RecyleRequestEntity> list(RecyleRequestService.ListReq listReq);
+
+    /**
+     * 根据条件查询总数
+     *
+     * @return
+     */
+    Integer count(RecyleRequestService.ListReq listReq);
 }

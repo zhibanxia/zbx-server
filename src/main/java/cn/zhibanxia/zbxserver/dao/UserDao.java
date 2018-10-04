@@ -57,4 +57,11 @@ public interface UserDao {
      * @return
      */
     boolean updateUserStatus(Long id, int userSatus);
+
+    /**
+     * 增加手机号、审核头像
+     *
+     * @return
+     */
+    boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo);
 }

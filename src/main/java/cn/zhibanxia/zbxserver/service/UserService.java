@@ -30,4 +30,12 @@ public interface UserService {
      * @return
      */
     UserEntity findById(Long uid);
+
+
+    /**
+     * 增加手机号、审核头像
+     *
+     * @return
+     */
+    boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo);
 }

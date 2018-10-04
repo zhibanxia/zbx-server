@@ -1,6 +1,6 @@
 package cn.zhibanxia.zbxserver.util;
 
-import cn.zhibanxia.zbxserver.constant.ErrorCodeConstant;
+import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.exception.BizException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -40,7 +40,7 @@ public class HttpClientUtil {
             return responseBody;
         } catch (Exception e) {
             logger.warn("http get fail, url={}", url, e);
-            throw new BizException(ErrorCodeConstant.CODE_HTTP_GET_ERROR, e.getMessage(), e);
+            throw new BizException(ErrorCode.CODE_HTTP_GET_ERROR, e);
         } finally {
             // 日志格式：时间|请求方式|url|参数|结果|response
             httpRequestlogger.info("GET|{}||{}|{}", url, success, responseBody);

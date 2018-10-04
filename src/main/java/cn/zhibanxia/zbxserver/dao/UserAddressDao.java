@@ -8,7 +8,7 @@ import java.util.List;
  * Created by zzy on  2018/09/24 21:31
  */
 public interface UserAddressDao {
-    
+
     /**
      * 插入
      *
@@ -25,4 +25,18 @@ public interface UserAddressDao {
      * @return
      */
     List<UserAddressEntity> findAddrs(Long userId, int bizType);
+
+    /**
+     * 批量插入
+     *
+     * @param userAddressEntityList
+     * @return
+     */
+    boolean batchInsert(List<UserAddressEntity> userAddressEntityList);
+
+    /**
+     * @param userAddressEntity
+     * @return
+     */
+    boolean update(UserAddressEntity userAddressEntity);
 }

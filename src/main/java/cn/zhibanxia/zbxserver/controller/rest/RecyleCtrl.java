@@ -1,13 +1,15 @@
-package cn.zhibanxia.zbxserver.controller;
+package cn.zhibanxia.zbxserver.controller.rest;
 
+import cn.zhibanxia.zbxserver.controller.param.RecyleRequestVo;
+import cn.zhibanxia.zbxserver.controller.param.Result;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Created by zzy on  2018/10/02 14:48
  */
-@RestController("recyle")
+@RestController("rest/recyle")
 public class RecyleCtrl {
     /**
      * 获取回收列表，根据参数不同，展示不同的数据：
@@ -19,7 +21,7 @@ public class RecyleCtrl {
      * @return
      */
     @GetMapping("list")
-    public ModelAndView list() {
+    public Result<RecyleRequestVo> list(@RequestParam("bizType") Integer bizType) {
         return null;
     }
 }
