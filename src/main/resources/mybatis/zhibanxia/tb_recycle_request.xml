@@ -120,7 +120,7 @@
         where id=#{id} and deleted=0
     </update>
 
-    <select id="list" parameterType="cn.zhibanxia.zbxserver.service.recycleRequestService.ListReq"
+    <select id="list" parameterType="cn.zhibanxia.zbxserver.bo.ListRecycleRequestBo"
             resultMap="RecycleRequestEntityMapper">
         select
         <include refid="all_column"/>
@@ -147,7 +147,7 @@
         limit #{startPage}, #{endPage}
     </select>
 
-    <select id="count" parameterType="cn.zhibanxia.zbxserver.service.RecycleRequestService.ListReq"
+    <select id="count" parameterType="cn.zhibanxia.zbxserver.bo.ListRecycleRequestBo"
             resultType="Integer">
         select count(1)
         from tb_recycle_request

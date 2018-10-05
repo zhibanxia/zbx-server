@@ -1,5 +1,6 @@
 package cn.zhibanxia.zbxserver.service.impl;
 
+import cn.zhibanxia.zbxserver.bo.ListRecycleRequestBo;
 import cn.zhibanxia.zbxserver.dao.RecycleRequestDao;
 import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
 import cn.zhibanxia.zbxserver.service.RecycleRequestService;
@@ -22,13 +23,13 @@ public class RecycleRequestServiceImpl implements RecycleRequestService {
     }
 
     @Override
-    public List<RecycleRequestEntity> list(ListReq listReq) {
-        return recycleRequestDao.list(listReq);
+    public List<RecycleRequestEntity> list(ListRecycleRequestBo listRecycleRequestBo) {
+        return recycleRequestDao.list(listRecycleRequestBo);
     }
 
     @Override
-    public Integer count(ListReq listReq) {
-        return recycleRequestDao.count(listReq);
+    public Integer count(ListRecycleRequestBo listRecycleRequestBo) {
+        return recycleRequestDao.count(listRecycleRequestBo);
     }
 
     @Override

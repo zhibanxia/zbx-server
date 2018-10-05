@@ -52,6 +52,7 @@ public class UploadFileCtrl {
 
     /**
      * 生成文件名称
+     * bizType: 1.回收人员的图片审核；2.业主上传的纸板照片
      *
      * @param bizType
      * @return
@@ -59,9 +60,9 @@ public class UploadFileCtrl {
      */
     private String getFileNameByBizType(Integer bizType) throws BizException {
         if (Objects.equals(1, bizType)) {
-            return RequestLocal.get().getHuishouUid() + "_" + RandomUtil.getRandomString(5);
+            return "huishou/" + RequestLocal.get().getHuishouUid() + "_" + RandomUtil.getRandomString(5);
         } else if (Objects.equals(2, bizType)) {
-            return RequestLocal.get().getYezhuUid() + "_" + RandomUtil.getRandomString(5);
+            return "yezhu/" + RequestLocal.get().getYezhuUid() + "_" + RandomUtil.getRandomString(5);
         } else {
             throw new BizException(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }

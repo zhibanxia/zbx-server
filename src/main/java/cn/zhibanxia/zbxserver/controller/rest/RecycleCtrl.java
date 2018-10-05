@@ -1,5 +1,6 @@
 package cn.zhibanxia.zbxserver.controller.rest;
 
+import cn.zhibanxia.zbxserver.bo.ListRecycleRequestBo;
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.controller.param.Addr;
 import cn.zhibanxia.zbxserver.controller.param.RecycleRequestVo;
@@ -60,20 +61,20 @@ public class RecycleCtrl {
         }
 
         if (Objects.equals(1, bizType)) {
-            RecycleRequestService.ListReq listReq = new RecycleRequestService.ListReq();
-            listReq.setResStatus(RecycleRequestEntity.RES_STATUS_PUBLISH);
-            listReq.setDeleted(false);
-            return Result.ResultBuilder.success(buildRecycleRequestVoList(listReq, page, size, true));
+            ListRecycleRequestBo listRecycleRequestBo = new ListRecycleRequestBo();
+            listRecycleRequestBo.setResStatus(RecycleRequestEntity.RES_STATUS_PUBLISH);
+            listRecycleRequestBo.setDeleted(false);
+            return Result.ResultBuilder.success(buildRecycleRequestVoList(listRecycleRequestBo, page, size, true));
         } else if (Objects.equals(2, bizType)) {
-            RecycleRequestService.ListReq listReq = new RecycleRequestService.ListReq();
-            listReq.setRecycleUserId(RequestLocal.get().getHuishouUid());
-            listReq.setDeleted(false);
-            return Result.ResultBuilder.success(buildRecycleRequestVoList(listReq, page, size, false));
+            ListRecycleRequestBo listRecycleRequestBo = new ListRecycleRequestBo();
+            listRecycleRequestBo.setRecycleUserId(RequestLocal.get().getHuishouUid());
+            listRecycleRequestBo.setDeleted(false);
+            return Result.ResultBuilder.success(buildRecycleRequestVoList(listRecycleRequestBo, page, size, false));
         } else if (Objects.equals(3, bizType)) {
-            RecycleRequestService.ListReq listReq = new RecycleRequestService.ListReq();
-            listReq.setCreateUserId(RequestLocal.get().getYezhuUid());
-            listReq.setDeleted(false);
-            return Result.ResultBuilder.success(buildRecycleRequestVoList(listReq, page, size, false));
+            ListRecycleRequestBo listRecycleRequestBo = new ListRecycleRequestBo();
+            listRecycleRequestBo.setCreateUserId(RequestLocal.get().getYezhuUid());
+            listRecycleRequestBo.setDeleted(false);
+            return Result.ResultBuilder.success(buildRecycleRequestVoList(listRecycleRequestBo, page, size, false));
         } else {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
@@ -239,14 +240,14 @@ public class RecycleCtrl {
         return mobilePhone;
     }
 
-    private List<RecycleRequestVo> buildRecycleRequestVoList(RecycleRequestService.ListReq listReq, Integer page, Integer size, boolean needHidden) {
+    private List<RecycleRequestVo> buildRecycleRequestVoList(ListRecycleRequestBo listRecycleRequestBo, Integer page, Integer size, boolean needHidden) {
         int pageVal = (page == null || page <= 0) ? 1 : page.intValue();
         int pageSize = (size == null || size <= 0) ? 10 : size.intValue();
         int startPage = pageVal * (pageSize - 1) + 1;
         int endPage = pageVal * pageSize;
-        listReq.setStartPage(startPage);
-        listReq.setEndPage(endPage);
-        List<RecycleRequestEntity> requestEntityList = recycleRequestService.list(listReq);
+        listRecycleRequestBo.setStartPage(startPage);
+        listRecycleRequestBo.setEndPage(endPage);
+        List<RecycleRequestEntity> requestEntityList = recycleRequestService.list(listRecycleRequestBo);
         if (CollectionUtils.isEmpty(requestEntityList)) {
             Result.ResultBuilder.success(Collections.emptyList());
         }

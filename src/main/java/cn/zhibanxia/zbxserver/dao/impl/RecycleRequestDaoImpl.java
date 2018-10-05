@@ -1,9 +1,9 @@
 package cn.zhibanxia.zbxserver.dao.impl;
 
+import cn.zhibanxia.zbxserver.bo.ListRecycleRequestBo;
 import cn.zhibanxia.zbxserver.dao.BaseDao;
 import cn.zhibanxia.zbxserver.dao.RecycleRequestDao;
 import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
-import cn.zhibanxia.zbxserver.service.RecycleRequestService;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -52,13 +52,13 @@ public class RecycleRequestDaoImpl extends BaseDao implements RecycleRequestDao 
     }
 
     @Override
-    public List<RecycleRequestEntity> list(RecycleRequestService.ListReq listReq) {
-        return selectList("list", listReq);
+    public List<RecycleRequestEntity> list(ListRecycleRequestBo listRecycleRequestBo) {
+        return selectList("list", listRecycleRequestBo);
     }
 
     @Override
-    public Integer count(RecycleRequestService.ListReq listReq) {
-        return selectOne("count", listReq);
+    public Integer count(ListRecycleRequestBo listRecycleRequestBo) {
+        return selectOne("count", listRecycleRequestBo);
     }
 
     @Override

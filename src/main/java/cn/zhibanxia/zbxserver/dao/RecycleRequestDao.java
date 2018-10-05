@@ -1,7 +1,7 @@
 package cn.zhibanxia.zbxserver.dao;
 
+import cn.zhibanxia.zbxserver.bo.ListRecycleRequestBo;
 import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
-import cn.zhibanxia.zbxserver.service.RecycleRequestService;
 
 import java.util.List;
 
@@ -53,17 +53,17 @@ public interface RecycleRequestDao {
     /**
      * 分页查询列表
      *
-     * @param listReq 分页请求
+     * @param listRecycleRequestBo 分页请求
      * @return
      */
-    List<RecycleRequestEntity> list(RecycleRequestService.ListReq listReq);
+    List<RecycleRequestEntity> list(ListRecycleRequestBo listRecycleRequestBo);
 
     /**
      * 根据条件查询总数
      *
      * @return
      */
-    Integer count(RecycleRequestService.ListReq listReq);
+    Integer count(ListRecycleRequestBo listRecycleRequestBo);
 
     /**
      * 删除回收请求

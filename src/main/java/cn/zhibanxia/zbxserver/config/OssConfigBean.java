@@ -66,12 +66,4 @@ public class OssConfigBean {
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
     }
-
-    public String getObjectPath() {
-        return objectPath;
-    }
-
-    public void setObjectPath(String objectPath) {
-        this.objectPath = objectPath;
-    }
 }
