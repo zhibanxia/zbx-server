@@ -12,30 +12,30 @@
         <result column="city_id" property="cityId"/>
         <result column="area_id" property="areaId"/>
         <result column="subdistrict_id" property="subdistrictId"/>
-        <result column="area_detail" property="areaDetail"/>
+        <result column="addr_detail" property="addrDetail"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
 
     <sql id="all_column">
-        id, user_id, biz_type, province_id, city_id, area_id, subdistrict_id, area_detail,
+        id, user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail,
         gmt_create, gmt_modified
     </sql>
 
     <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.UserAddressEntity"
             useGeneratedKeys="true" keyProperty="id">
-        insert into tb_user_address (user_id, biz_type, province_id, city_id, area_id, subdistrict_id, area_detail)
+        insert into tb_user_address (user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail)
         values
         (#{userId}, #{bizType}, #{provinceId}, #{cityId},
-        #{areaId}, #{subdistrictId}, #{areaDetail})
+        #{areaId}, #{subdistrictId}, #{addrDetail})
     </insert>
 
     <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id">
-        insert into tb_user_address (user_id, biz_type, province_id, city_id, area_id, subdistrict_id, area_detail)
+        insert into tb_user_address (user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail)
         values
         <foreach collection="list" item="addr" separator=",">
             (#{addr.userId}, #{addr.bizType}, #{addr.provinceId}, #{addr.cityId}, #{addr.areaId}, #{addr.subdistrictId},
-            #{addr.areaDetail})
+            #{addr.addrDetail})
         </foreach>
     </insert>
 
@@ -59,11 +59,11 @@
         <if test="areaId!=null">
             area_id=#{areaId},
         </if>
-        <if test="subDistrictId!=null">
-            subdistrict_id=#{subDistrictId},
+        <if test="subdistrictId!=null">
+            subdistrict_id=#{subdistrictId},
         </if>
-        <if test="areaDetail!=null">
-            area_detail=#{areaDetail},
+        <if test="addrDetail!=null">
+            addr_detail=#{addrDetail},
         </if>
         gmt_modified=now()
         where id=#{id}

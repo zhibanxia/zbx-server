@@ -1,5 +1,6 @@
 package cn.zhibanxia.zbxserver.entity;
 
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Date;
@@ -7,7 +8,7 @@ import java.util.Date;
 /**
  * Created by zzy on  2018/09/24 15:58
  */
-public class RecyleRequestEntity {
+public class RecycleRequestEntity {
 
     /**
      * 发布
@@ -26,6 +27,29 @@ public class RecyleRequestEntity {
      */
     public static final int RES_STATUS_CANCEL = 4;
 
+    /**
+     * 资源类型，纸板
+     */
+    public static final int RES_TYPE_ZHIBAN = 1;
+    /**
+     * 资源类型，塑料瓶
+     */
+    public static final int RES_TYPE_SULIAOPING = 2;
+    /**
+     * 资源类型，纸板和塑料瓶
+     */
+    public static final int RES_TYPE_ZHIBAN_AND_SULIAOPING = 3;
+
+    /**
+     * 资源类型
+     */
+    public static final ImmutableSet<Integer> RES_TYPES = ImmutableSet.of(RES_TYPE_ZHIBAN, RES_TYPE_SULIAOPING, RES_TYPE_ZHIBAN_AND_SULIAOPING);
+
+    /**
+     * 资源数量
+     */
+    public static final ImmutableSet<Integer> RES_AMOUNTS = ImmutableSet.of(1, 2, 3, 4, 5);
+
     private Long id;
     /**
      * 发布人id
@@ -34,7 +58,7 @@ public class RecyleRequestEntity {
     /**
      * 确认回收人id
      */
-    private Long recyleUserId;
+    private Long recycleUserId;
     /**
      * 资源类型值
      * 1.纸板
@@ -50,6 +74,11 @@ public class RecyleRequestEntity {
      * 4.取消
      */
     private Integer resStatus;
+
+    /**
+     * 是否删除
+     */
+    private Boolean deleted = false;
     /**
      * 回收数量:
      * 1.0-0.5kg 免费回收
@@ -98,11 +127,11 @@ public class RecyleRequestEntity {
     /**
      * 街道id
      */
-    private String subDistrictId;
+    private String subdistrictId;
     /**
      * 详细地址
      */
-    private String areaDetail;
+    private String addrDetail;
 
     /**
      * 业主手机号码，用于回收人员联系使用
@@ -115,7 +144,7 @@ public class RecyleRequestEntity {
     /**
      * 确认回收时间
      */
-    private Date comfirmRecyleTime;
+    private Date confirmRecyleTime;
     /**
      * 完成回收时间
      */
@@ -139,12 +168,12 @@ public class RecyleRequestEntity {
         this.createUserId = createUserId;
     }
 
-    public Long getRecyleUserId() {
-        return recyleUserId;
+    public Long getRecycleUserId() {
+        return recycleUserId;
     }
 
-    public void setRecyleUserId(Long recyleUserId) {
-        this.recyleUserId = recyleUserId;
+    public void setRecycleUserId(Long recycleUserId) {
+        this.recycleUserId = recycleUserId;
     }
 
     public Integer getResType() {
@@ -161,6 +190,14 @@ public class RecyleRequestEntity {
 
     public void setResStatus(Integer resStatus) {
         this.resStatus = resStatus;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Integer getResAmount() {
@@ -251,20 +288,20 @@ public class RecyleRequestEntity {
         this.areaId = areaId;
     }
 
-    public String getSubDistrictId() {
-        return subDistrictId;
+    public String getSubdistrictId() {
+        return subdistrictId;
     }
 
-    public void setSubDistrictId(String subDistrictId) {
-        this.subDistrictId = subDistrictId;
+    public void setSubdistrictId(String subdistrictId) {
+        this.subdistrictId = subdistrictId;
     }
 
-    public String getAreaDetail() {
-        return areaDetail;
+    public String getAddrDetail() {
+        return addrDetail;
     }
 
-    public void setAreaDetail(String areaDetail) {
-        this.areaDetail = areaDetail;
+    public void setAddrDetail(String addrDetail) {
+        this.addrDetail = addrDetail;
     }
 
     public String getMobilePhone() {
@@ -283,12 +320,12 @@ public class RecyleRequestEntity {
         this.publishTime = publishTime;
     }
 
-    public Date getComfirmRecyleTime() {
-        return comfirmRecyleTime;
+    public Date getConfirmRecyleTime() {
+        return confirmRecyleTime;
     }
 
-    public void setComfirmRecyleTime(Date comfirmRecyleTime) {
-        this.comfirmRecyleTime = comfirmRecyleTime;
+    public void setConfirmRecyleTime(Date confirmRecyleTime) {
+        this.confirmRecyleTime = confirmRecyleTime;
     }
 
     public Date getGmtCreate() {

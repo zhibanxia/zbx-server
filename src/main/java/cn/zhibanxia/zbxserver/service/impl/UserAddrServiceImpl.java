@@ -48,8 +48,8 @@ public class UserAddrServiceImpl implements UserAddrService {
                 existOne.setSubdistrictId(userAddressEntity.getSubdistrictId());
                 needUpdate = true;
             }
-            if (userAddressEntity.getAreaDetail() != null) {
-                existOne.setAreaDetail(userAddressEntity.getAreaDetail());
+            if (userAddressEntity.getAddrDetail() != null) {
+                existOne.setAddrDetail(userAddressEntity.getAddrDetail());
                 needUpdate = true;
             }
             if (needUpdate) {

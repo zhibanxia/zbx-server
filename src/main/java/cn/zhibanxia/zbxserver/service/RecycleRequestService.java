@@ -1,6 +1,6 @@
 package cn.zhibanxia.zbxserver.service;
 
-import cn.zhibanxia.zbxserver.entity.RecyleRequestEntity;
+import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.io.Serializable;
@@ -10,14 +10,23 @@ import java.util.List;
 /**
  * Created by zzy on  2018/10/04 21:57
  */
-public interface RecyleRequestService {
+public interface RecycleRequestService {
+
+    /**
+     * 发布回收请求
+     *
+     * @param recycleRequestEntity
+     * @return
+     */
+    Long create(RecycleRequestEntity recycleRequestEntity);
+
     /**
      * 分页查询列表
      *
      * @param listReq 分页请求
      * @return
      */
-    List<RecyleRequestEntity> list(ListReq listReq);
+    List<RecycleRequestEntity> list(ListReq listReq);
 
     /**
      * 根据条件查询总数
@@ -26,6 +35,43 @@ public interface RecyleRequestService {
      */
     Integer count(ListReq listReq);
 
+
+    /**
+     * 根据主键id查询
+     *
+     * @param id
+     * @return
+     */
+    RecycleRequestEntity find(Long id);
+
+    /**
+     * 确认回收请求
+     *
+     * @param id
+     * @param recycleUserId
+     * @return
+     */
+    boolean confirmRecycleRequest(Long id, Long recycleUserId);
+
+    /**
+     * 删除
+     *
+     * @param id
+     * @return
+     */
+    boolean delete(Long id);
+
+    /**
+     * 更新
+     *
+     * @param entity
+     * @return
+     */
+    boolean update(RecycleRequestEntity entity);
+
+    /**
+     * 查询回收列表请求对象
+     */
     class ListReq implements Serializable {
         private static final long serialVersionUID = -5722656789271505028L;
         /**
@@ -42,13 +88,17 @@ public interface RecyleRequestService {
          */
         private Integer resStatus;
         /**
+         * 是否删除
+         */
+        private Boolean deleted;
+        /**
          * 发布人id
          */
         private Long createUserId;
         /**
          * 确认回收人id
          */
-        private Long recyleUserId;
+        private Long recycleUserId;
         /**
          * 起始页码
          */
@@ -82,6 +132,14 @@ public interface RecyleRequestService {
             this.resStatus = resStatus;
         }
 
+        public Boolean getDeleted() {
+            return deleted;
+        }
+
+        public void setDeleted(Boolean deleted) {
+            this.deleted = deleted;
+        }
+
         public Long getCreateUserId() {
             return createUserId;
         }
@@ -90,12 +148,12 @@ public interface RecyleRequestService {
             this.createUserId = createUserId;
         }
 
-        public Long getRecyleUserId() {
-            return recyleUserId;
+        public Long getRecycleUserId() {
+            return recycleUserId;
         }
 
-        public void setRecyleUserId(Long recyleUserId) {
-            this.recyleUserId = recyleUserId;
+        public void setRecycleUserId(Long recycleUserId) {
+            this.recycleUserId = recycleUserId;
         }
 
         public int getStartPage() {

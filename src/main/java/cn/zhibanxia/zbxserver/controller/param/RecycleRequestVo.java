@@ -2,13 +2,14 @@ package cn.zhibanxia.zbxserver.controller.param;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
  * 回收请求列表数据
  * Created by zzy on  2018/10/04 21:42
  */
-public class RecyleRequestVo implements Serializable {
+public class RecycleRequestVo implements Serializable {
     private static final long serialVersionUID = -8492753300547953307L;
     private Long id;
     /**
@@ -18,13 +19,14 @@ public class RecyleRequestVo implements Serializable {
     /**
      * 确认回收人id
      */
-    private Long recyleUserId;
+    private Long recycleUserId;
     /**
      * 资源类型值
      * 1.纸板
      * 2.塑料瓶
      * 3.纸板和塑料瓶
      */
+    @NotNull
     private Integer resType;
     /**
      * 回收资源状态：
@@ -42,6 +44,7 @@ public class RecyleRequestVo implements Serializable {
      * 4.3-5kg
      * 5.5kg+
      */
+    @NotNull
     private Integer resAmount;
     /**
      * 废品照片，多张，逗号分隔，最多3张
@@ -50,11 +53,11 @@ public class RecyleRequestVo implements Serializable {
     /**
      * 是否帮忙带垃圾
      */
-    private boolean takeGarbageFlag;
+    private Boolean takeGarbageFlag = false;
     /**
      * 是否免费回收
      */
-    private boolean freeTakeFlag;
+    private Boolean freeTakeFlag = false;
     /**
      * 备注说明
      */
@@ -67,30 +70,17 @@ public class RecyleRequestVo implements Serializable {
      * 上门时间段：截止
      */
     private String doorServEndTime;
+
     /**
-     * 省id
+     * 回收地址信息
      */
-    private String provinceId;
-    /**
-     * 市id
-     */
-    private String cityId;
-    /**
-     * 区id
-     */
-    private String areaId;
-    /**
-     * 街道id
-     */
-    private String subDistrictId;
-    /**
-     * 详细地址
-     */
-    private String areaDetail;
+    @NotNull
+    private Addr addr;
 
     /**
      * 业主手机号码，用于回收人员联系使用
      */
+    @NotNull
     private String mobilePhone;
 
     /**
@@ -100,11 +90,11 @@ public class RecyleRequestVo implements Serializable {
     /**
      * 确认回收时间
      */
-    private String comfirmRecyleTime;
+    private String confirmRecycleTime;
     /**
      * 完成回收时间
      */
-    private String completeRecyleTime;
+    private String completeRecycleTime;
 
     public Long getId() {
         return id;
@@ -122,12 +112,12 @@ public class RecyleRequestVo implements Serializable {
         this.createUserId = createUserId;
     }
 
-    public Long getRecyleUserId() {
-        return recyleUserId;
+    public Long getRecycleUserId() {
+        return recycleUserId;
     }
 
-    public void setRecyleUserId(Long recyleUserId) {
-        this.recyleUserId = recyleUserId;
+    public void setRecycleUserId(Long recycleUserId) {
+        this.recycleUserId = recycleUserId;
     }
 
     public Integer getResType() {
@@ -202,44 +192,12 @@ public class RecyleRequestVo implements Serializable {
         this.doorServEndTime = doorServEndTime;
     }
 
-    public String getProvinceId() {
-        return provinceId;
+    public Addr getAddr() {
+        return addr;
     }
 
-    public void setProvinceId(String provinceId) {
-        this.provinceId = provinceId;
-    }
-
-    public String getCityId() {
-        return cityId;
-    }
-
-    public void setCityId(String cityId) {
-        this.cityId = cityId;
-    }
-
-    public String getAreaId() {
-        return areaId;
-    }
-
-    public void setAreaId(String areaId) {
-        this.areaId = areaId;
-    }
-
-    public String getSubDistrictId() {
-        return subDistrictId;
-    }
-
-    public void setSubDistrictId(String subDistrictId) {
-        this.subDistrictId = subDistrictId;
-    }
-
-    public String getAreaDetail() {
-        return areaDetail;
-    }
-
-    public void setAreaDetail(String areaDetail) {
-        this.areaDetail = areaDetail;
+    public void setAddr(Addr addr) {
+        this.addr = addr;
     }
 
     public String getMobilePhone() {
@@ -258,20 +216,20 @@ public class RecyleRequestVo implements Serializable {
         this.publishTime = publishTime;
     }
 
-    public String getComfirmRecyleTime() {
-        return comfirmRecyleTime;
+    public String getConfirmRecycleTime() {
+        return confirmRecycleTime;
     }
 
-    public void setComfirmRecyleTime(String comfirmRecyleTime) {
-        this.comfirmRecyleTime = comfirmRecyleTime;
+    public void setConfirmRecycleTime(String confirmRecycleTime) {
+        this.confirmRecycleTime = confirmRecycleTime;
     }
 
-    public String getCompleteRecyleTime() {
-        return completeRecyleTime;
+    public String getCompleteRecycleTime() {
+        return completeRecycleTime;
     }
 
-    public void setCompleteRecyleTime(String completeRecyleTime) {
-        this.completeRecyleTime = completeRecyleTime;
+    public void setCompleteRecycleTime(String completeRecycleTime) {
+        this.completeRecycleTime = completeRecycleTime;
     }
 
     @Override

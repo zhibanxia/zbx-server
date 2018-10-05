@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="cn.zhibanxia.zbxserver.dao.impl.RecyleRequestDaoImpl">
+<mapper namespace="cn.zhibanxia.zbxserver.dao.impl.RecycleRequestDaoImpl">
 
-    <resultMap id="RecyleRequestEntityMapper"
-               type="cn.zhibanxia.zbxserver.entity.RecyleRequestEntity">
+    <resultMap id="RecycleRequestEntityMapper"
+               type="cn.zhibanxia.zbxserver.entity.RecycleRequestEntity">
         <result column="id" property="id"/>
         <result column="create_user_id" property="createUserId"/>
-        <result column="recyle_user_id" property="recyleUserId"/>
+        <result column="recycle_user_id" property="recycleUserId"/>
         <result column="res_type" property="resType"/>
         <result column="res_status" property="resStatus"/>
+        <result column="deleted" property="deleted"/>
         <result column="res_amount" property="resAmount"/>
         <result column="res_images" property="resImages"/>
         <result column="take_garbage_flag" property="takeGarbageFlag"/>
@@ -20,55 +21,58 @@
         <result column="province_id" property="provinceId"/>
         <result column="city_id" property="cityId"/>
         <result column="area_id" property="areaId"/>
-        <result column="subdistrict_id" property="subDistrictId"/>
-        <result column="area_detail" property="areaDetail"/>
+        <result column="subdistrict_id" property="subdistrictId"/>
+        <result column="addr_detail" property="addrDetail"/>
         <result column="mobile_phone" property="mobilePhone"/>
         <result column="publish_time" property="publishTime"/>
-        <result column="comfirm_recyle_time" property="comfirmRecyleTime"/>
-        <result column="complete_recyle_time" property="completeRecyleTime"/>
+        <result column="confirm_recycle_time" property="confirmRecycleTime"/>
+        <result column="complete_recycle_time" property="completeRecycleTime"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
 
     <sql id="all_column">
-        id, create_user_id, recyle_user_id, res_type, res_status, res_amount, res_images, take_garbage_flag,
+        id, create_user_id, recycle_user_id, res_type, res_status, deleted, res_amount, res_images, take_garbage_flag,
         free_take_flag, res_note, door_serv_start_time, door_serv_end_time, province_id, city_id, area_id,
-        subdistrict_id, area_detail, mobile_phone, publish_time, comfirm_recyle_time, complete_recyle_time, gmt_create,
+        subdistrict_id, addr_detail, mobile_phone, publish_time, confirm_recycle_time, complete_recycle_time,
+        gmt_create,
         gmt_modified
     </sql>
 
-    <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.RecyleRequestEntity"
+    <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.RecycleRequestEntity"
             useGeneratedKeys="true" keyProperty="id">
-        insert into tb_recyle_request (create_user_id, recyle_user_id, res_type, res_status, res_amount, res_images,
+        insert into tb_recycle_request (create_user_id, recycle_user_id, res_type, res_status, deleted, res_amount,
+        res_images,
         take_garbage_flag, free_take_flag, res_note, door_serv_start_time, door_serv_end_time, province_id, city_id,
-        area_id, subdistrict_id, area_detail, mobile_phone, publish_time, comfirm_recyle_time, complete_recyle_time)
+        area_id, subdistrict_id, addr_detail, mobile_phone, publish_time, comfirm_recycle_time, complete_recycle_time)
         values
-        (#{createUserId}, #{recyleUserId}, #{resType}, #{resStatus}, #{resAmount}, #{resImages}, #{takeGarbageFlag},
+        (#{createUserId}, #{recycleUserId}, #{resType}, #{resStatus}, #{deleted}, #{resAmount}, #{resImages},
+        #{takeGarbageFlag},
         #{freeTakeFlag}, #{resNote}, #{doorServStartTime}, #{doorServEndTime}, #{provinceId}, #{cityId}, #{areaId},
-        #{subDistrictId}, #{areaDetail}, #{mobilePhone}, #{publishTime}, #{comfirmRecyleTime}, #{completeRecyleTime})
+        #{subdistrictId}, #{addrDetail}, #{mobilePhone}, now(), null, null)
     </insert>
 
-    <select id="findById" parameterType="Long" resultMap="RecyleRequestEntityMapper">
+    <select id="findById" parameterType="Long" resultMap="RecycleRequestEntityMapper">
         select
         <include refid="all_column"/>
-        from tb_recyle_request
-        where id=#{id}
+        from tb_recycle_request
+        where id=#{id} and deleted=0
     </select>
 
-    <update id="confirmRecyle" parameterType="Map">
-        update tb_recyle_request
-        set res_status=#{resStatus}, recyle_user_id=#{recyleUserId}, comfirm_recyle_time = now()
-        where id=#{id}
+    <update id="confirmRecycle" parameterType="Map">
+        update tb_recycle_request
+        set res_status=#{resStatus}, recycle_user_id=#{recycleUserId}, comfirm_recycle_time = now()
+        where id=#{id} and deleted=0
     </update>
 
-    <update id="completeRecyle" parameterType="Map">
-        update tb_recyle_request
-        set res_status=#{resStatus}, complete_recyle_time = now()
-        where id=#{id}
+    <update id="completeRecycle" parameterType="Map">
+        update tb_recycle_request
+        set res_status=#{resStatus}, complete_recycle_time = now()
+        where id=#{id} and deleted=0
     </update>
 
-    <update id="update" parameterType="cn.zhibanxia.zbxserver.entity.RecyleRequestEntity">
-        update tb_recyle_request
+    <update id="update" parameterType="cn.zhibanxia.zbxserver.entity.RecycleRequestEntity">
+        update tb_recycle_request
         set
         <if test="resType!=null">
             res_type=#{resType},
@@ -103,33 +107,36 @@
         <if test="areaId!=null">
             area_id=#{areaId},
         </if>
-        <if test="subDistrictId!=null">
-            sub_district_id=#{subDistrictId},
+        <if test="subdistrictId!=null">
+            sub_district_id=#{subdistrictId},
         </if>
-        <if test="areaDetail!=null">
-            area_detail=#{areaDetail},
+        <if test="addrDetail!=null">
+            addr_detail=#{addrDetail},
         </if>
         <if test="mobilePhone!=null">
             mobile_phone=#{mobilePhone},
         </if>
         gmt_modified = now()
-        where id=#{id}
+        where id=#{id} and deleted=0
     </update>
 
-    <select id="list" parameterType="cn.zhibanxia.zbxserver.service.RecyleRequestService.ListReq"
-            resultMap="RecyleRequestEntityMapper">
+    <select id="list" parameterType="cn.zhibanxia.zbxserver.service.recycleRequestService.ListReq"
+            resultMap="RecycleRequestEntityMapper">
         select
         <include refid="all_column"/>
-        from tb_recyle_request
-        where 1=1
+        from tb_recycle_request
+        where deleted=0
         <if test="createUserId!=null">
             and create_user_id=#{createUserId}
         </if>
-        <if test="recyleUserId!=null">
-            and recyle_user_id=#{recyleUserId}
+        <if test="recycleUserId!=null">
+            and recycle_user_id=#{recycleUserId}
         </if>
         <if test="resStatus!=null">
             and res_status=#{resStatus}
+        </if>
+        <if test="deleted!=null">
+            and deleted = #{deleted}
         </if>
         <if test="start!=null">
             and gmt_create &gt;= #{start}
@@ -140,19 +147,22 @@
         limit #{startPage}, #{endPage}
     </select>
 
-    <select id="count" parameterType="cn.zhibanxia.zbxserver.service.RecyleRequestService.ListReq"
+    <select id="count" parameterType="cn.zhibanxia.zbxserver.service.RecycleRequestService.ListReq"
             resultType="Integer">
         select count(1)
-        from tb_recyle_request
+        from tb_recycle_request
         where 1=1
         <if test="createUserId!=null">
             and create_user_id=#{createUserId}
         </if>
-        <if test="recyleUserId!=null">
-            and recyle_user_id=#{recyleUserId}
+        <if test="recycleUserId!=null">
+            and recycle_user_id=#{recycleUserId}
         </if>
         <if test="resStatus!=null">
             and res_status=#{resStatus}
+        </if>
+        <if test="deleted!=null">
+            and deleted = #{deleted}
         </if>
         <if test="start!=null">
             and gmt_create &gt;= #{start}
@@ -162,5 +172,10 @@
         </if>
     </select>
 
+    <update id="delete" parameterType="Long">
+        update tb_recycle_request
+        set deleted=1
+        where id=#{id} and deleted=0
+    </update>
 
 </mapper>

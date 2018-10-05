@@ -52,7 +52,7 @@ public class UserAddressEntity {
     /**
      * 详细地址
      */
-    private String areaDetail;
+    private String addrDetail;
     private Date gmtCreate;
     private Date gmtModified;
 
@@ -112,12 +112,12 @@ public class UserAddressEntity {
         this.subdistrictId = subdistrictId;
     }
 
-    public String getAreaDetail() {
-        return areaDetail;
+    public String getAddrDetail() {
+        return addrDetail;
     }
 
-    public void setAreaDetail(String areaDetail) {
-        this.areaDetail = areaDetail;
+    public void setAddrDetail(String addrDetail) {
+        this.addrDetail = addrDetail;
     }
 
     public Date getGmtCreate() {

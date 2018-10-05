@@ -8,6 +8,7 @@ package cn.zhibanxia.zbxserver.constant;
  * 1x3xxx   oss上传文件错误
  * 2xxxxx   用户相关错误
  * 3xxxxx   参数不合法
+ * 4xxxxx   回收业务相关
  * 9xxxxx   系统相关
  */
 public enum ErrorCode {
@@ -31,7 +32,7 @@ public enum ErrorCode {
      * json字符串解析出错
      */
     CODE_JSON_PASER_ERROR("102001", "JSON解析出错"),
-    
+
     /**
      * oss上传文件出错
      */
@@ -46,6 +47,11 @@ public enum ErrorCode {
      * 参数不合法
      */
     CODE_INVALID_PARAM_ERROR("301001", "参数不合法"),
+
+    /**
+     * 回收请求已经被处理
+     */
+    CODE_RECYCLE_HAS_HANDLED_ERROR("401001", "回收已经被处理"),
 
     /**
      * 未知错误

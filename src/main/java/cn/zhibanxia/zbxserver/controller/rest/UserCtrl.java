@@ -53,7 +53,7 @@ public class UserCtrl {
                 userAddressEntity.setCityId(addUserDetailReq.getDeafultAddr().getCityId());
                 userAddressEntity.setAreaId(addUserDetailReq.getDeafultAddr().getAreaId());
                 userAddressEntity.setSubdistrictId(addUserDetailReq.getDeafultAddr().getSubdistrictId());
-                userAddressEntity.setAreaDetail(addUserDetailReq.getDeafultAddr().getAddrDetail());
+                userAddressEntity.setAddrDetail(addUserDetailReq.getDeafultAddr().getAddrDetail());
                 userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
                 return Result.ResultBuilder.success(null);
             } else if (RequestLocal.get().isHuishou()) {
@@ -69,7 +69,7 @@ public class UserCtrl {
                 userAddressEntity.setCityId(addUserDetailReq.getDeafultAddr().getCityId());
                 userAddressEntity.setAreaId(addUserDetailReq.getDeafultAddr().getAreaId());
                 userAddressEntity.setSubdistrictId(addUserDetailReq.getDeafultAddr().getSubdistrictId());
-                userAddressEntity.setAreaDetail(addUserDetailReq.getDeafultAddr().getAddrDetail());
+                userAddressEntity.setAddrDetail(addUserDetailReq.getDeafultAddr().getAddrDetail());
                 userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
 
                 List<UserAddressEntity> focusAddrs = addUserDetailReq.getFocusAddrList().stream().map(e -> {
@@ -80,7 +80,7 @@ public class UserCtrl {
                     temp.setCityId(e.getCityId());
                     temp.setAreaId(e.getAreaId());
                     temp.setSubdistrictId(e.getSubdistrictId());
-                    temp.setAreaDetail(e.getAddrDetail());
+                    temp.setAddrDetail(e.getAddrDetail());
                     return temp;
                 }).collect(Collectors.toList());
 
@@ -121,7 +121,7 @@ public class UserCtrl {
         addr.setCityId(userAddressEntity.getCityId());
         addr.setAreaId(userAddressEntity.getAreaId());
         addr.setSubdistrictId(userAddressEntity.getSubdistrictId());
-        addr.setAddrDetail(userAddressEntity.getAreaDetail());
+        addr.setAddrDetail(userAddressEntity.getAddrDetail());
         yezhuUserInfoRsp.setDefaultAddr(addr);
         return Result.ResultBuilder.success(yezhuUserInfoRsp);
     }
@@ -156,7 +156,7 @@ public class UserCtrl {
         addr.setCityId(userAddressEntity.getCityId());
         addr.setAreaId(userAddressEntity.getAreaId());
         addr.setSubdistrictId(userAddressEntity.getSubdistrictId());
-        addr.setAddrDetail(userAddressEntity.getAreaDetail());
+        addr.setAddrDetail(userAddressEntity.getAddrDetail());
         huishouUserInfoRsp.setDefaultAddr(addr);
         List<UserAddressEntity> focusAddrs = userAddrService.findFocusAddrs(userEntity.getId());
         if (CollectionUtils.isEmpty(focusAddrs)) {
@@ -169,7 +169,7 @@ public class UserCtrl {
             temp.setCityId(e.getCityId());
             temp.setAreaId(e.getAreaId());
             temp.setSubdistrictId(e.getSubdistrictId());
-            temp.setAddrDetail(e.getAreaDetail());
+            temp.setAddrDetail(e.getAddrDetail());
             return temp;
         }).collect(Collectors.toList());
         huishouUserInfoRsp.setFocusAddrList(addrs);
