@@ -1,17 +1,13 @@
 package cn.zhibanxia.zbxserver.controller.rest;
 
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
-import cn.zhibanxia.zbxserver.controller.param.AddUserDetailReq;
-import cn.zhibanxia.zbxserver.controller.param.Addr;
-import cn.zhibanxia.zbxserver.controller.param.HuishouUserInfoRsp;
-import cn.zhibanxia.zbxserver.controller.param.YezhuUserInfoRsp;
+import cn.zhibanxia.zbxserver.controller.param.*;
 import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.filter.RequestLocal;
 import cn.zhibanxia.zbxserver.service.UserAddrService;
 import cn.zhibanxia.zbxserver.service.UserService;
-import cn.zhibanxia.zbxserver.controller.param.Result;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,11 +94,18 @@ public class UserCtrl {
     }
 
     @GetMapping("getUserType")
-    public Result<Integer> getUserType() {
-        if (!RequestLocal.get().isYezhu() || RequestLocal.get().isHuishou()) {
+    public Result<UserIdentifyRsp> getUserType() {
+        if (!(RequestLocal.get().isYezhu() || RequestLocal.get().isHuishou())) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
-        return Result.ResultBuilder.success(RequestLocal.get().getUserType());
+        UserIdentifyRsp userIdentifyRsp = new UserIdentifyRsp();
+        userIdentifyRsp.setUserType(RequestLocal.get().getUserType());
+        if (RequestLocal.get().isHuishou()) {
+            userIdentifyRsp.setUserStatus(RequestLocal.get().getHuishouUserEntity().getUserStatus());
+        } else {
+            userIdentifyRsp.setUserStatus(RequestLocal.get().getYezhuUserEntity().getUserStatus());
+        }
+        return Result.ResultBuilder.success(userIdentifyRsp);
     }
 
 
