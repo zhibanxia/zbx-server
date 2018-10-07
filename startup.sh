@@ -3,8 +3,16 @@
 PROJECT_NAME=zbx-server
 LOG_PATH=$HOME/logs/$PROJECT_NAME
 JAR_FILE=./build/libs/$PROJECT_NAME-0.1.jar
+PROP_FILE=./zbx.properties
 
 function start() {
+
+if [ -f $PROP_FILE ]
+then
+    JAR_OPTS=--Dspring.config.location=$PROP_FILE
+else
+    JAR_OPTS=""
+fi
         JAVA_OPTS="$JAVA_OPTS -server
                -Xmx4g
                -Xms256m
@@ -35,7 +43,7 @@ function start() {
                -XX:+HeapDumpOnOutOfMemoryError
                -XX:HeapDumpPath=$LOG_PATH/"
 
-          nohup java $JAVA_OPTS -jar $JAR_FILE 2>$LOG_PATH/console_error.log 1>/dev/null &
+          nohup java $JAVA_OPTS -jar $JAR_FILE $JAR_OPTS 2>$LOG_PATH/console_error.log 1>/dev/null &
 }
 
 function stop() {
