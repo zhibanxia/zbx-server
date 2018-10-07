@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 PROJECT_NAME=zbx-server
 LOG_PATH=$HOME/logs/$PROJECT_NAME
