@@ -27,6 +27,15 @@ public interface UserAddressDao {
     List<UserAddressEntity> findAddrs(Long userId, int bizType);
 
     /**
+     * 查询用户地址数量
+     *
+     * @param userId
+     * @param bizType
+     * @return
+     */
+    int countAddr(Long userId, int bizType);
+
+    /**
      * 批量插入
      *
      * @param userAddressEntityList
@@ -39,4 +48,12 @@ public interface UserAddressDao {
      * @return
      */
     boolean update(UserAddressEntity userAddressEntity);
+
+    /**
+     * 批量查询
+     *
+     * @param ids
+     * @return
+     */
+    List<UserAddressEntity> batchFind(List<Long> ids);
 }

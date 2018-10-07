@@ -6,15 +6,7 @@ package cn.zhibanxia.zbxserver.constant;
  */
 public interface CookieConstant {
     /**
-     * 业主cookie名称
+     * cookie名称：可以是业主、回收人员、管理员
      */
-    String COOKIE_KEY_YEZHU_USER = "zbxuser_1";
-    /**
-     * 回收人员cookie
-     */
-    String COOKIE_KEY_HUISHOU_USER = "zbxuser_2";
-    /**
-     * 管理员cookie
-     */
-    String COOKIE_KEY_ADMIN_USER = "zbxuser_3";
+    String COOKIE_KEY_YEZHU_USER = "zbxuser";
 }

@@ -27,7 +27,7 @@ public class WxApiServiceImpl implements WxApiService {
 
     @Override
     public WxUserAuthBo userAuth(String code) throws BizException {
-        String url = MessageFormat.format(USER_AUTH_URL, wxPropConfig.getAppId(), wxPropConfig.getSecret(), code);
+        String url = MessageFormat.format(wxPropConfig.getUserAuthUrl(), wxPropConfig.getAppId(), wxPropConfig.getSecret(), code);
         String body = HttpClientUtil.get(url);
         JSONObject jsonObject;
         try {
@@ -46,7 +46,7 @@ public class WxApiServiceImpl implements WxApiService {
 
     @Override
     public WxUserInfoBo getUserInfo(String accessToken, String openId) throws BizException {
-        String url = MessageFormat.format(USER_INFO_URL, accessToken, openId);
+        String url = MessageFormat.format(wxPropConfig.getUserInfoUrl(), accessToken, openId);
         String body = HttpClientUtil.get(url);
         JSONObject jsonObject;
         try {

@@ -20,7 +20,7 @@ public class AddUserDetailReq implements Serializable {
     private String mobilePhone;
 
     @NotNull
-    private Addr deafultAddr;
+    private Addr defaultAddr;
 
     private List<Addr> focusAddrList;
 
@@ -37,12 +37,12 @@ public class AddUserDetailReq implements Serializable {
         this.mobilePhone = mobilePhone;
     }
 
-    public Addr getDeafultAddr() {
-        return deafultAddr;
+    public Addr getDefaultAddr() {
+        return defaultAddr;
     }
 
-    public void setDeafultAddr(Addr deafultAddr) {
-        this.deafultAddr = deafultAddr;
+    public void setDefaultAddr(Addr defaultAddr) {
+        this.defaultAddr = defaultAddr;
     }
 
     public List<Addr> getFocusAddrList() {

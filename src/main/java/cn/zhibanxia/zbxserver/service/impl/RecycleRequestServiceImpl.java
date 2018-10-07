@@ -43,6 +43,11 @@ public class RecycleRequestServiceImpl implements RecycleRequestService {
     }
 
     @Override
+    public boolean completeRecycleRequest(Long id) {
+        return recycleRequestDao.completeRecycle(id);
+    }
+
+    @Override
     public boolean delete(Long id) {
         return recycleRequestDao.delete(id);
     }

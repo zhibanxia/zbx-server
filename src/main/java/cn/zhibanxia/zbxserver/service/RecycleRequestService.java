@@ -52,6 +52,14 @@ public interface RecycleRequestService {
     boolean confirmRecycleRequest(Long id, Long recycleUserId);
 
     /**
+     * 回收请求标记完成
+     *
+     * @param id
+     * @return
+     */
+    boolean completeRecycleRequest(Long id);
+
+    /**
      * 删除
      *
      * @param id

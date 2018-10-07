@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 public class WxPropConfig {
     private String appId;
     private String secret;
+    private String authRedirectUrl;
+    private String userAuthUrl;
+    private String userInfoUrl;
 
     public String getAppId() {
         return appId;
@@ -26,5 +29,29 @@ public class WxPropConfig {
 
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public String getAuthRedirectUrl() {
+        return authRedirectUrl;
+    }
+
+    public void setAuthRedirectUrl(String authRedirectUrl) {
+        this.authRedirectUrl = authRedirectUrl;
+    }
+
+    public String getUserAuthUrl() {
+        return userAuthUrl;
+    }
+
+    public void setUserAuthUrl(String userAuthUrl) {
+        this.userAuthUrl = userAuthUrl;
+    }
+
+    public String getUserInfoUrl() {
+        return userInfoUrl;
+    }
+
+    public void setUserInfoUrl(String userInfoUrl) {
+        this.userInfoUrl = userInfoUrl;
     }
 }

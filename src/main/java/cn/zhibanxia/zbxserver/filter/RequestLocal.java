@@ -6,12 +6,14 @@ import cn.zhibanxia.zbxserver.util.UserCookieUtil;
 import cn.zhibanxia.zbxserver.controller.param.UserCookieVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * Created by zzy on  2018/10/03 11:45
  */
 public class RequestLocal {
     private static ThreadLocal<RequestLocal> threadLocal = new ThreadLocal<>();
+    private Integer userType;
     private Long yezhuUid;
     private Long huishouUid;
     private UserEntity yezhuUserEntity;
@@ -29,17 +31,20 @@ public class RequestLocal {
      */
     static void init(HttpServletRequest request, UserService userService, String encryptKey) {
         RequestLocal requestLocal = new RequestLocal();
-        UserCookieVo yezhuUserCookieVo = UserCookieUtil.parserCookie(request, UserEntity.USER_TYPE_YEZHU, encryptKey);
-        if (yezhuUserCookieVo != null) {
-            requestLocal.yezhuUid = yezhuUserCookieVo.getUid();
-            requestLocal.yezhuUserEntity = userService.findById(yezhuUserCookieVo.getUid());
-        }
-        UserCookieVo huishouUserCookieVo = UserCookieUtil.parserCookie(request, UserEntity.USER_TYPE_YEZHU, encryptKey);
-        if (huishouUserCookieVo != null) {
-            requestLocal.huishouUid = huishouUserCookieVo.getUid();
-            requestLocal.huishouUserEntity = userService.findById(huishouUserCookieVo.getUid());
-        }
         threadLocal.set(requestLocal);
+
+        UserCookieVo userCookieVo = UserCookieUtil.parserCookie(request, encryptKey);
+        if (userCookieVo == null) {
+            return;
+        }
+        requestLocal.userType = userCookieVo.getType();
+        if (Objects.equals(UserEntity.USER_TYPE_YEZHU, userCookieVo.getType())) {
+            requestLocal.yezhuUid = userCookieVo.getUid();
+            requestLocal.yezhuUserEntity = userService.findById(userCookieVo.getUid());
+        } else if (Objects.equals(UserEntity.USER_TYPE_HUISHOU, userCookieVo.getType())) {
+            requestLocal.huishouUid = userCookieVo.getUid();
+            requestLocal.huishouUserEntity = userService.findById(userCookieVo.getUid());
+        }
     }
 
     public static RequestLocal get() {
@@ -79,5 +84,9 @@ public class RequestLocal {
 
     public UserEntity getHuishouUserEntity() {
         return huishouUserEntity;
+    }
+
+    public Integer getUserType() {
+        return userType;
     }
 }

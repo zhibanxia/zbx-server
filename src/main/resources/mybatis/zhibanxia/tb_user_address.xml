@@ -47,6 +47,14 @@
         and biz_type=#{bizType}
     </select>
 
+    <select id="countAddr" parameterType="Map" resultType="Integer">
+        select
+        count(1)
+        from tb_user_address
+        where user_id=#{userId}
+        and biz_type=#{bizType}
+    </select>
+
     <update id="update" parameterType="cn.zhibanxia.zbxserver.entity.UserAddressEntity">
         update tb_user_address
         set
@@ -68,5 +76,16 @@
         gmt_modified=now()
         where id=#{id}
     </update>
+
+    <select id="batchFind" parameterType="List" resultMap="UserAddressEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_user_address
+        where id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+    </select>
 
 </mapper>

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
-    <property resource="application.properties" />
+	<property name="logpath" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}"/>
+	<property name="logPattern" value="%d{HH:mm:ss.SSS} %-5level [%thread] %logger{32}[%file:%line] -&gt; %msg%n"/>
+
+	<property resource="application.properties" />
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
@@ -25,7 +28,7 @@
 		</filter>
 		<File>${logpath}/http/http_request.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>${logpath}/http/http_request.log.%d{yyyy-MM-dd}</FileNamePattern>
+			<FileNamePattern>${logpath}/http/http_request.%d{yyyy-MM-dd}.log</FileNamePattern>
 			<maxHistory>7</maxHistory>
 		</rollingPolicy>
 		<layout class="ch.qos.logback.classic.PatternLayout">

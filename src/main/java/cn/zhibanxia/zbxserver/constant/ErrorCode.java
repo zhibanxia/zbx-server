@@ -6,6 +6,7 @@ package cn.zhibanxia.zbxserver.constant;
  * 1xxxxx   http请求错误
  * 1x2xxx   json解析错误
  * 1x3xxx   oss上传文件错误
+ * 1x4xxx   上传文件格式不合法
  * 2xxxxx   用户相关错误
  * 3xxxxx   参数不合法
  * 4xxxxx   回收业务相关
@@ -39,6 +40,11 @@ public enum ErrorCode {
     CODE_OSS_UPLOAD_ERROR("103001", "oss上传文件出错"),
 
     /**
+     * 上传文件格式不合法
+     */
+    CODE_INVALID_IMG_TYPE_ERROR("104001", "文件格式不合法"),
+
+    /**
      * json字符串解析出错
      */
     CODE_USER_CANNOT_MODIFY_ADDR_ERROR("201001", "资料已审核通过，不能修改"),
@@ -52,6 +58,12 @@ public enum ErrorCode {
      * 回收请求已经被处理
      */
     CODE_RECYCLE_HAS_HANDLED_ERROR("401001", "回收已经被处理"),
+
+
+    /**
+     * 回收请求已经被处理
+     */
+    CODE_TOO_MANY_FOCUS_ADDR_ERROR("402001", "关注的回收地址过多"),
 
     /**
      * 未知错误

@@ -44,7 +44,7 @@
         insert into tb_recycle_request (create_user_id, recycle_user_id, res_type, res_status, deleted, res_amount,
         res_images,
         take_garbage_flag, free_take_flag, res_note, door_serv_start_time, door_serv_end_time, province_id, city_id,
-        area_id, subdistrict_id, addr_detail, mobile_phone, publish_time, comfirm_recycle_time, complete_recycle_time)
+        area_id, subdistrict_id, addr_detail, mobile_phone, publish_time, confirm_recycle_time, complete_recycle_time)
         values
         (#{createUserId}, #{recycleUserId}, #{resType}, #{resStatus}, #{deleted}, #{resAmount}, #{resImages},
         #{takeGarbageFlag},
@@ -61,7 +61,7 @@
 
     <update id="confirmRecycle" parameterType="Map">
         update tb_recycle_request
-        set res_status=#{resStatus}, recycle_user_id=#{recycleUserId}, comfirm_recycle_time = now()
+        set res_status=#{resStatus}, recycle_user_id=#{recycleUserId}, confirm_recycle_time = now()
         where id=#{id} and deleted=0
     </update>
 
@@ -108,7 +108,7 @@
             area_id=#{areaId},
         </if>
         <if test="subdistrictId!=null">
-            sub_district_id=#{subdistrictId},
+            subdistrict_id=#{subdistrictId},
         </if>
         <if test="addrDetail!=null">
             addr_detail=#{addrDetail},

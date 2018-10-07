@@ -1,6 +1,7 @@
 package cn.zhibanxia.zbxserver.service;
 
 import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
+import cn.zhibanxia.zbxserver.exception.BizException;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface UserAddrService {
      * @param userAddressEntityList
      * @return
      */
-    boolean batchAddAddr(List<UserAddressEntity> userAddressEntityList);
+    boolean batchAddAddr(Long uid, List<UserAddressEntity> userAddressEntityList) throws BizException;
 
     /**
      * 获取默认住址

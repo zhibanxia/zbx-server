@@ -15,6 +15,10 @@ public class UserCookieVo implements Serializable {
      */
     private Long uid;
     /**
+     * 用户类型：1.业主；2.回收人员；3.管理员
+     */
+    private Integer type;
+    /**
      * 时间戳
      */
     private Long ts;
@@ -25,6 +29,14 @@ public class UserCookieVo implements Serializable {
 
     public void setUid(Long uid) {
         this.uid = uid;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public Long getTs() {

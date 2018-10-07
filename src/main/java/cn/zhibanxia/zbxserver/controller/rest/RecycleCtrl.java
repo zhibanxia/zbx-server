@@ -15,10 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +25,8 @@ import java.util.stream.Collectors;
 /**
  * Created by zzy on  2018/10/02 14:48
  */
-@RestController("rest/recycle")
+@RestController
+@RequestMapping("/rest/recycle")
 public class RecycleCtrl {
     private static Logger logger = LoggerFactory.getLogger(RecycleCtrl.class);
     @Autowired
@@ -118,7 +116,7 @@ public class RecycleCtrl {
     }
 
     @PostMapping("create")
-    public Result<Void> create(RecycleRequestVo recycleRequestVo) {
+    public Result<Long> create(@RequestBody RecycleRequestVo recycleRequestVo) {
         if (!RequestLocal.get().isYezhu()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
@@ -128,8 +126,9 @@ public class RecycleCtrl {
         try {
             RecycleRequestEntity recycleRequestEntity = convertVo2Entity(recycleRequestVo);
             recycleRequestEntity.setCreateUserId(RequestLocal.get().getYezhuUid());
-            recycleRequestService.create(recycleRequestEntity);
-            return Result.ResultBuilder.success(null);
+            recycleRequestEntity.setResStatus(RecycleRequestEntity.RES_STATUS_PUBLISH);
+            Long id = recycleRequestService.create(recycleRequestEntity);
+            return Result.ResultBuilder.success(id);
         } catch (Exception e) {
             logger.warn("", e);
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
@@ -137,19 +136,19 @@ public class RecycleCtrl {
     }
 
     @PostMapping("confirmRecycle")
-    public Result<Void> confirmRecycle(@RequestParam("resId") Long resId) {
+    public Result<Void> confirmRecycle(@RequestParam("id") Long id) {
         // 如果不是回收人员、或者状态不是正常状态，则拒绝请求
         if (!RequestLocal.get().isHuishou() || !Objects.equals(RequestLocal.get().getHuishouUserEntity().getUserStatus(), UserEntity.USER_STATUS_NORMAL)) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
-        RecycleRequestEntity recycleRequestEntity = recycleRequestService.find(resId);
+        RecycleRequestEntity recycleRequestEntity = recycleRequestService.find(id);
         if (recycleRequestEntity == null) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
         }
         if (!Objects.equals(RecycleRequestEntity.RES_STATUS_PUBLISH, recycleRequestEntity.getResStatus())) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_RECYCLE_HAS_HANDLED_ERROR);
         }
-        boolean success = recycleRequestService.confirmRecycleRequest(resId, RequestLocal.get().getHuishouUid());
+        boolean success = recycleRequestService.confirmRecycleRequest(id, RequestLocal.get().getHuishouUid());
         if (!success) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_RECYCLE_HAS_HANDLED_ERROR);
         }
@@ -157,24 +156,23 @@ public class RecycleCtrl {
     }
 
     @PostMapping("delete")
-    public Result<Void> delete(@RequestParam("resId") Long resId) {
+    public Result<Boolean> delete(@RequestParam("id") Long id) {
         // 如果不是业主则拒绝请求
         if (!RequestLocal.get().isYezhu()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
-        RecycleRequestEntity recycleRequestEntity = recycleRequestService.find(resId);
+        RecycleRequestEntity recycleRequestEntity = recycleRequestService.find(id);
         if (recycleRequestEntity == null) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
         }
         if (!Objects.equals(RecycleRequestEntity.RES_STATUS_PUBLISH, recycleRequestEntity.getResStatus())) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_RECYCLE_HAS_HANDLED_ERROR);
         }
-        recycleRequestService.delete(resId);
-        return Result.ResultBuilder.success(null);
+        return Result.ResultBuilder.success(recycleRequestService.delete(id));
     }
 
     @PostMapping("update")
-    public Result<Void> update(RecycleRequestVo recycleRequestVo) {
+    public Result<Boolean> update(@RequestBody RecycleRequestVo recycleRequestVo) {
         // 如果不是业主则拒绝请求
         if (!RequestLocal.get().isYezhu()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
@@ -190,12 +188,29 @@ public class RecycleCtrl {
             return Result.ResultBuilder.fail(ErrorCode.CODE_RECYCLE_HAS_HANDLED_ERROR);
         }
         try {
-            recycleRequestService.update(convertVo2Entity(recycleRequestVo));
-            return Result.ResultBuilder.success(null);
+            RecycleRequestEntity updateEntity = convertVo2Entity(recycleRequestVo);
+            updateEntity.setId(recycleRequestVo.getId());
+            return Result.ResultBuilder.success(recycleRequestService.update(updateEntity));
         } catch (Exception e) {
             logger.warn("", e);
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
         }
+    }
+
+    @PostMapping("completeRecycle")
+    public Result<Boolean> completeRecycle(@RequestParam("id") Long id) {
+        // 如果不是业主则拒绝请求
+        if (!RequestLocal.get().isYezhu()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        RecycleRequestEntity recycleRequestEntity = recycleRequestService.find(id);
+        if (recycleRequestEntity == null) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+        }
+        if (!Objects.equals(RecycleRequestEntity.RES_STATUS_CONFIRM, recycleRequestEntity.getResStatus())) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        return Result.ResultBuilder.success(recycleRequestService.completeRecycleRequest(id));
     }
 
 
@@ -243,13 +258,13 @@ public class RecycleCtrl {
     private List<RecycleRequestVo> buildRecycleRequestVoList(ListRecycleRequestBo listRecycleRequestBo, Integer page, Integer size, boolean needHidden) {
         int pageVal = (page == null || page <= 0) ? 1 : page.intValue();
         int pageSize = (size == null || size <= 0) ? 10 : size.intValue();
-        int startPage = pageVal * (pageSize - 1) + 1;
+        int startPage = (pageVal - 1) * pageSize;
         int endPage = pageVal * pageSize;
         listRecycleRequestBo.setStartPage(startPage);
         listRecycleRequestBo.setEndPage(endPage);
         List<RecycleRequestEntity> requestEntityList = recycleRequestService.list(listRecycleRequestBo);
         if (CollectionUtils.isEmpty(requestEntityList)) {
-            Result.ResultBuilder.success(Collections.emptyList());
+            return Collections.emptyList();
         }
         return requestEntityList.stream().map(e -> buildRecycleRequestVo(e, needHidden)).collect(Collectors.toList());
     }

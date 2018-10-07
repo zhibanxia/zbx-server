@@ -1,14 +1,20 @@
 package cn.zhibanxia.zbxserver.service.impl;
 
+import cn.zhibanxia.zbxserver.config.ZbxConfig;
+import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.dao.UserAddressDao;
 import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
+import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.service.UserAddrService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Created by zzy on  2018/10/03 16:57
@@ -18,9 +24,12 @@ public class UserAddrServiceImpl implements UserAddrService {
     @Autowired
     private UserAddressDao userAddressDao;
 
+    @Autowired
+    private ZbxConfig zbxConfig;
+
     @Override
     public boolean addOrUpdateOnlyAddr(UserAddressEntity userAddressEntity) {
-        if (userAddressEntity == null || userAddressEntity.getId() == null) {
+        if (userAddressEntity == null) {
             throw new IllegalArgumentException("null args");
         }
         if (userAddressEntity.getBizType() == null || Objects.equals(UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS, userAddressEntity.getBizType())) {
@@ -60,11 +69,51 @@ public class UserAddrServiceImpl implements UserAddrService {
     }
 
     @Override
-    public boolean batchAddAddr(List<UserAddressEntity> userAddressEntityList) {
+    public boolean batchAddAddr(Long uid, List<UserAddressEntity> userAddressEntityList) throws BizException {
         if (CollectionUtils.isEmpty(userAddressEntityList)) {
             return false;
         }
-        return userAddressDao.batchInsert(userAddressEntityList);
+
+        // 区分更新和插入
+        Map<Long, UserAddressEntity> map = null;
+        List<Long> ids = userAddressEntityList.stream().filter(e -> e.getId() != null).map(UserAddressEntity::getId).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(ids)) {
+            List<UserAddressEntity> tempList = userAddressDao.batchFind(ids);
+            if (CollectionUtils.isNotEmpty(tempList)) {
+                map = tempList.stream().collect(Collectors.toMap(UserAddressEntity::getId, e -> e));
+            }
+        }
+
+        if (map == null) {
+            int count = userAddressDao.countAddr(uid, UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
+            if (zbxConfig.getMaxFocusAddrNum() - count < userAddressEntityList.size()) {
+                throw new BizException(ErrorCode.CODE_TOO_MANY_FOCUS_ADDR_ERROR);
+            }
+            return userAddressDao.batchInsert(userAddressEntityList);
+        }
+
+        final Map<Long, UserAddressEntity> internelMap = map;
+        final List<UserAddressEntity> insertList = new ArrayList<>();
+        userAddressEntityList.stream().forEach(e -> {
+            if (e.getId() == null) {
+                insertList.add(e);
+                return;
+            }
+            UserAddressEntity entity = internelMap.get(e.getId());
+            if (entity == null) {
+                insertList.add(e);
+            } else {
+                userAddressDao.update(e);
+            }
+        });
+        if (insertList.isEmpty()) {
+            return true;
+        }
+        int count = userAddressDao.countAddr(uid, UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
+        if (zbxConfig.getMaxFocusAddrNum() - count < insertList.size()) {
+            throw new BizException(ErrorCode.CODE_TOO_MANY_FOCUS_ADDR_ERROR);
+        }
+        return userAddressDao.batchInsert(insertList);
     }
 
     @Override
