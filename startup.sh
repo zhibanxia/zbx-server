@@ -9,7 +9,7 @@ function start() {
 
 if [ -f $PROP_FILE ]
 then
-    JAR_OPTS=--Dspring.config.location=$PROP_FILE
+    JAR_OPTS="--spring.config.location=$PROP_FILE"
 else
     JAR_OPTS=""
 fi
