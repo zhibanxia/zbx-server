@@ -61,7 +61,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.guava/guava
     compile group: 'com.google.guava', name: 'guava', version: '26.0-jre'
     // aliyun oss
-    compile 'com.aliyun.oss:aliyun-sdk-oss:3.1.0'
+    compile 'com.aliyun.oss:aliyun-sdk-oss:3.3.0'
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
