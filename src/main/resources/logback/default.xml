@@ -1,48 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
-	<property name="logpath" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}"/>
-	<property name="logPattern" value="%d{HH:mm:ss.SSS} %-5level [%thread] %logger{32}[%file:%line] -&gt; %msg%n"/>
+    <property name="logpath" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}"/>
+    <property name="logPattern" value="%d{HH:mm:ss.SSS} %-5level [%thread] %logger{32}[%file:%line] -&gt; %msg%n"/>
 
-	<property resource="application.properties" />
-	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
-			<charset>utf8</charset>
-		</encoder>
-	</appender>
+    <property resource="application.properties"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
 
-	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${logpath}/application.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${logpath}/application_%d{yyyy-MM-dd}.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{32}[%file:%line] -&gt; %msg%n</pattern>
-		</encoder>
-	</appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logpath}/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logpath}/application_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{32}[%file:%line] -&gt; %msg%n</pattern>
+        </encoder>
+    </appender>
 
-	<appender name="httpRequestLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>INFO</level>
-		</filter>
-		<File>${logpath}/http/http_request.log</File>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>${logpath}/http/http_request.%d{yyyy-MM-dd}.log</FileNamePattern>
-			<maxHistory>7</maxHistory>
-		</rollingPolicy>
-		<layout class="ch.qos.logback.classic.PatternLayout">
-			<pattern>%d{HH:mm:ss.SSS}|%msg%n</pattern>
-		</layout>
-	</appender>
+    <appender name="httpRequestLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <File>${logpath}/http/http_request.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${logpath}/http/http_request.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{HH:mm:ss.SSS}|%msg%n</pattern>
+        </layout>
+    </appender>
 
-	<logger name="httpRequest" level="INFO" additivity="false">
-		<appender-ref ref="httpRequestLog"/>
-	</logger>
+    <appender name="adminAccessLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <File>${logpath}/http/admin_access.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${logpath}/http/admin_access.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{HH:mm:ss.SSS}|%msg%n</pattern>
+        </layout>
+    </appender>
 
-	<root level="INFO">
-		<appender-ref ref="CONSOLE" />
-		<appender-ref ref="FILE" />
-	</root>
-	
+    <logger name="httpRequest" level="INFO" additivity="false">
+        <appender-ref ref="httpRequestLog"/>
+    </logger>
+
+    <logger name="adminAccess" level="INFO" additivity="false">
+        <appender-ref ref="adminAccessLog"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
 </included>

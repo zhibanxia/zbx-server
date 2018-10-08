@@ -62,6 +62,19 @@ public class UserDaoImpl extends BaseDao implements UserDao {
         return ret >= 1;
     }
 
+    @Override
+    public List<UserEntity> listAllUser(int startPage, int endPage) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("startPage", startPage);
+        params.put("endPage", endPage);
+        return selectList("listAllUser", params);
+    }
+
+    @Override
+    public int countAllUser() {
+        return selectOne("countAllUser");
+    }
+
     private List<UserEntity> selectUsersByOpenIdOrType(String wxOpenId, Integer userType) {
         Map<String, Object> params = new HashMap<>();
         params.put("wxOpenId", wxOpenId);

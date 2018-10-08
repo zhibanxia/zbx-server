@@ -2,6 +2,8 @@ package cn.zhibanxia.zbxserver.service;
 
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 
+import java.util.List;
+
 /**
  * Created by zzy on  2018/10/02 13:02
  */
@@ -38,4 +40,22 @@ public interface UserService {
      * @return
      */
     boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo);
+
+
+
+    /**
+     * 分页查询全部用户列表
+     *
+     * @param startPage
+     * @param endPage
+     * @return
+     */
+    List<UserEntity> listAllUser(int startPage, int endPage);
+
+    /**
+     * 查询用户总数
+     *
+     * @return
+     */
+    int countAllUser();
 }

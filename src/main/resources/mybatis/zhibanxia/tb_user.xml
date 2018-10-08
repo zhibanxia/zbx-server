@@ -68,4 +68,21 @@
         where id=#{id}
     </update>
 
+    <!-- 查询全部用户列表，排除注销的用户，按照创建时间倒序-->
+    <select id="listAllUser" parameterType="Map" resultMap="UserEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_user
+        where user_status!=6 order by gmt_create desc
+        limit #{startPage}, #{endPage}
+    </select>
+
+    <!-- 查询用户总数-->
+    <select id="listAllUser" resultType="int">
+        select
+        count(1)
+        from tb_user
+        where user_status!=6
+    </select>
+
 </mapper>

@@ -8,6 +8,8 @@ import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.filter.RequestLocal;
 import cn.zhibanxia.zbxserver.service.UserAddrService;
 import cn.zhibanxia.zbxserver.service.UserService;
+import cn.zhibanxia.zbxserver.util.BeanUtil;
+import cn.zhibanxia.zbxserver.util.LoggerUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
 public class UserCtrl {
 
     private static Logger logger = LoggerFactory.getLogger(UserCtrl.class);
+
+    private static Logger adminAccessLogger = LoggerUtil.getAdminAccessLogger();
 
     @Autowired
     private UserService userService;
@@ -190,4 +194,30 @@ public class UserCtrl {
         huishouUserInfoRsp.setFocusAddrList(addrs);
         return Result.ResultBuilder.success(huishouUserInfoRsp);
     }
+
+    @GetMapping("getAllUser")
+    public Result<ListRsp<UserDetail4Admin>> getAllUser(@RequestParam("page") Integer page,
+                                                        @RequestParam(value = "size", required = false) Integer size) {
+        if (!RequestLocal.get().isAdmin()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        int pageVal = (page == null || page <= 0) ? 1 : page.intValue();
+        int pageSize = (size == null || size <= 0) ? 10 : size.intValue();
+        int startPage = (pageVal - 1) * pageSize;
+        int endPage = pageVal * pageSize;
+        try {
+            List<UserEntity> entityList = userService.listAllUser(startPage, endPage);
+            int count = userService.countAllUser();
+            ListRsp<UserDetail4Admin> listRsp = new ListRsp<>();
+            listRsp.setTotalCount(count);
+            listRsp.setList(BeanUtil.copyList(entityList, UserDetail4Admin.class));
+            return Result.ResultBuilder.success(listRsp);
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        } finally {
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "getAllUser", "page=" + page + ", size=" + size);
+        }
+    }
+
 }

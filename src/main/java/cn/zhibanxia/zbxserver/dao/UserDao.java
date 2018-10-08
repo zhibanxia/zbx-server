@@ -64,4 +64,21 @@ public interface UserDao {
      * @return
      */
     boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo);
+
+
+    /**
+     * 分页查询全部用户列表
+     *
+     * @param startPage
+     * @param endPage
+     * @return
+     */
+    List<UserEntity> listAllUser(int startPage, int endPage);
+
+    /**
+     * 查询用户总数
+     *
+     * @return
+     */
+    int countAllUser();
 }

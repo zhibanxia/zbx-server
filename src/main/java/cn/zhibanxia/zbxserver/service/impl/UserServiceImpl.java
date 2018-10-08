@@ -6,6 +6,8 @@ import cn.zhibanxia.zbxserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by zzy on  2018/10/02 13:35
  */
@@ -32,5 +34,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo) {
         return userDao.addMobileAndVerify(id, mobilePhone, verifyLogo);
+    }
+
+    @Override
+    public List<UserEntity> listAllUser(int startPage, int endPage) {
+        return userDao.listAllUser(startPage, endPage);
+    }
+
+    @Override
+    public int countAllUser() {
+        return userDao.countAllUser();
     }
 }

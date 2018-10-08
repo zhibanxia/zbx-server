@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpClientUtil {
 
-    private static Logger httpRequestlogger = LoggerFactory.getLogger("httpRequest");
+    private static Logger httpRequestlogger = LoggerUtil.getHttpRequestLogger();
     private static Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
     private static RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(1000).setConnectTimeout(1000).setSocketTimeout(2000).build();

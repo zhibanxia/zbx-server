@@ -46,6 +46,15 @@ public abstract class BaseDao {
 
     /**
      * @param statement
+     * @return
+     */
+    public <T> T selectOne(String statement) {
+        return getSqlSessionTemplate().selectOne(addNameSpace(statement));
+    }
+
+
+    /**
+     * @param statement
      * @param parameter
      * @return
      */
