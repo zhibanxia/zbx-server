@@ -45,4 +45,14 @@ public class UserServiceImpl implements UserService {
     public int countAllUser() {
         return userDao.countAllUser();
     }
+
+    @Override
+    public boolean verifyHuishou(Long id, boolean verifyResult, String remark) {
+        return userDao.verifyHuishou(id, verifyResult, remark);
+    }
+
+    @Override
+    public boolean updateUserStatus(Long id, int userSatus) {
+        return userDao.updateUserStatus(id, userSatus);
+    }
 }

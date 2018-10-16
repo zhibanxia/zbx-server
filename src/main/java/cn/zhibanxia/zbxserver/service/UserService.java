@@ -42,7 +42,6 @@ public interface UserService {
     boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo);
 
 
-
     /**
      * 分页查询全部用户列表
      *
@@ -58,4 +57,23 @@ public interface UserService {
      * @return
      */
     int countAllUser();
+
+    /**
+     * 审核回收人员
+     *
+     * @param id           回收人员id
+     * @param verifyResult 审核结果，true通过，false失败
+     * @param remark       审核失败原因，可选
+     * @return
+     */
+    boolean verifyHuishou(Long id, boolean verifyResult, String remark);
+
+    /**
+     * 更新用户状态
+     *
+     * @param id
+     * @param userSatus
+     * @return
+     */
+    boolean updateUserStatus(Long id, int userSatus);
 }

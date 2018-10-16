@@ -81,4 +81,15 @@ public interface UserDao {
      * @return
      */
     int countAllUser();
+
+
+    /**
+     * 审核回收人员
+     *
+     * @param id           回收人员id
+     * @param verifyResult 审核结果，true通过，false失败
+     * @param remark       审核失败原因，可选
+     * @return
+     */
+    boolean verifyHuishou(Long id, boolean verifyResult, String remark);
 }

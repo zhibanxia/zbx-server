@@ -14,13 +14,14 @@
         <result column="user_status" property="userStatus"/>
         <result column="mobile_phone" property="mobilePhone"/>
         <result column="verify_logo" property="verifyLogo"/>
+        <result column="verify_remark" property="verifyRemark"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
 
     <sql id="all_column">
         id, user_type, wx_open_id, wx_nick_name, wx_logo, wx_id, user_status, mobile_phone,
-        verify_logo, gmt_create, gmt_modified
+        verify_logo, verify_remark, gmt_create, gmt_modified
     </sql>
 
     <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.UserEntity"
@@ -84,5 +85,15 @@
         from tb_user
         where user_status!=6
     </select>
+
+    <update id="verifyHuishou" parameterType="Map">
+        update tb_user
+        set user_status=#{userStatus}
+        <if test="verifyRemark!=null">
+            verify_remark=#{verifyRemark},
+        </if>
+        gmt_modified=now()
+        where id=#{id}
+    </update>
 
 </mapper>

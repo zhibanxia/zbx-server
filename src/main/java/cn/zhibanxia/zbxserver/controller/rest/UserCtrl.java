@@ -124,6 +124,36 @@ public class UserCtrl {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
         UserEntity userEntity = RequestLocal.get().getYezhuUserEntity();
+        return Result.ResultBuilder.success(buildYezhuUserInfoRsp(userEntity));
+    }
+
+    /**
+     * 获取回收人员信息，可用于审核过程中状态查询、审核驳回信息展示
+     *
+     * @return
+     */
+    @GetMapping("getYezhuUserInfo4Admin")
+    public Result<YezhuUserInfoRsp> getYezhuUserInfo4Admin(@RequestParam("id") Long id) {
+        if (!RequestLocal.get().isAdmin()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        try {
+            UserEntity userEntity = userService.findById(id);
+            if (userEntity == null || !Objects.equals(userEntity.getUserType(), UserEntity.USER_TYPE_YEZHU)) {
+                logger.warn("user({id}) not exist, or is not yezhu", id);
+                return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+            }
+            return Result.ResultBuilder.success(buildYezhuUserInfoRsp(userEntity));
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        } finally {
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "getYezhuUserInfo4Admin", "id=" + id);
+        }
+    }
+
+
+    private YezhuUserInfoRsp buildYezhuUserInfoRsp(UserEntity userEntity) {
         YezhuUserInfoRsp yezhuUserInfoRsp = new YezhuUserInfoRsp();
         yezhuUserInfoRsp.setUid(userEntity.getId());
         yezhuUserInfoRsp.setWxNickName(userEntity.getWxNickName());
@@ -132,7 +162,7 @@ public class UserCtrl {
 
         UserAddressEntity userAddressEntity = userAddrService.findOnlyAddr(userEntity.getId(), UserAddressEntity.BIZ_TYPE_YEZHU);
         if (userAddressEntity == null) {
-            return Result.ResultBuilder.success(yezhuUserInfoRsp);
+            return yezhuUserInfoRsp;
         }
         Addr addr = new Addr();
         addr.setAddrId(userAddressEntity.getId());
@@ -142,7 +172,7 @@ public class UserCtrl {
         addr.setSubdistrictId(userAddressEntity.getSubdistrictId());
         addr.setAddrDetail(userAddressEntity.getAddrDetail());
         yezhuUserInfoRsp.setDefaultAddr(addr);
-        return Result.ResultBuilder.success(yezhuUserInfoRsp);
+        return yezhuUserInfoRsp;
     }
 
 
@@ -156,7 +186,41 @@ public class UserCtrl {
         if (!RequestLocal.get().isHuishou()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
-        UserEntity userEntity = RequestLocal.get().getHuishouUserEntity();
+        try {
+            UserEntity userEntity = RequestLocal.get().getHuishouUserEntity();
+            return Result.ResultBuilder.success(buildHuishouUserInfoRsp(userEntity));
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        }
+    }
+
+    /**
+     * 获取回收人员信息，可用于审核过程中状态查询、审核驳回信息展示
+     *
+     * @return
+     */
+    @GetMapping("getHuishouUserInfo4Admin")
+    public Result<HuishouUserInfoRsp> getHuishouUserInfo4Admin(@RequestParam("id") Long id) {
+        if (!RequestLocal.get().isAdmin()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        try {
+            UserEntity userEntity = userService.findById(id);
+            if (userEntity == null || !Objects.equals(userEntity.getUserType(), UserEntity.USER_TYPE_HUISHOU)) {
+                logger.warn("user({id}) not exist, or is not huishou", id);
+                return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+            }
+            return Result.ResultBuilder.success(buildHuishouUserInfoRsp(userEntity));
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        } finally {
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "getHuishouUserInfo4Admin", "id=" + id);
+        }
+    }
+
+    private HuishouUserInfoRsp buildHuishouUserInfoRsp(UserEntity userEntity) {
         HuishouUserInfoRsp huishouUserInfoRsp = new HuishouUserInfoRsp();
         huishouUserInfoRsp.setUid(userEntity.getId());
         huishouUserInfoRsp.setWxNickName(userEntity.getWxNickName());
@@ -167,7 +231,7 @@ public class UserCtrl {
 
         UserAddressEntity userAddressEntity = userAddrService.findOnlyAddr(userEntity.getId(), UserAddressEntity.BIZ_TYPE_HUISHOU);
         if (userAddressEntity == null) {
-            return Result.ResultBuilder.success(huishouUserInfoRsp);
+            return huishouUserInfoRsp;
         }
         Addr addr = new Addr();
         addr.setAddrId(userAddressEntity.getId());
@@ -192,8 +256,64 @@ public class UserCtrl {
             return temp;
         }).collect(Collectors.toList());
         huishouUserInfoRsp.setFocusAddrList(addrs);
-        return Result.ResultBuilder.success(huishouUserInfoRsp);
+        return huishouUserInfoRsp;
     }
+
+
+    /**
+     * 获取回收人员信息，可用于审核过程中状态查询、审核驳回信息展示
+     *
+     * @return
+     */
+    @PostMapping("verifyHuishou")
+    public Result<Boolean> verifyHuishou(@RequestParam("id") Long id, @RequestParam("verifyResult") boolean verifyResult, @RequestParam(value = "verifyRemark", required = false) String verifyRemark) {
+        if (!RequestLocal.get().isAdmin()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        try {
+            UserEntity userEntity = userService.findById(id);
+            if (userEntity == null || !Objects.equals(userEntity.getUserType(), UserEntity.USER_TYPE_HUISHOU) || !Objects.equals(UserEntity.USER_STATUS_PERMIT_PROCESS, userEntity.getUserStatus())) {
+                logger.warn("user({id}) not exist, or is not huishou, or status is not in permit process", id);
+                return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+            }
+            return Result.ResultBuilder.success(userService.verifyHuishou(id, verifyResult, verifyRemark));
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        } finally {
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "verifyHuishou", "id=" + id + ", verifyResult=" + verifyResult);
+        }
+    }
+
+    /**
+     * 修改用户状态，可用于禁用/恢复账号
+     *
+     * @return
+     */
+    @GetMapping("modifyUserStatus")
+    public Result<Boolean> modifyUserStatus(@RequestParam("id") Long id, @RequestParam("status") int status, @RequestParam(value = "remark", required = false) String remark) {
+        if (!RequestLocal.get().isAdmin()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        if (!UserEntity.STATUS_SET.contains(status)) {
+            logger.warn("status() is invalid", status);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+        }
+        try {
+            UserEntity userEntity = userService.findById(id);
+            if (userEntity == null) {
+                logger.warn("user({id}) not exist, or status is not in permit process", id);
+                return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+            }
+            return Result.ResultBuilder.success(userService.updateUserStatus(id, status));
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        } finally {
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "modifyUserStatus", "id=" + id + ", status=" + status + ", remark=" + remark);
+        }
+    }
+
 
     @GetMapping("getAllUser")
     public Result<ListRsp<UserDetail4Admin>> getAllUser(@RequestParam("page") Integer page,

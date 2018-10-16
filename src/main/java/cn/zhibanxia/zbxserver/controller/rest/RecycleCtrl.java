@@ -10,6 +10,7 @@ import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.filter.RequestLocal;
 import cn.zhibanxia.zbxserver.service.RecycleRequestService;
 import cn.zhibanxia.zbxserver.util.DateUtil;
+import cn.zhibanxia.zbxserver.util.LoggerUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/rest/recycle")
 public class RecycleCtrl {
     private static Logger logger = LoggerFactory.getLogger(RecycleCtrl.class);
+    private static Logger adminAccessLogger = LoggerUtil.getAdminAccessLogger();
     @Autowired
     private RecycleRequestService recycleRequestService;
 
@@ -78,6 +80,37 @@ public class RecycleCtrl {
         }
     }
 
+    /**
+     * 获取回收列表，根据参数不同，展示不同的数据：
+     * bizType
+     * 1.回收人员查看待回收列表
+     * 2.回收人员查询已经确认的列表
+     * 3.业主查询自己提交的回收请求
+     *
+     * @return
+     */
+    @GetMapping("list4Admin")
+    public Result<List<RecycleRequestVo>> list4Admin(@RequestParam(value = "status", required = false) Integer status, @RequestParam("page") Integer page,
+                                                     @RequestParam(value = "size", required = false) Integer size) {
+        // 必须是回收人员，并且通过了认证
+        if (!RequestLocal.get().isAdmin()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        try {
+            ListRecycleRequestBo listRecycleRequestBo = new ListRecycleRequestBo();
+            if (!RecycleRequestEntity.RES_TYPES.contains(status)) {
+                status = null;
+            }
+            if (status != null) {
+                listRecycleRequestBo.setResStatus(status);
+            }
+            listRecycleRequestBo.setDeleted(false);
+            return Result.ResultBuilder.success(buildRecycleRequestVoList(listRecycleRequestBo, page, size, true));
+        } finally {
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "list4Admin", "status=" + status + ", page=" + page + ", size=" + size);
+        }
+    }
+    
     @GetMapping("detail")
     public Result<RecycleRequestVo> getRecyleRequestDetail(@RequestParam("id") Long id, @RequestParam("bizType") Integer bizType) {
         if (Objects.equals(1, bizType) || Objects.equals(2, bizType)) {

@@ -1,5 +1,6 @@
 package cn.zhibanxia.zbxserver.entity;
 
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Date;
@@ -8,6 +9,8 @@ import java.util.Date;
  * Created by zzy on  2018/09/23 11:35
  */
 public class UserEntity {
+
+
     /**
      * 用户类型：业主
      */
@@ -46,6 +49,11 @@ public class UserEntity {
      * 注销
      */
     public static final int USER_STATUS_OFF = 6;
+
+    /**
+     * 用户状态集
+     */
+    public static final ImmutableSet<Integer> STATUS_SET = ImmutableSet.of(USER_STATUS_NORMAL, USER_STATUS_NEED_ACTIVE, USER_STATUS_NOT_PERMIT, USER_STATUS_PERMIT_PROCESS, USER_STATUS_FORBIDDEN, USER_STATUS_OFF);
     /**
      * 主键id
      */
@@ -88,6 +96,11 @@ public class UserEntity {
      * 回收人员提交的审核头像
      */
     private String verifyLogo;
+
+    /**
+     * 审核备注，用于审核拒绝时的原因填写
+     */
+    private String verifyRemark;
     private Date gmtCreate;
     private Date gmtModified;
 
@@ -161,6 +174,14 @@ public class UserEntity {
 
     public void setVerifyLogo(String verifyLogo) {
         this.verifyLogo = verifyLogo;
+    }
+
+    public String getVerifyRemark() {
+        return verifyRemark;
+    }
+
+    public void setVerifyRemark(String verifyRemark) {
+        this.verifyRemark = verifyRemark;
     }
 
     public Date getGmtCreate() {
