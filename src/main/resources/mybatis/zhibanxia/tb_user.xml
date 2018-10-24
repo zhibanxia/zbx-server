@@ -79,7 +79,7 @@
     </select>
 
     <!-- 查询用户总数-->
-    <select id="listAllUser" resultType="int">
+    <select id="countAllUser" resultType="int">
         select
         count(1)
         from tb_user
