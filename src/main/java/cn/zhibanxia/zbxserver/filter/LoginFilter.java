@@ -41,7 +41,7 @@ public class LoginFilter implements HandlerInterceptor {
             RequestLocal.init(request, userService, zbxConfig.getEncryptKey(), zbxConfig.getAdminOpenIdSet());
             // 既没有业主cookie，又没有回收人员cookie，重定向到错误页
             if (!(RequestLocal.get().isYezhu() || RequestLocal.get().isHuishou())) {
-                response.sendRedirect(UrlConstant.NOT_ALLOW);
+                response.sendRedirect(zbxConfig.getZbxServiceDomain() + UrlConstant.NOT_ALLOW);
                 return false;
             }
             return true;

@@ -81,7 +81,7 @@ public class WeixinIndexCtrl {
                 }
                 UserCookieUtil.addCookie(response, UserEntity.USER_TYPE_YEZHU, id, zbxConfig.getEncryptKey());
                 // 新增回收请求
-                response.sendRedirect(zbxConfig.getZbxServiceDomain() + UrlConstant.YEZHU_ADD_RECYLE_REQUEST);
+                response.sendRedirect(zbxConfig.getZbxServiceDomain());
                 return null;
             } else if (type.equals(UserEntity.USER_TYPE_HUISHOU)) {
                 UserEntity userEntity = userService.findUserByOpenId(wxUserAuthBo.getOpenId(), UserEntity.USER_TYPE_HUISHOU);
