@@ -1,0 +1,74 @@
+.g-tip {
+  color: #888;
+  margin-left: 10px;
+  line-height: 1.5;
+  padding: 5px 0;
+}
+.g-tip-item {
+  font-size: 14px;
+}
+.g-warning {
+  color: #e6a23c;
+  margin-left: 10px;
+}
+.g-red {
+  color: #f56c6c;
+}
+.g-blue {
+  color: #409EFF;
+}
+.g-flex {
+  display: flex;
+  align-items: center;
+}
+.g-flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// 一般用于表格上方过滤项
+.g-filter-form {
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  & > *,
+  .filter-item {
+    margin: 0 10px 10px 0;
+    width: 180px;
+  }
+  & > label {
+    width: auto;
+  }
+}
+
+.g-table {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.g-detail-page {
+  & > div {
+    display: flex;
+    align-items: center;
+    line-height: 2;
+    & > * {
+      margin-right: 10px;
+    }
+    & > a {
+      color: @primary-color;
+    }
+  }
+}
+
+.g-link, .g-link:hover {
+  color: @primary-color;
+  text-decoration: underline;
+}
+
+.g-box {
+  padding: 10px 20px;
+  border-radius: 2px;
+  border: 1px solid #dcdfe6;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
+}
