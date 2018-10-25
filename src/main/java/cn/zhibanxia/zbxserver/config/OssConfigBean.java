@@ -31,9 +31,9 @@ public class OssConfigBean {
     private String bucketName;
 
     /**
-     * 资源路径
+     * 外部资源路
      */
-    private String objectPath;
+    private String outUrl;
 
     public String getEndPoint() {
         return endPoint;
@@ -65,5 +65,13 @@ public class OssConfigBean {
 
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
+    }
+
+    public String getOutUrl() {
+        return outUrl;
+    }
+
+    public void setOutUrl(String outUrl) {
+        this.outUrl = outUrl;
     }
 }
