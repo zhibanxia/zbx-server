@@ -265,6 +265,10 @@ public class RecycleCtrl {
             logger.info("location info is null or empty");
             return false;
         }
+        // 针对没有街道id的情况，暂时填充-1
+        if (StringUtils.isBlank(recycleRequestVo.getAddr().getSubdistrictId())) {
+            recycleRequestVo.getAddr().setSubdistrictId("-1");
+        }
         if (StringUtils.isBlank(recycleRequestVo.getMobilePhone())) {
             logger.info("mobilePhone is null or empty");
             return false;
