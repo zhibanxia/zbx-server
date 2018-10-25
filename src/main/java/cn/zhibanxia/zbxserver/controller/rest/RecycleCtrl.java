@@ -110,7 +110,7 @@ public class RecycleCtrl {
             adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "list4Admin", "status=" + status + ", page=" + page + ", size=" + size);
         }
     }
-    
+
     @GetMapping("detail")
     public Result<RecycleRequestVo> getRecyleRequestDetail(@RequestParam("id") Long id, @RequestParam("bizType") Integer bizType) {
         if (Objects.equals(1, bizType) || Objects.equals(2, bizType)) {
@@ -260,8 +260,8 @@ public class RecycleCtrl {
             logger.info("resAmount is null or invalid");
             return false;
         }
-        if (recycleRequestVo.getAddr() == null || StringUtils.isBlank(recycleRequestVo.getAddr().getProvinceId()) || StringUtils.isBlank(recycleRequestVo.getAddr().getCityId()) || StringUtils.isBlank(recycleRequestVo.getAddr().getAreaId()) ||
-                StringUtils.isBlank(recycleRequestVo.getAddr().getSubdistrictId()) || StringUtils.isBlank(recycleRequestVo.getAddr().getAddrDetail())) {
+        if (recycleRequestVo.getAddr() == null || StringUtils.isBlank(recycleRequestVo.getAddr().getProvinceId()) || StringUtils.isBlank(recycleRequestVo.getAddr().getCityId()) || StringUtils.isBlank(recycleRequestVo.getAddr().getAreaId())
+                || StringUtils.isBlank(recycleRequestVo.getAddr().getAddrDetail())) {
             logger.info("location info is null or empty");
             return false;
         }
