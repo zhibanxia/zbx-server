@@ -255,7 +255,7 @@ export default {
       this.loading = true
       let params = {
         imgBase64: file.content,
-        bizType: 1
+        bizType: 2
       }
       this.resImages = this.resImages || []
       await this.$ajax('upload', params).then((res) => {
