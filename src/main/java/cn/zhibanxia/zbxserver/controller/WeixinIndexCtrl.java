@@ -81,7 +81,7 @@ public class WeixinIndexCtrl {
                 }
                 UserCookieUtil.addCookie(response, UserEntity.USER_TYPE_YEZHU, id, zbxConfig.getEncryptKey());
                 // 新增回收请求
-                response.sendRedirect(zbxConfig.getZbxServiceDomain() + UrlConstant.YEZHU_ADD_RECYLE_REQUEST);
+                response.sendRedirect(zbxConfig.getZbxServiceDomain());
                 return null;
             } else if (type.equals(UserEntity.USER_TYPE_HUISHOU)) {
                 UserEntity userEntity = userService.findUserByOpenId(wxUserAuthBo.getOpenId(), UserEntity.USER_TYPE_HUISHOU);
@@ -146,8 +146,8 @@ public class WeixinIndexCtrl {
                     response.sendRedirect(authUrl);
                     return null;
                 }
-                // 解密正常，跳转添加页面
-                response.sendRedirect(zbxConfig.getZbxServiceDomain() + UrlConstant.YEZHU_ADD_RECYLE_REQUEST);
+                // 解密正常，跳转首页
+                response.sendRedirect(zbxConfig.getZbxServiceDomain());
                 return null;
             } else if (Objects.equals(UserEntity.USER_TYPE_HUISHOU, type)) {
                 UserCookieVo userCookieVo;
@@ -196,31 +196,33 @@ public class WeixinIndexCtrl {
     private ModelAndView judgeHuishouUser(HttpServletResponse response, Integer userStatus) throws IOException {
         // 正常，跳转回收列表页面
         if (Objects.equals(UserEntity.USER_STATUS_NORMAL, userStatus)) {
-            String recyleListUrl = zbxConfig.getZbxServiceDomain() + UrlConstant.RECYLE_REQUEST_LIST + "?bizType=1";
-            response.sendRedirect(recyleListUrl);
+            String index = zbxConfig.getZbxServiceDomain();
+            response.sendRedirect(index);
             return null;
         }
         // 审核中,跳转审核中等待页
         else if (Objects.equals(UserEntity.USER_STATUS_PERMIT_PROCESS, userStatus)) {
-            ModelAndView modelAndView = new ModelAndView("/user/permit_process");
-            return modelAndView;
+            String index = zbxConfig.getZbxServiceDomain();
+            response.sendRedirect(index);
+            return null;
         }
         // 还没提交审核，提醒用户提交头像审核
         else if (Objects.equals(UserEntity.USER_STATUS_NEED_ACTIVE, userStatus)) {
-            String recyleListUrl = zbxConfig.getZbxServiceDomain() + UrlConstant.USER_DETAIL + "?status=2";
-            response.sendRedirect(recyleListUrl);
+            String index = zbxConfig.getZbxServiceDomain();
+            response.sendRedirect(index);
             return null;
         }
         // 审核不通过，重新提交
         else if (Objects.equals(UserEntity.USER_STATUS_NOT_PERMIT, userStatus)) {
-            String recyleListUrl = zbxConfig.getZbxServiceDomain() + UrlConstant.PERFIM_REFUSE + "?status=2";
-            response.sendRedirect(recyleListUrl);
+            String index = zbxConfig.getZbxServiceDomain();
+            response.sendRedirect(index);
             return null;
         }
         // 禁用或者注销,跳转状态异常页面
         else {
-            ModelAndView modelAndView = new ModelAndView("/user/problem");
-            return modelAndView;
+            String index = zbxConfig.getZbxServiceDomain();
+            response.sendRedirect(index);
+            return null;
         }
     }
 }

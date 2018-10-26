@@ -39,7 +39,7 @@ public class OssServiceImpl implements OssService {
             metadata.setContentType(getContentType(fileName));
             //上传文件   (上传文件流的形式)
             oss.putObject(ossConfigBean.getBucketName(), fileName, in, metadata);
-            return ossConfigBean.getEndPoint() + "/" + fileName;
+            return ossConfigBean.getOutUrl() + "/" + fileName;
         } catch (Exception e) {
             logger.warn("", e);
             throw new BizException(ErrorCode.CODE_OSS_UPLOAD_ERROR);

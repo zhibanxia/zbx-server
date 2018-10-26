@@ -1,6 +1,7 @@
 package cn.zhibanxia.zbxserver.controller.rest;
 
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
+import cn.zhibanxia.zbxserver.controller.param.UploadImageVo;
 import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.filter.RequestLocal;
 import cn.zhibanxia.zbxserver.service.OssService;
@@ -11,10 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
@@ -32,12 +30,17 @@ public class UploadFileCtrl {
     /**
      * 通用的上传图片接口
      *
-     * @param imgBase64 图片base64字符串
-     * @param bizType   1.回收人员的图片审核；2.业主上传的纸板照片
+     * @param uploadImageVo 请求参数
      * @return
      */
     @PostMapping("uploadImg")
-    public Result<String> uploadImg(@RequestParam("imgBase64") String imgBase64, @RequestParam("bizType") Integer bizType) {
+    public Result<String> uploadImg(@RequestBody UploadImageVo uploadImageVo) {
+        if (uploadImageVo == null) {
+            logger.warn("uploadImageVo is null");
+            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+        }
+        String imgBase64 = uploadImageVo.getImgBase64();
+        Integer bizType = uploadImageVo.getBizType();
         String val;
         if ((val = StringUtils.trimToNull(imgBase64)) == null) {
             logger.warn("imgBase64 is empty");
