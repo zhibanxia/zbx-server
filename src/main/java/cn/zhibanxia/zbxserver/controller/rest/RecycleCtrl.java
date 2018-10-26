@@ -333,6 +333,7 @@ public class RecycleCtrl {
         vo.setId(e.getId());
         vo.setCreateUserId(e.getCreateUserId());
         vo.setResType(e.getResType());
+        vo.setResStatus(e.getResStatus());
         vo.setResAmount(e.getResAmount());
         vo.setResImages(e.getResImages());
         vo.setTakeGarbageFlag(e.isTakeGarbageFlag());
