@@ -57,7 +57,7 @@ public class WeixinIndexCtrl {
     @GetMapping(value = "redirectIndex")
     public ModelAndView redirectYezhuIndex(@RequestParam("code") String code, @RequestParam("state") Integer type, HttpServletResponse response) {
         try {
-            if (type == null || !(type.equals(UserEntity.USER_TYPE_YEZHU) || type.equals(UserEntity.USER_TYPE_HUISHOU))) {
+            if (type == null || !(type.equals(UserEntity.USER_TYPE_YEZHU) || type.equals(UserEntity.USER_TYPE_HUISHOU) || type.equals(UserEntity.USER_TYPE_ADMIN))) {
                 ModelAndView modelAndView = new ModelAndView("/error");
                 modelAndView.addObject("code", ErrorCode.CODE_UNKONWN_ERROR.getCode());
                 modelAndView.addObject("msg", "state参数不合法");
