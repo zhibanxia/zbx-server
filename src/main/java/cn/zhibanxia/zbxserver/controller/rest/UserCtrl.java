@@ -99,15 +99,17 @@ public class UserCtrl {
 
     @GetMapping("getUserType")
     public Result<UserIdentifyRsp> getUserType() {
-        if (!(RequestLocal.get().isYezhu() || RequestLocal.get().isHuishou())) {
+        if (!(RequestLocal.get().isYezhu() || RequestLocal.get().isHuishou() || RequestLocal.get().isAdmin())) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
         UserIdentifyRsp userIdentifyRsp = new UserIdentifyRsp();
         userIdentifyRsp.setUserType(RequestLocal.get().getUserType());
         if (RequestLocal.get().isHuishou()) {
             userIdentifyRsp.setUserStatus(RequestLocal.get().getHuishouUserEntity().getUserStatus());
-        } else {
+        } else if (RequestLocal.get().isYezhu()) {
             userIdentifyRsp.setUserStatus(RequestLocal.get().getYezhuUserEntity().getUserStatus());
+        } else if (RequestLocal.get().isAdmin()) {
+            userIdentifyRsp.setUserStatus(RequestLocal.get().getAdminUserEntity().getUserStatus());
         }
         return Result.ResultBuilder.success(userIdentifyRsp);
     }
