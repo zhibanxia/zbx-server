@@ -208,12 +208,12 @@ public class WeixinIndexCtrl {
                     UserCookieUtil.delCookie(response);
                     logger.warn("", e);
                     // cookie解析报错，走微信授权
-                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_HUISHOU);
+                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_ADMIN);
                     response.sendRedirect(authUrl);
                     return null;
                 }
                 if (userCookieVo == null) {
-                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_HUISHOU);
+                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_ADMIN);
                     response.sendRedirect(authUrl);
                     return null;
                 }
