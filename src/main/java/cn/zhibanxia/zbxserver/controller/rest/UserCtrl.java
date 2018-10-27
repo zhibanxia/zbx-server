@@ -184,7 +184,13 @@ public class UserCtrl {
      * @return
      */
     @GetMapping("getHuishouUserInfo")
-    public Result<HuishouUserInfoRsp> getHuishouUserInfo() {
+    public Result<HuishouUserInfoRsp> getHuishouUserInfo(@RequestParam(value = "id", required = false) Long id) {
+        if (id != null) {
+            if (!RequestLocal.get().isAdmin()) {
+                return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+            }
+            return getHuishouUserInfo4Admin(id);
+        }
         if (!RequestLocal.get().isHuishou()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
@@ -202,8 +208,7 @@ public class UserCtrl {
      *
      * @return
      */
-    @GetMapping("getHuishouUserInfo4Admin")
-    public Result<HuishouUserInfoRsp> getHuishouUserInfo4Admin(@RequestParam("id") Long id) {
+    private Result<HuishouUserInfoRsp> getHuishouUserInfo4Admin(Long id) {
         if (!RequestLocal.get().isAdmin()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
