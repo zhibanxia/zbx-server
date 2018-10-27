@@ -87,7 +87,10 @@ public class UserCtrl {
                     temp.setAddrDetail(e.getAddrDetail());
                     return temp;
                 }).collect(Collectors.toList());
-                return Result.ResultBuilder.success(userAddrService.batchAddAddr(RequestLocal.get().getHuishouUid(), focusAddrs));
+                userAddrService.batchAddAddr(RequestLocal.get().getHuishouUid(), focusAddrs);
+
+                // 最终修改回收人员状态为审核中
+                return Result.ResultBuilder.success(userService.updateUserStatus(RequestLocal.get().getHuishouUid(), UserEntity.USER_STATUS_PERMIT_PROCESS));
             }
         } catch (BizException e) {
             logger.warn("", e);
