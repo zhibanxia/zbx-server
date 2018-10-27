@@ -9,7 +9,6 @@ import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.controller.param.UserCookieVo;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.exception.BizException;
-import cn.zhibanxia.zbxserver.filter.RequestLocal;
 import cn.zhibanxia.zbxserver.service.UserService;
 import cn.zhibanxia.zbxserver.service.WxApiService;
 import cn.zhibanxia.zbxserver.util.UserCookieUtil;
@@ -199,7 +198,7 @@ public class WeixinIndexCtrl {
                     response.sendRedirect(authUrl);
                     return null;
                 }
-                return judgeHuishouUser(response, RequestLocal.get().getHuishouUserEntity().getUserStatus());
+                return judgeHuishouUser(response, userEntity.getUserStatus());
             } else if (Objects.equals(UserEntity.USER_TYPE_ADMIN, type)) {
                 UserCookieVo userCookieVo;
                 try {
