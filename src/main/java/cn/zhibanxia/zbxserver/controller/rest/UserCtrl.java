@@ -274,22 +274,22 @@ public class UserCtrl {
      * @return
      */
     @PostMapping("verifyHuishou")
-    public Result<Boolean> verifyHuishou(@RequestParam("id") Long id, @RequestParam("verifyResult") boolean verifyResult, @RequestParam(value = "verifyRemark", required = false) String verifyRemark) {
+    public Result<Boolean> verifyHuishou(@RequestBody VerifyHuishouVo verifyHuishouVo) {
         if (!RequestLocal.get().isAdmin()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
         try {
-            UserEntity userEntity = userService.findById(id);
+            UserEntity userEntity = userService.findById(verifyHuishouVo.getId());
             if (userEntity == null || !Objects.equals(userEntity.getUserType(), UserEntity.USER_TYPE_HUISHOU) || !Objects.equals(UserEntity.USER_STATUS_PERMIT_PROCESS, userEntity.getUserStatus())) {
-                logger.warn("user({id}) not exist, or is not huishou, or status is not in permit process", id);
+                logger.warn("user({id}) not exist, or is not huishou, or status is not in permit process", verifyHuishouVo.getId());
                 return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
             }
-            return Result.ResultBuilder.success(userService.verifyHuishou(id, verifyResult, verifyRemark));
+            return Result.ResultBuilder.success(userService.verifyHuishou(verifyHuishouVo.getId(), verifyHuishouVo.getVerifyResult(), verifyHuishouVo.getVerifyRemark()));
         } catch (Exception e) {
             logger.warn("", e);
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
         } finally {
-            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "verifyHuishou", "id=" + id + ", verifyResult=" + verifyResult);
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "verifyHuishou", "id=" + verifyHuishouVo.getId() + ", verifyResult=" + verifyHuishouVo.getVerifyResult());
         }
     }
 
