@@ -55,6 +55,21 @@ public class RequestUtil implements InitializingBean {
         response.addCookie(cookie);
     }
 
+    /**
+     * 删除用户cookie
+     *
+     * @param response
+     * @param key
+     */
+    public static void delUserCookie(HttpServletResponse response, String key) {
+        Cookie cookie = new Cookie(key, "");
+        cookie.setDomain(cookieDomain);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
     @Override
     public void afterPropertiesSet() {
         setCookieDomain(zbxConfig.getCookieDomain());

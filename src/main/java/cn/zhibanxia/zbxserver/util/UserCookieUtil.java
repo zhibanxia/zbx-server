@@ -28,4 +28,8 @@ public class UserCookieUtil {
         String cookieVal = EncryptUtil.encrypt(JSONObject.toJSONString(userCookieVo), encryptKey);
         RequestUtil.addUserCookie(response, CookieConstant.COOKIE_KEY_YEZHU_USER, cookieVal);
     }
+
+    public static void delCookie(HttpServletResponse response) {
+        RequestUtil.delUserCookie(response, CookieConstant.COOKIE_KEY_YEZHU_USER);
+    }
 }

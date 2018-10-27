@@ -6,7 +6,6 @@ import cn.zhibanxia.zbxserver.bo.WxUserInfoBo;
 import cn.zhibanxia.zbxserver.config.WxPropConfig;
 import cn.zhibanxia.zbxserver.config.ZbxConfig;
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
-import cn.zhibanxia.zbxserver.constant.UrlConstant;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.service.UserService;
@@ -139,6 +138,13 @@ public class WeixinIndexCtrl {
                     response.sendRedirect(authUrl);
                     return null;
                 }
+                // 如果不是业主cookie，则按照没有cookie处理
+                if (!Objects.equals(UserEntity.USER_TYPE_YEZHU, userCookieVo.getType())) {
+                    UserCookieUtil.delCookie(response);
+                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_YEZHU);
+                    response.sendRedirect(authUrl);
+                    return null;
+                }
                 UserEntity userEntity = userService.findById(userCookieVo.getUid());
                 // 如果用户不存在，则重定向到授权页
                 if (userEntity == null) {
@@ -165,6 +171,14 @@ public class WeixinIndexCtrl {
                     response.sendRedirect(authUrl);
                     return null;
                 }
+                // 如果不是回收人员cookie，则按照没有cookie处理
+                if (!Objects.equals(UserEntity.USER_TYPE_HUISHOU, userCookieVo.getType())) {
+                    UserCookieUtil.delCookie(response);
+                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_HUISHOU);
+                    response.sendRedirect(authUrl);
+                    return null;
+                }
+
                 UserEntity userEntity = userService.findById(userCookieVo.getUid());
                 // 如果用户不存在，或者类型不是回收人员，则重定向到授权页
                 if (userEntity == null || Objects.equals(userEntity.getUserType(), UserEntity.USER_TYPE_HUISHOU)) {
