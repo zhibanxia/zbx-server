@@ -112,7 +112,7 @@ public class RecycleCtrl {
     }
 
     @GetMapping("detail")
-    public Result<RecycleRequestVo> getRecyleRequestDetail(@RequestParam("id") Long id, @RequestParam("bizType") Integer bizType) {
+    public Result<RecycleRequestVo> getRecyleRequestDetail(@RequestParam("id") Long id, @RequestParam(value = "bizType", required = false) Integer bizType) {
         if (Objects.equals(1, bizType) || Objects.equals(2, bizType)) {
             // 必须是回收人员，并且通过了认证
             if (!RequestLocal.get().isHuishou() || !Objects.equals(UserEntity.USER_STATUS_NORMAL, RequestLocal.get().getHuishouUserEntity().getUserStatus())) {
@@ -122,6 +122,11 @@ public class RecycleCtrl {
         // 业务类型3必须是业主
         if (Objects.equals(3, bizType)) {
             if (!RequestLocal.get().isYezhu()) {
+                return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+            }
+        }
+        if (bizType == null) {
+            if (!RequestLocal.get().isAdmin()) {
                 return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
             }
         }
@@ -142,6 +147,8 @@ public class RecycleCtrl {
             if (!RequestLocal.get().getYezhuUid().equals(e.getCreateUserId())) {
                 return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
             }
+            return Result.ResultBuilder.success(buildRecycleRequestVo(e, false));
+        } else if (bizType == null) {
             return Result.ResultBuilder.success(buildRecycleRequestVo(e, false));
         } else {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
