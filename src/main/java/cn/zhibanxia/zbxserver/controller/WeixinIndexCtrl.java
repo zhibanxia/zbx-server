@@ -6,6 +6,7 @@ import cn.zhibanxia.zbxserver.bo.WxUserInfoBo;
 import cn.zhibanxia.zbxserver.config.WxPropConfig;
 import cn.zhibanxia.zbxserver.config.ZbxConfig;
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
+import cn.zhibanxia.zbxserver.controller.param.UserCookieVo;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.filter.RequestLocal;
@@ -146,8 +147,25 @@ public class WeixinIndexCtrl {
     public ModelAndView index(@RequestParam("type") Integer type, HttpServletRequest request, HttpServletResponse response) {
         try {
             if (Objects.equals(UserEntity.USER_TYPE_YEZHU, type)) {
-                // 如果不是业主，则按照没有cookie处理
-                if (!RequestLocal.get().isYezhu()) {
+                UserCookieVo userCookieVo;
+                try {
+                    userCookieVo = UserCookieUtil.parserCookie(request, zbxConfig.getEncryptKey());
+                } catch (Exception e) {
+                    UserCookieUtil.delCookie(response);
+                    logger.warn("", e);
+                    // cookie解析报错，走微信授权
+                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_YEZHU);
+                    response.sendRedirect(authUrl);
+                    return null;
+                }
+                if (userCookieVo == null) {
+                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_YEZHU);
+                    response.sendRedirect(authUrl);
+                    return null;
+                }
+                UserEntity userEntity = userService.findById(userCookieVo.getUid());
+                // 如果用户不存在，则重定向到授权页
+                if (userEntity == null || !Objects.equals(UserEntity.USER_TYPE_YEZHU, userEntity.getUserType())) {
                     UserCookieUtil.delCookie(response);
                     String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_YEZHU);
                     response.sendRedirect(authUrl);
@@ -157,8 +175,25 @@ public class WeixinIndexCtrl {
                 response.sendRedirect(zbxConfig.getZbxServiceDomain());
                 return null;
             } else if (Objects.equals(UserEntity.USER_TYPE_HUISHOU, type)) {
-                // 如果不是回收人员，则按照没有cookie处理
-                if (!RequestLocal.get().isHuishou()) {
+                UserCookieVo userCookieVo;
+                try {
+                    userCookieVo = UserCookieUtil.parserCookie(request, zbxConfig.getEncryptKey());
+                } catch (Exception e) {
+                    UserCookieUtil.delCookie(response);
+                    logger.warn("", e);
+                    // cookie解析报错，走微信授权
+                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_HUISHOU);
+                    response.sendRedirect(authUrl);
+                    return null;
+                }
+                if (userCookieVo == null) {
+                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_HUISHOU);
+                    response.sendRedirect(authUrl);
+                    return null;
+                }
+                UserEntity userEntity = userService.findById(userCookieVo.getUid());
+                // 如果用户不存在，则重定向到授权页
+                if (userEntity == null || !Objects.equals(UserEntity.USER_TYPE_HUISHOU, userEntity.getUserType())) {
                     UserCookieUtil.delCookie(response);
                     String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_HUISHOU);
                     response.sendRedirect(authUrl);
@@ -166,8 +201,25 @@ public class WeixinIndexCtrl {
                 }
                 return judgeHuishouUser(response, RequestLocal.get().getHuishouUserEntity().getUserStatus());
             } else if (Objects.equals(UserEntity.USER_TYPE_ADMIN, type)) {
+                UserCookieVo userCookieVo;
+                try {
+                    userCookieVo = UserCookieUtil.parserCookie(request, zbxConfig.getEncryptKey());
+                } catch (Exception e) {
+                    UserCookieUtil.delCookie(response);
+                    logger.warn("", e);
+                    // cookie解析报错，走微信授权
+                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_HUISHOU);
+                    response.sendRedirect(authUrl);
+                    return null;
+                }
+                if (userCookieVo == null) {
+                    String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_HUISHOU);
+                    response.sendRedirect(authUrl);
+                    return null;
+                }
+                UserEntity userEntity = userService.findById(userCookieVo.getUid());
                 // 如果不是管理员，则按照没有cookie处理
-                if (!RequestLocal.get().isAdmin()) {
+                if (userEntity == null || !Objects.equals(UserEntity.USER_TYPE_ADMIN, userEntity.getUserType())) {
                     UserCookieUtil.delCookie(response);
                     String authUrl = MessageFormat.format(wxPropConfig.getAuthRedirectUrl(), wxPropConfig.getAppId(), URLEncoder.encode(zbxConfig.getZbxServiceDomain() + "/weixin/redirectIndex", "utf-8"), UserEntity.USER_TYPE_ADMIN);
                     response.sendRedirect(authUrl);
