@@ -55,7 +55,7 @@ public class UserCtrl {
                 userAddressEntity.setProvinceId(addUserDetailReq.getDefaultAddr().getProvinceId());
                 userAddressEntity.setCityId(addUserDetailReq.getDefaultAddr().getCityId());
                 userAddressEntity.setAreaId(addUserDetailReq.getDefaultAddr().getAreaId());
-                userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId());
+                userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId() == null ? "-1" : addUserDetailReq.getDefaultAddr().getSubdistrictId());
                 userAddressEntity.setAddrDetail(addUserDetailReq.getDefaultAddr().getAddrDetail());
                 return Result.ResultBuilder.success(userAddrService.addOrUpdateOnlyAddr(userAddressEntity));
             } else {
@@ -70,7 +70,8 @@ public class UserCtrl {
                 userAddressEntity.setProvinceId(addUserDetailReq.getDefaultAddr().getProvinceId());
                 userAddressEntity.setCityId(addUserDetailReq.getDefaultAddr().getCityId());
                 userAddressEntity.setAreaId(addUserDetailReq.getDefaultAddr().getAreaId());
-                userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId());
+                // 街道id暂时没有，用-1填充
+                userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId() == null ? "-1" : addUserDetailReq.getDefaultAddr().getSubdistrictId());
                 userAddressEntity.setAddrDetail(addUserDetailReq.getDefaultAddr().getAddrDetail());
                 userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
 
@@ -82,7 +83,7 @@ public class UserCtrl {
                     temp.setProvinceId(e.getProvinceId());
                     temp.setCityId(e.getCityId());
                     temp.setAreaId(e.getAreaId());
-                    temp.setSubdistrictId(e.getSubdistrictId());
+                    temp.setSubdistrictId(e.getSubdistrictId() == null ? "-1" : e.getSubdistrictId());
                     temp.setAddrDetail(e.getAddrDetail());
                     return temp;
                 }).collect(Collectors.toList());
