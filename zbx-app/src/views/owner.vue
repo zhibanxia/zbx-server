@@ -1,18 +1,22 @@
 <template>
 <div id="owner-container">
   <van-nav-bar title="我的发布" right-text="发布回收" @click-right="onClickRight"/>
-  <van-pull-refresh v-model="loading" @refresh="onRefresh" class="recyler-content">
-  <van-list v-model="loading" :finished="finished" @load="getList">
+  <van-pull-refresh v-model="loading" @refresh="onRefresh" class="recyler-content" v-if="data.length">
     <recyle-list :data="data" :biztype="params.bizType" @click="handleClick"></recyle-list>
-  </van-list>
-</van-pull-refresh>
+    <p class="loadmore" @click="getList" v-if="!finished">点击加载更多</p>
+    <p v-else>没有更多了</p>
+  </van-pull-refresh>
+  <empty v-else></empty>
+  <van-loading v-if="loading" class="loading" color="white"/>
 </div>
 </template>
 <script>
 import RecyleList from './components/RecyleList'
+import Empty from './components/Empty'
 export default {
   components: {
-    RecyleList
+    RecyleList,
+    Empty
   },
   data () {
     return {
@@ -26,6 +30,9 @@ export default {
       }
     }
   },
+  created () {
+    this.getList()
+  },
   methods: {
     onClickRight () {
       this.$router.push(`/owner/publish`)
@@ -35,8 +42,10 @@ export default {
       this.loading = true
       await this.$ajax('recyleList', this.params).then(res => {
         // 数据请求完成
-        this.finished = true
-        this.params.page === 1 ? this.data = res.data : this.data.list = this.data.list.concat(res.data.list)
+        if (res.data.length === 0) {
+          this.finished = true
+        }
+        this.params.page === 1 ? this.data = res.data : this.data = this.data.concat(res.data)
         this.params.page++
       }).finally(() => {
         this.loading = false
@@ -65,6 +74,22 @@ export default {
       padding: 0;
     }
   }
-  
+  .loadmore {
+    padding: 0;
+    line-height: 20px;
+    text-align: center;
+    color: #666;
+  }
+  .loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
+    padding: 10px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, .5);
+  }
 }
 </style>

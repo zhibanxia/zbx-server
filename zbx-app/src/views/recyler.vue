@@ -1,27 +1,33 @@
 <template>
 <div id="recyler-wrap">
 <van-nav-bar :title="active === 0 ? '回收列表' : '我的回收'" />
-<van-pull-refresh v-model="loading" @refresh="onRefresh" class="recyler-content">
-  <van-list v-model="loading" :finished="finished" @load="getList">
+<van-pull-refresh v-model="loading" @refresh="onRefresh" class="recyler-content" v-if="data.length">
+  <!-- <van-list v-model="loading" :finished="finished" @load="getList"> -->
     <recyle-list :data="data" :biztype="params.bizType" @click="handleClick"></recyle-list>
-  </van-list>
+    <p class="loadmore" @click="getList" v-if="!finished">点击加载更多</p>
+    <p v-else>没有更多了</p>
+  <!-- </van-list> -->
 </van-pull-refresh>
+<empty v-else></empty>
 <van-tabbar v-model="active" @change="handleTabbar">
   <van-tabbar-item icon="wap-home">回收列表</van-tabbar-item>
   <van-tabbar-item icon="records" :dot="isupdate">我的回收</van-tabbar-item>
 </van-tabbar>
+<van-loading v-if="loading" class="loading" color="white"/>
 </div>
 </template>
 <script>
 import RecyleList from './components/RecyleList'
+import Empty from './components/Empty'
 export default {
   components: {
-    RecyleList
+    RecyleList,
+    Empty
   },
   data () {
     return {
       data: [],
-      active: 0,
+      active: +this.$route.query.bizType === 2 ? 1 : 0,
       loading: false,
       finished: false,
       params: {
@@ -32,14 +38,8 @@ export default {
       isupdate: !!this.$route.query.update
     }
   },
-  watch: {
-    // '$route' (to, from) {  
-    //   if (from.fullPath.indexOf('recyler/detail') !== -1) {
-    //     if (to.query.update) {
-    //       this.isupdate = true
-    //     }
-    //   }
-    // }
+  created () {
+    this.getList()
   },
   methods: {
     // 回收人员查询所有的列表
@@ -47,7 +47,9 @@ export default {
       this.loading = true
       await this.$ajax('recyleList', this.params).then(res => {
         // 数据请求完成
-        this.finished = true
+        if (res.data.length === 0) {
+          this.finished = true
+        }
         this.params.page === 1 ? this.data = res.data : this.data = this.data.concat(res.data)
         this.params.page++
       }).finally(() => {
@@ -85,6 +87,23 @@ export default {
 <style lang="less" scoped>
 #recyler-wrap {
   padding-bottom: 50px;
+  .loadmore {
+    padding: 0;
+    line-height: 20px;
+    text-align: center;
+    color: #666;
+  }
+  .loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
+    padding: 10px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, .5);
+  }
 }
 </style>
 

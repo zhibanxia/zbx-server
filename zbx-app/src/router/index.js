@@ -53,7 +53,6 @@ router.beforeEach(async (to, from, next) => {
     if (to.path.indexOf('/register') !== -1) {
       return next('/register')
     }
-
     // 用户状态不正常时
     if (status !== 1) {
       return next('/error?status=' + status + '&type=' + type)

@@ -1,41 +1,46 @@
 <template>
 <div id="admin-wrap">
 <van-nav-bar :title="active === 0 ? '回收列表' : '用户列表'" />
-<van-pull-refresh v-model="loading" @refresh="onRefresh" class="admin-content">
-  <!-- 回收列表 -->
-  <van-list v-model="loading" :finished="finished" @load="getRecyleList" v-if="active === 0">
-    <recyle-list :data="data" @click="handleRecylerClick"></recyle-list>
-  </van-list>
-  <!-- 用户列表 -->
-  <van-list v-else :finished="finished" @load="getAllUser">
-    <div v-for="(item, index) in data" :key="index" @click="handleUserClick(item)">
-      <van-row class="user-item">
-        <van-col span="24">
-          <!-- <van-row class="item-title">
-            <van-col>
-              <img :src="item.wxLogo" class="logo"/>
-              <span>{{item.wxNickName}}</span>  
-            </van-col>
-          </van-row> -->
-          <van-row class="item-content">
-            <van-col span="4"><img :src="item.wxLogo" class="resImage"/></van-col>
-            <van-col span="12">
-              <van-row><span>昵称：{{item.wxNickName}}</span></van-row>
-              <van-row><span>类型：{{formatType(item.userType)}}</span></van-row>
-              
-              <!-- <van-row v-if="item.completeRecycleTime"><span>回收时间：{{item.completeRecycleTime}}</span></van-row> -->
-            </van-col>
-            <van-col span="8" class="status" :class="'status' + item.userStatus">{{formatStatus(item.userStatus)}}</van-col>
-          </van-row>
-        </van-col>
-      </van-row>
-      </div>
-  </van-list>
+<!-- 回收列表 -->
+<van-pull-refresh v-model="loading" @refresh="onRefresh" class="admin-content" v-if="active === 0">
+  <recyle-list :data="data" @click="handleRecylerClick"></recyle-list>
+  <p class="loadmore" @click="getRecyleList" v-if="!finished">点击加载更多</p>
+  <p v-else>没有更多了</p>
 </van-pull-refresh>
+
+<!-- 用户列表 -->
+<van-pull-refresh v-else v-model="loading" @refresh="onRefresh2" class="admin-content">
+  <div v-for="(item, index) in data2" :key="index" @click="handleUserClick(item)">
+    <van-row class="user-item">
+      <van-col span="24">
+        <!-- <van-row class="item-title">
+          <van-col>
+            <img :src="item.wxLogo" class="logo"/>
+            <span>{{item.wxNickName}}</span>  
+          </van-col>
+        </van-row> -->
+        <van-row class="item-content">
+          <van-col span="4"><img :src="item.wxLogo" class="resImage"/></van-col>
+          <van-col span="12">
+            <van-row><span>昵称：{{item.wxNickName}}</span></van-row>
+            <van-row><span>类型：{{formatType(item.userType)}}</span></van-row>
+            
+            <!-- <van-row v-if="item.completeRecycleTime"><span>回收时间：{{item.completeRecycleTime}}</span></van-row> -->
+          </van-col>
+          <van-col span="8" class="status" :class="'status' + item.userStatus">{{formatStatus(item.userStatus)}}</van-col>
+        </van-row>
+      </van-col>
+    </van-row>
+  </div>
+  <p class="loadmore" @click="getAllUser" v-if="!finished">点击加载更多</p>
+  <p v-else>没有更多了</p>
+</van-pull-refresh>
+
 <van-tabbar v-model="active" @change="handleTabbar">
   <van-tabbar-item icon="wap-home">回收列表</van-tabbar-item>
   <van-tabbar-item icon="records">用户列表</van-tabbar-item>
 </van-tabbar>
+<van-loading v-if="loading" class="loading" color="white"/>
 </div>
 </template>
 <script>
@@ -48,24 +53,19 @@ export default {
   data () {
     return {
       data: [],
+      data2: [],
       active: this.$route.query.user ? 1 : 0,
       loading: false,
       finished: false,
       params: {
         page: 1,
         size: 10
+      },
+      params2: {
+        page: 1,
+        size: 10
       }
     }
-  },
-  watch: {
-    // '$route' (to) {
-    //   debugger
-    //   if (to.query.user) {
-    //     console.log(1)
-    //     this.active = 1
-    //     // this.handleTabbar(this.active)
-    //   }
-    // }
   },
   created () {
     this.handleTabbar(this.active)
@@ -75,7 +75,6 @@ export default {
      * 回收列表
      */
     async getRecyleList () {
-      if (this.loading) return
       this.loading = true
       let params = {
         status: '',
@@ -83,7 +82,10 @@ export default {
         size: this.params.size
       }
       await this.$ajax('recylerListByAdmin', params).then(res => {
-        this.finished = true
+        // 
+        if (res.data.length === 0) {
+          this.finished = true
+        }
         this.params.page === 1 ? this.data = res.data : this.data = this.data.concat(res.data)
         this.params.page++
       }).finally(() => {
@@ -94,12 +96,18 @@ export default {
      * 用户列表
      */
     async getAllUser () {
-      if (this.loading) return
       this.loading = true
-      await this.$ajax('getAllUser', this.params).then(res => {
-        this.finished = true
-        this.params.page === 1 ? this.data = res.data.list : this.data = this.data.concat(res.data.list)
-        this.params.page++
+      let params = {
+        page: this.params2.page,
+        size: this.params2.size
+      }
+      await this.$ajax('getAllUser', params).then(res => {
+        // this.finished = true
+        if (res.data.list.length === 0) {
+          this.finished = true
+        }
+        this.params2.page === 1 ? this.data2 = res.data.list : this.data2 = this.data2.concat(res.data.list)
+        this.params2.page++
       }).finally(() => {
         this.loading = false
       })
@@ -107,21 +115,22 @@ export default {
     /**
      * 上拉刷新
      */
-    onRefresh () {
+    async onRefresh () {
       this.params.page = 1
-      if (this.active === 0) {
-        this.getRecyleList()
-        return
-      }
-      this.getAllUser()
+      await this.getRecyleList()
+    },
+    async onRefresh2 () {
+      this.params2.page = 1
+      await this.getAllUser()
     },
     handleTabbar (index) {
       this.active = index
-      this.params.page = 1
       if (index === 0) {
+        this.params.page = 1
         this.getRecyleList()
         return
       }
+      this.params2.page = 1
       this.getAllUser()
     },
     /**
@@ -134,6 +143,10 @@ export default {
      * 点击进入用户详情页
      */
     handleUserClick (item) {
+      if (item.userType === 3) {
+        this.$dialog.alert({message:'该用户为管理员'})
+        return
+      }
       this.$router.push(`/admin/userdetail/${item.id}/${item.userType}/${item.userStatus}`)
     },
     formatType (type) {
@@ -147,6 +160,26 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+#admin-wrap {
+  padding-bottom: 70px;
+  .loadmore {
+    padding: 0;
+    line-height: 20px;
+    text-align: center;
+    color: #666;
+  }
+  .loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
+    padding: 10px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, .5);
+  }
+}
 .user-item {
   padding: 20px 0;
   border-bottom: 1px solid #f8f8f8;
@@ -179,6 +212,11 @@ export default {
         background-color: rgba(68, 187, 0, 0.77);
       }
     }
+    
+  }
+  .resImage {
+    width: 40px;
+    height: 40px;
   }
   
 }

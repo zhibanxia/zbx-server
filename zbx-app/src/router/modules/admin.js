@@ -14,7 +14,7 @@ export default {
       component: _import('admin/recyleDetail')
     }, {
       path: 'userdetail/:id/:userType/:userStatus',
-      meta: { title: '回收详情页', auth: ['admin'] },
+      meta: { title: '用户详情页', auth: ['admin'] },
       component: _import('admin/userDetail')
     }
   ]

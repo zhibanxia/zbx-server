@@ -2,7 +2,7 @@
  * @Author: wangmangmang 
  * @Date: 2018-10-07 11:16:29 
  * @Last Modified by: wangmangmang
- * @Last Modified time: 2018-10-19 12:17:28
+ * @Last Modified time: 2018-10-28 19:15:28
  * 回收人员进入详情页
  */
 
@@ -72,7 +72,8 @@ export default {
      * 点击返回
      */
     handlerBack () {
-      this.$router.push(`/recyler`)
+      this.$router.push(`/recyler?bizType=${this.params.biztype}`)
+      // this.$router.go(-1)
     }
   },
   created () {

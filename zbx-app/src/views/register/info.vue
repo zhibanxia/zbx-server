@@ -170,6 +170,7 @@ export default {
      * 点击提交信息
      */
     async submit () {
+      this.form.focusAddrList = []
       // 省市区 验证
       this.area ? (this.errors.area = null) : (this.errors.area = ERROR_MESSAGE)
       // 手机不为空验证
