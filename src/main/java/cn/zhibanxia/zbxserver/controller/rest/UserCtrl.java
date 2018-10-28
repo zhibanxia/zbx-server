@@ -55,7 +55,7 @@ public class UserCtrl {
                 userAddressEntity.setProvinceId(addUserDetailReq.getDefaultAddr().getProvinceId());
                 userAddressEntity.setCityId(addUserDetailReq.getDefaultAddr().getCityId());
                 userAddressEntity.setAreaId(addUserDetailReq.getDefaultAddr().getAreaId());
-                userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId());
+                userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId() == null ? "-1" : addUserDetailReq.getDefaultAddr().getSubdistrictId());
                 userAddressEntity.setAddrDetail(addUserDetailReq.getDefaultAddr().getAddrDetail());
                 return Result.ResultBuilder.success(userAddrService.addOrUpdateOnlyAddr(userAddressEntity));
             } else {
@@ -70,7 +70,8 @@ public class UserCtrl {
                 userAddressEntity.setProvinceId(addUserDetailReq.getDefaultAddr().getProvinceId());
                 userAddressEntity.setCityId(addUserDetailReq.getDefaultAddr().getCityId());
                 userAddressEntity.setAreaId(addUserDetailReq.getDefaultAddr().getAreaId());
-                userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId());
+                // 街道id暂时没有，用-1填充
+                userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId() == null ? "-1" : addUserDetailReq.getDefaultAddr().getSubdistrictId());
                 userAddressEntity.setAddrDetail(addUserDetailReq.getDefaultAddr().getAddrDetail());
                 userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
 
@@ -82,11 +83,14 @@ public class UserCtrl {
                     temp.setProvinceId(e.getProvinceId());
                     temp.setCityId(e.getCityId());
                     temp.setAreaId(e.getAreaId());
-                    temp.setSubdistrictId(e.getSubdistrictId());
+                    temp.setSubdistrictId(e.getSubdistrictId() == null ? "-1" : e.getSubdistrictId());
                     temp.setAddrDetail(e.getAddrDetail());
                     return temp;
                 }).collect(Collectors.toList());
-                return Result.ResultBuilder.success(userAddrService.batchAddAddr(RequestLocal.get().getHuishouUid(), focusAddrs));
+                userAddrService.batchAddAddr(RequestLocal.get().getHuishouUid(), focusAddrs);
+
+                // 最终修改回收人员状态为审核中
+                return Result.ResultBuilder.success(userService.updateUserStatus(RequestLocal.get().getHuishouUid(), UserEntity.USER_STATUS_PERMIT_PROCESS));
             }
         } catch (BizException e) {
             logger.warn("", e);
@@ -99,15 +103,17 @@ public class UserCtrl {
 
     @GetMapping("getUserType")
     public Result<UserIdentifyRsp> getUserType() {
-        if (!(RequestLocal.get().isYezhu() || RequestLocal.get().isHuishou())) {
+        if (!(RequestLocal.get().isYezhu() || RequestLocal.get().isHuishou() || RequestLocal.get().isAdmin())) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
         UserIdentifyRsp userIdentifyRsp = new UserIdentifyRsp();
         userIdentifyRsp.setUserType(RequestLocal.get().getUserType());
         if (RequestLocal.get().isHuishou()) {
             userIdentifyRsp.setUserStatus(RequestLocal.get().getHuishouUserEntity().getUserStatus());
-        } else {
+        } else if (RequestLocal.get().isYezhu()) {
             userIdentifyRsp.setUserStatus(RequestLocal.get().getYezhuUserEntity().getUserStatus());
+        } else if (RequestLocal.get().isAdmin()) {
+            userIdentifyRsp.setUserStatus(RequestLocal.get().getAdminUserEntity().getUserStatus());
         }
         return Result.ResultBuilder.success(userIdentifyRsp);
     }
@@ -182,7 +188,13 @@ public class UserCtrl {
      * @return
      */
     @GetMapping("getHuishouUserInfo")
-    public Result<HuishouUserInfoRsp> getHuishouUserInfo() {
+    public Result<HuishouUserInfoRsp> getHuishouUserInfo(@RequestParam(value = "id", required = false) Long id) {
+        if (id != null) {
+            if (!RequestLocal.get().isAdmin()) {
+                return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+            }
+            return getHuishouUserInfo4Admin(id);
+        }
         if (!RequestLocal.get().isHuishou()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
@@ -200,8 +212,7 @@ public class UserCtrl {
      *
      * @return
      */
-    @GetMapping("getHuishouUserInfo4Admin")
-    public Result<HuishouUserInfoRsp> getHuishouUserInfo4Admin(@RequestParam("id") Long id) {
+    private Result<HuishouUserInfoRsp> getHuishouUserInfo4Admin(Long id) {
         if (!RequestLocal.get().isAdmin()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
@@ -266,22 +277,22 @@ public class UserCtrl {
      * @return
      */
     @PostMapping("verifyHuishou")
-    public Result<Boolean> verifyHuishou(@RequestParam("id") Long id, @RequestParam("verifyResult") boolean verifyResult, @RequestParam(value = "verifyRemark", required = false) String verifyRemark) {
+    public Result<Boolean> verifyHuishou(@RequestBody VerifyHuishouVo verifyHuishouVo) {
         if (!RequestLocal.get().isAdmin()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
         try {
-            UserEntity userEntity = userService.findById(id);
+            UserEntity userEntity = userService.findById(verifyHuishouVo.getId());
             if (userEntity == null || !Objects.equals(userEntity.getUserType(), UserEntity.USER_TYPE_HUISHOU) || !Objects.equals(UserEntity.USER_STATUS_PERMIT_PROCESS, userEntity.getUserStatus())) {
-                logger.warn("user({id}) not exist, or is not huishou, or status is not in permit process", id);
+                logger.warn("user({id}) not exist, or is not huishou, or status is not in permit process", verifyHuishouVo.getId());
                 return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
             }
-            return Result.ResultBuilder.success(userService.verifyHuishou(id, verifyResult, verifyRemark));
+            return Result.ResultBuilder.success(userService.verifyHuishou(verifyHuishouVo.getId(), verifyHuishouVo.getVerifyResult(), verifyHuishouVo.getVerifyRemark()));
         } catch (Exception e) {
             logger.warn("", e);
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
         } finally {
-            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "verifyHuishou", "id=" + id + ", verifyResult=" + verifyResult);
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "verifyHuishou", "id=" + verifyHuishouVo.getId() + ", verifyResult=" + verifyHuishouVo.getVerifyResult());
         }
     }
 

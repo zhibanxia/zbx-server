@@ -39,3 +39,4 @@ classes/
 out/
 
 node_modules
+*.map
