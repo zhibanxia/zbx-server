@@ -5,7 +5,7 @@
 <van-pull-refresh v-model="loading" @refresh="onRefresh" class="admin-content" v-if="active === 0">
   <recyle-list :data="data" @click="handleRecylerClick"></recyle-list>
   <p class="loadmore" @click="getRecyleList" v-if="!finished">点击加载更多</p>
-  <p v-else>没有更多了</p>
+  <p class="loadmore" v-else>没有更多了</p>
 </van-pull-refresh>
 
 <!-- 用户列表 -->
@@ -33,7 +33,7 @@
     </van-row>
   </div>
   <p class="loadmore" @click="getAllUser" v-if="!finished">点击加载更多</p>
-  <p v-else>没有更多了</p>
+  <p class="loadmore" v-else>没有更多了</p>
 </van-pull-refresh>
 
 <van-tabbar v-model="active" @change="handleTabbar">

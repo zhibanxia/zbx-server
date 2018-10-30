@@ -4,7 +4,7 @@
   <van-pull-refresh v-model="loading" @refresh="onRefresh" class="recyler-content" v-if="data.length">
     <recyle-list :data="data" :biztype="params.bizType" @click="handleClick"></recyle-list>
     <p class="loadmore" @click="getList" v-if="!finished">点击加载更多</p>
-    <p v-else>没有更多了</p>
+    <p class="loadmore" v-else>没有更多了</p>
   </van-pull-refresh>
   <empty v-else></empty>
   <van-loading v-if="loading" class="loading" color="white"/>

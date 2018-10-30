@@ -15,7 +15,7 @@
         
         <van-cell title="联系电话"  :value="data.mobilePhone"/>
         <!-- 业主 -->
-        <van-cell title="业主住址" icon="location" :value="formatArea(data.defaultAddr)" v-if="usertype === 1"/>
+        <van-cell title="业主住址" icon="location" :value="formatArea(data.defaultAddr)" v-if="usertype === 1 && data.defaultAddr"/>
 
         <!-- 回收 -->
         
@@ -33,13 +33,13 @@
     
     <van-row style="margin-top:30px">
       <!-- 回收人员待审核状态 -->
-      <van-col span="24" v-if="usertype === 2 && data.status === 2">
+      <van-col span="24" v-if="usertype === 2 && data.status === 4">
         <van-button block @click="handleRecyler(true)">审核通过</van-button>
         <van-button type="primary" block @click="handleRecyler(false)" style="margin-top:20px;">审核不通过</van-button>
       </van-col>
       <!-- 其他情况：禁用与恢复 -->
-      <van-col span="24" v-if="data.status !== 2">
-        <van-button type="primary" block @click="handleYezhu(5)" v-if="data.status === 1">禁用账号</van-button>
+      <van-col span="24" v-if="(data.status !== 6 && data.status !== 5) || data.status === 5">
+        <van-button type="primary" block @click="handleYezhu(data.status)" v-if="data.status !== 6 && data.status !== 5">禁用账号</van-button>
         <van-button type="primary" block @click="handleYezhu(1)" v-if="data.status === 5">恢复账号</van-button>
       </van-col>
     </van-row>
@@ -88,7 +88,7 @@ export default {
       return stt.length ? stt[0].label : '--'
     },
     formatArea (item) {
-       let area = []
+      let area = []
       let provice = areaList.province_list[item.provinceId]
       let city = areaList.city_list[item.cityId]
       let areaId = areaList.county_list[item.areaId]
