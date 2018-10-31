@@ -39,7 +39,7 @@
       </van-col>
       <!-- 其他情况：禁用与恢复 -->
       <van-col span="24" v-if="(data.status !== 6 && data.status !== 5) || data.status === 5">
-        <van-button type="primary" block @click="handleYezhu(data.status)" v-if="data.status !== 6 && data.status !== 5">禁用账号</van-button>
+        <van-button type="primary" block @click="handleYezhu(5)" v-if="data.status !== 6 && data.status !== 5">禁用账号</van-button>
         <van-button type="primary" block @click="handleYezhu(1)" v-if="data.status === 5">恢复账号</van-button>
       </van-col>
     </van-row>
@@ -126,7 +126,7 @@ export default {
      * 账号 禁用 恢复
      */
     async handleYezhu (status) {
-      await this.$dialog.confirm({message: `确定${status === 5 ? '恢复' : '禁用'}吗？`})
+      await this.$dialog.confirm({message: `确定${status === 5 ? '禁用' : '恢复'}吗？`})
       await this.$ajax('modifyUserStatus', {id: this.id, status: status})
       await this.$dialog.alert({message: `操作成功`})
       this.$router.push(`/admin/?user=1&timestamp=${new Date().getTime()}`)
