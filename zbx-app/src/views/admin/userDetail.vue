@@ -126,7 +126,7 @@ export default {
      * 账号 禁用 恢复
      */
     async handleYezhu (status) {
-      await this.$dialog.confirm({message: `确定${status === 5 ? '禁用' : '恢复'}吗？`})
+      await this.$dialog.confirm({message: `确定${status === 5 ? '恢复' : '禁用'}吗？`})
       await this.$ajax('modifyUserStatus', {id: this.id, status: status})
       await this.$dialog.alert({message: `操作成功`})
       this.$router.push(`/admin/?user=1&timestamp=${new Date().getTime()}`)
