@@ -79,7 +79,7 @@ public class UserDaoImpl extends BaseDao implements UserDao {
     public boolean verifyHuishou(Long id, boolean verifyResult, String remark) {
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
-        params.put("status", verifyResult ? UserEntity.USER_STATUS_NORMAL : UserEntity.USER_STATUS_NOT_PERMIT);
+        params.put("userStatus", verifyResult ? UserEntity.USER_STATUS_NORMAL : UserEntity.USER_STATUS_NOT_PERMIT);
         params.put("verifyRemark", remark);
         int ret = update("verifyHuishou", params);
         return ret == 1;

@@ -88,11 +88,11 @@
 
     <update id="verifyHuishou" parameterType="Map">
         update tb_user
-        set user_status=#{userStatus},
+        set
         <if test="verifyRemark!=null">
             verify_remark=#{verifyRemark},
         </if>
-        gmt_modified=now()
+        user_status=#{userStatus}
         where id=#{id}
     </update>
 
