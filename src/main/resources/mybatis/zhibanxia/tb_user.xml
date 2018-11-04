@@ -86,7 +86,7 @@
         where user_status!=6
     </select>
 
-    <update id="verifyHuishou" parameterType="Map">
+    <update id="verifyHuishou" parameterType="java.util.Map">
         update tb_user
         set
         <if test="verifyRemark!=null">
