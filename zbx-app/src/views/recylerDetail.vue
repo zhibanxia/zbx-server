@@ -10,7 +10,7 @@
   <div id="recyler-detail">
     <detail :data="data" @backup="handlerBack">
       <!-- 处于已发布状态下的待回收列表，可以确认回收 -->
-      <van-row v-if="data.resStatus == 1 && params.biztype === 1" style="margin-top:30px">
+      <van-row v-if="data.resStatus == 1 && params.bizType === 1" style="margin-top:30px">
         <van-col span="24">
           <van-button type="primary" block @click="submit">确认回收</van-button>
         </van-col>
