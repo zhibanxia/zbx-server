@@ -8,6 +8,12 @@
         <van-button size="normal" block @click="handleClick">重新提交</van-button>
       </van-col>
     </van-row>
+    <!-- 回收人员，没有提交信息 -->
+    <van-row v-if="status === 2 && type === 2">
+      <van-col span="10" offset="7">
+        <van-button size="normal" block @click="handleClick">完善信息</van-button>
+      </van-col>
+    </van-row>
   </div>
 </template>
 <script>
@@ -51,4 +57,3 @@ export default {
   }
 }
 </style>
-
