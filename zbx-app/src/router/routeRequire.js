@@ -22,7 +22,7 @@ export default {
           }
         }
         let status = userInfo.userStatus
-        resolve({ authMap: authMap, status: status, type: type })
+        resolve({ authMap: authMap, status: status, type })
       })
     })
   },
