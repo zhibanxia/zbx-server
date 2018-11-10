@@ -13,12 +13,13 @@
         <result column="area_id" property="areaId"/>
         <result column="subdistrict_id" property="subdistrictId"/>
         <result column="addr_detail" property="addrDetail"/>
+        <result column="deleted" property="deleted"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
 
     <sql id="all_column">
-        id, user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail,
+        id, user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail, deleted,
         gmt_create, gmt_modified
     </sql>
 
@@ -39,20 +40,20 @@
         </foreach>
     </insert>
 
-    <select id="findAddrs" parameterType="Map" resultMap="UserAddressEntityMapper">
+    <select id="findAddrs" parameterType="java.util.Map" resultMap="UserAddressEntityMapper">
         select
         <include refid="all_column"/>
         from tb_user_address
         where user_id=#{userId}
-        and biz_type=#{bizType}
+        and biz_type=#{bizType} and deleted=0 order by gmt_modified desc
     </select>
 
-    <select id="countAddr" parameterType="Map" resultType="Integer">
+    <select id="countAddr" parameterType="java.util.Map" resultType="Integer">
         select
         count(1)
         from tb_user_address
         where user_id=#{userId}
-        and biz_type=#{bizType}
+        and biz_type=#{bizType} and deleted=0
     </select>
 
     <update id="update" parameterType="cn.zhibanxia.zbxserver.entity.UserAddressEntity">
@@ -77,7 +78,7 @@
         where id=#{id}
     </update>
 
-    <select id="batchFind" parameterType="List" resultMap="UserAddressEntityMapper">
+    <select id="batchFind" parameterType="java.util.List" resultMap="UserAddressEntityMapper">
         select
         <include refid="all_column"/>
         from tb_user_address
@@ -85,7 +86,14 @@
         <foreach collection="list" item="id" separator=",">
             #{id}
         </foreach>
-        )
+        ) and deleted=0
     </select>
 
+    <update id="batchDelete" parameterType="java.util.List">
+        update tb_user_address set deleted = 1 where id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+    </update>
 </mapper>
