@@ -123,8 +123,10 @@ export default {
         this.area = area.join('/')
 
         this.defaultAddr = defaultAddr.addrDetail
+        this.areaCode = defaultAddr
         const { focusAddrList, mobilePhone, verifyLogo } = res.data
         this.form = { focusAddrList, mobilePhone, verifyLogo, defaultAddr }
+
         // this.form.focusAddrList =  [this.defaultAddr]
         // this.form.mobilePhone = res.data.mobilePhone
         // this.form.verifyLogo = res.data.verifyLogo
@@ -234,7 +236,6 @@ export default {
         })
       }
 
-
       let params = {
         mobilePhone: this.form.mobilePhone,
         defaultAddr: this.form.defaultAddr
@@ -243,7 +244,7 @@ export default {
         params.verifyLogo = this.form.verifyLogo
         params.focusAddrList = this.form.focusAddrList
       }
-      console.log(params)
+
       await this.$ajax('addUserDetail', params)
       await this.$dialog.alert({message: '操作成功'})
       window.location.href = '/'
