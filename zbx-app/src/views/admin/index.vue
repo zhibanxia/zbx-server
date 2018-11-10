@@ -16,7 +16,7 @@
         <!-- <van-row class="item-title">
           <van-col>
             <img :src="item.wxLogo" class="logo"/>
-            <span>{{item.wxNickName}}</span>  
+            <span>{{item.wxNickName}}</span>
           </van-col>
         </van-row> -->
         <van-row class="item-content">
@@ -24,7 +24,7 @@
           <van-col span="12">
             <van-row><span>昵称：{{item.wxNickName}}</span></van-row>
             <van-row><span>类型：{{formatType(item.userType)}}</span></van-row>
-            
+
             <!-- <van-row v-if="item.completeRecycleTime"><span>回收时间：{{item.completeRecycleTime}}</span></van-row> -->
           </van-col>
           <van-col span="8" class="status" :class="'status' + item.userStatus">{{formatStatus(item.userStatus)}}</van-col>
@@ -82,7 +82,7 @@ export default {
         size: this.params.size
       }
       await this.$ajax('recylerListByAdmin', params).then(res => {
-        // 
+        //
         if (res.data.length === 0) {
           this.finished = true
         }
@@ -203,21 +203,21 @@ export default {
     &.status1 {
       color: rgba(228, 49, 21, 0.53);
       &::before {
-        background-color: rgba(228, 49, 21, 0.53) 
+        background-color: rgba(228, 49, 21, 0.53)
       }
     }
-    &.status2 {
+    &.status4 {
       color: rgba(68, 187, 0, 0.77);
       &::before {
         background-color: rgba(68, 187, 0, 0.77);
       }
     }
-    
+
   }
   .resImage {
     width: 40px;
     height: 40px;
   }
-  
+
 }
 </style>
