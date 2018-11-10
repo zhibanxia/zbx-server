@@ -1,6 +1,6 @@
 /*
- * @Author: wangmangmang 
- * @Date: 2018-10-07 11:16:29 
+ * @Author: wangmangmang
+ * @Date: 2018-10-07 11:16:29
  * @Last Modified by: wangmangmang
  * @Last Modified time: 2018-10-28 19:15:28
  * 回收人员进入详情页
@@ -29,7 +29,7 @@ export default {
     return {
       params: {
         id: this.$route.query.id,
-        biztype: +this.$route.query.biztype
+        bizType: +this.$route.query.biztype
       },
       data: {}
     }

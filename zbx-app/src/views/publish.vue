@@ -13,7 +13,7 @@
           <van-uploader :after-read="onRead" slot="right-icon" v-if="!resImages || resImages.length < 3">
             <van-button type="default" size="small">上传</van-button>
           </van-uploader>
-          
+
         </van-cell>
 
         <van-cell v-if="resImages && resImages.length">
@@ -53,7 +53,7 @@
           placeholder="请输入手机号"
           :error-message="errors.mobilePhone"
         />
-        
+
         <van-field
           v-model="form.resNote"
           label="备注"
@@ -107,7 +107,7 @@
   </div>
 </template>
 <script>
-import {RECYLE_TYPE,  RECYLE_AMOUNT, TAKE_GARBAGE} from '@/utils/constant'
+import {RECYLE_TYPE, RECYLE_AMOUNT, TAKE_GARBAGE} from '@/utils/constant'
 import { ImagePreview } from 'vant'
 import {dateFomatter} from '@/utils/formatter'
 import areaList from '@/utils/area'
@@ -185,26 +185,32 @@ export default {
           // 详细地址
           this.defaultAddr = res.data.addr.addrDetail
         })
-        return 
+        return
       }
       // 获取业主信息
       await this.$ajax('getYezhuUserInfo').then(res => {
+        const defaultAddr = res.data.defaultAddr || {
+          areaId: '330102',
+          cityId: '330100',
+          provinceId: '330000'
+        }
         // 电话
         this.form.mobilePhone = res.data.mobilePhone
-        this.form.addr = res.data.defaultAddr
+        this.form.addr = defaultAddr
+        this.form.takeGarbageFlag = false
 
         let area = []
-        let provice = areaList.province_list[res.data.defaultAddr.provinceId]
-        let city = areaList.city_list[res.data.defaultAddr.cityId]
-        let areaId = areaList.county_list[res.data.defaultAddr.areaId]
+        let provice = areaList.province_list[defaultAddr.provinceId]
+        let city = areaList.city_list[defaultAddr.cityId]
+        let areaId = areaList.county_list[defaultAddr.areaId]
         area.push(provice)
         provice !== city && area.push(city)
         area.push(areaId)
-        this.selectArea = res.data.defaultAddr.areaId
+        this.selectArea = defaultAddr.areaId
         // 住址
         this.area = area.join('/')
         // 详细地址
-        this.defaultAddr = res.data.defaultAddr.addrDetail
+        this.defaultAddr = defaultAddr.addrDetail
       })
     },
     handleRestypeConfirm (item) {
@@ -232,11 +238,11 @@ export default {
       return stt.length ? stt[0].label : '请选择'
     },
     handleDoorServStartTimeConfirm (value) {
-      this.form.doorServStartTime =  dateFomatter(this.startDate, 'yyyy-MM-dd hh:mm:ss')
+      this.form.doorServStartTime = dateFomatter(this.startDate, 'yyyy-MM-dd hh:mm:ss')
       this.doorServStartTimePopShow = false
     },
     handledoorServEndTimeConfirm (value) {
-      this.form.doorServEndTime =  dateFomatter(this.endDate, 'yyyy-MM-dd hh:mm:ss')
+      this.form.doorServEndTime = dateFomatter(this.endDate, 'yyyy-MM-dd hh:mm:ss')
       this.doorServEndTimePopShow = false
     },
     formatter (type, value) {
@@ -247,7 +253,7 @@ export default {
       }
       return value
     },
-    
+
     /**
      * 上传头像，需要调用接口上传
      */
@@ -259,7 +265,7 @@ export default {
       }
       this.resImages = this.resImages || []
       await this.$ajax('upload', params).then((res) => {
-        this.resImages.push(res.data) 
+        this.resImages.push(res.data)
       }).finally(() => {
         this.loading = false
       })

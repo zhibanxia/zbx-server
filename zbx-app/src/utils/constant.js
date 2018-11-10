@@ -26,7 +26,7 @@ export const USER_STATUS = [
 ]
 export const USER_STATUS4ADMIN = [
   {label: '正常', id: 1},
-  {label: '待审核', id: 2},
+  {label: '待完善资料', id: 2},
   {label: '审核不通过', id: 3},
   {label: '审核中', id: 4},
   {label: '被禁用', id: 5},
