@@ -3,6 +3,7 @@ package cn.zhibanxia.zbxserver.controller.rest;
 import cn.zhibanxia.zbxserver.bo.ListRecycleRequestBo;
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.controller.param.Addr;
+import cn.zhibanxia.zbxserver.controller.param.ConfirmRecycleReq;
 import cn.zhibanxia.zbxserver.controller.param.RecycleRequestVo;
 import cn.zhibanxia.zbxserver.controller.param.Result;
 import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
@@ -200,11 +201,12 @@ public class RecycleCtrl {
     }
 
     @PostMapping("confirmRecycle")
-    public Result<Void> confirmRecycle(@RequestParam("id") Long id) {
+    public Result<Void> confirmRecycle(@RequestBody ConfirmRecycleReq confirmRecycleReq) {
         // 如果不是回收人员、或者状态不是正常状态，则拒绝请求
         if (!RequestLocal.get().isHuishou() || !Objects.equals(RequestLocal.get().getHuishouUserEntity().getUserStatus(), UserEntity.USER_STATUS_NORMAL)) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
+        Long id = confirmRecycleReq.getId();
         RecycleRequestEntity recycleRequestEntity = recycleRequestService.find(id);
         if (recycleRequestEntity == null) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
