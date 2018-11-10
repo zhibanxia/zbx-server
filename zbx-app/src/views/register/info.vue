@@ -123,9 +123,10 @@ export default {
         this.area = area.join('/')
 
         this.defaultAddr = defaultAddr.addrDetail
-        this.form.focusAddrList = [this.defaultAddr]
-        this.form.mobilePhone = res.data.mobilePhone
-        this.form.verifyLogo = res.data.verifyLogo
+        this.form = res.data
+        // this.form.focusAddrList =  [this.defaultAddr]
+        // this.form.mobilePhone = res.data.mobilePhone
+        // this.form.verifyLogo = res.data.verifyLogo
       })
     },
     getType () {
