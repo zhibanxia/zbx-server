@@ -232,7 +232,7 @@ export default {
       // 回收人员补充信息
       if (this.type === 2) {
         this.villages.map(item => {
-          this.form.focusAddrList.push(Object.assign({}, this.areaCode, {addrDetail: item.village}))
+          this.form.focusAddrList.push(Object.assign({}, this.areaCode, {addrId: '', addrDetail: item.village}))
         })
       }
 
