@@ -6,9 +6,12 @@ import cn.zhibanxia.zbxserver.controller.param.Addr;
 import cn.zhibanxia.zbxserver.controller.param.RecycleRequestVo;
 import cn.zhibanxia.zbxserver.controller.param.Result;
 import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
+import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.filter.RequestLocal;
 import cn.zhibanxia.zbxserver.service.RecycleRequestService;
+import cn.zhibanxia.zbxserver.service.UserAddrService;
+import cn.zhibanxia.zbxserver.service.UserService;
 import cn.zhibanxia.zbxserver.util.DateUtil;
 import cn.zhibanxia.zbxserver.util.LoggerUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,6 +36,12 @@ public class RecycleCtrl {
     private static Logger adminAccessLogger = LoggerUtil.getAdminAccessLogger();
     @Autowired
     private RecycleRequestService recycleRequestService;
+
+    @Autowired
+    private UserAddrService userAddrService;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * 获取回收列表，根据参数不同，展示不同的数据：
@@ -167,6 +176,21 @@ public class RecycleCtrl {
             RecycleRequestEntity recycleRequestEntity = convertVo2Entity(recycleRequestVo);
             recycleRequestEntity.setCreateUserId(RequestLocal.get().getYezhuUid());
             recycleRequestEntity.setResStatus(RecycleRequestEntity.RES_STATUS_PUBLISH);
+
+            // 回收请求的地址保存下来，下次用
+            UserAddressEntity userAddressEntity = new UserAddressEntity();
+            userAddressEntity.setBizType(UserAddressEntity.BIZ_TYPE_YEZHU);
+            userAddressEntity.setUserId(RequestLocal.get().getYezhuUid());
+            userAddressEntity.setProvinceId(recycleRequestEntity.getProvinceId());
+            userAddressEntity.setCityId(recycleRequestEntity.getCityId());
+            userAddressEntity.setAreaId(recycleRequestEntity.getAreaId());
+            userAddressEntity.setSubdistrictId(recycleRequestEntity.getSubdistrictId() == null ? "-1" : recycleRequestEntity.getSubdistrictId());
+            userAddressEntity.setAddrDetail(recycleRequestEntity.getAddrDetail());
+            userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
+
+            // 保存业主手机号，方便下次提交时不用再填
+            userService.addMobileAndVerify(RequestLocal.get().getYezhuUid(), recycleRequestEntity.getMobilePhone(), null);
+
             Long id = recycleRequestService.create(recycleRequestEntity);
             return Result.ResultBuilder.success(id);
         } catch (Exception e) {

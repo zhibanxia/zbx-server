@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateUserStatus(Long id, int userSatus) {
-        return userDao.updateUserStatus(id, userSatus);
+    public boolean updateUserStatus(Long id, int userStatus) {
+        return userDao.updateUserStatus(id, userStatus);
     }
 }

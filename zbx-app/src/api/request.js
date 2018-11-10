@@ -25,7 +25,7 @@ const cacheData = {}
 
 const request = axios.create({
   baseURL: ROOT,
-  timeout: 30000
+  timeout: 60000
 })
 
 // const csrfToken = getToken()

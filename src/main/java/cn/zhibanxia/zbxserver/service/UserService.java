@@ -72,8 +72,8 @@ public interface UserService {
      * 更新用户状态
      *
      * @param id
-     * @param userSatus
+     * @param userStatus
      * @return
      */
-    boolean updateUserStatus(Long id, int userSatus);
+    boolean updateUserStatus(Long id, int userStatus);
 }
