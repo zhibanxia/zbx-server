@@ -126,7 +126,9 @@ export default {
         this.areaCode = defaultAddr
         const { focusAddrList, mobilePhone, verifyLogo } = res.data
         this.form = { focusAddrList, mobilePhone, verifyLogo, defaultAddr }
-        this.villages = (focusAddrList || [{}]).map(v => ({ village: v.addrDetail }))
+        if (focusAddrList && focusAddrList.length) {
+          this.villages = focusAddrList.map(v => ({ village: v.addrDetail }))
+        }
         // this.form.focusAddrList =  [this.defaultAddr]
         // this.form.mobilePhone = res.data.mobilePhone
         // this.form.verifyLogo = res.data.verifyLogo
