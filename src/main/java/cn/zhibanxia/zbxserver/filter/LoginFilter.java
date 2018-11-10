@@ -64,7 +64,7 @@ public class LoginFilter implements HandlerInterceptor {
         }
         StringBuilder builder = new StringBuilder();
         builder.append("ip=").append(RequestUtil.getIpAddr(request)).append(", ");
-        builder.append("User-Agent=").append(request.getHeaders("User-Agent")).append(", ");
+        builder.append("User-Agent=").append(request.getHeader("User-Agent")).append(", ");
         builder.append('[');
         for (Cookie cookie : cookies) {
             builder.append(cookie.getName()).append('=').append(cookie.getValue()).append(", ");
