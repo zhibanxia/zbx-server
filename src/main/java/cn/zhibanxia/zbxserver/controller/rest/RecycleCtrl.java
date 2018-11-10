@@ -393,8 +393,8 @@ public class RecycleCtrl {
         if (e.getPublishTime() != null) {
             vo.setPublishTime(DateUtil.getSecondStr(e.getPublishTime()));
         }
-        if (e.getConfirmRecyleTime() != null) {
-            vo.setConfirmRecycleTime(DateUtil.getSecondStr(e.getConfirmRecyleTime()));
+        if (e.getConfirmRecycleTime() != null) {
+            vo.setConfirmRecycleTime(DateUtil.getSecondStr(e.getConfirmRecycleTime()));
         }
         return vo;
     }

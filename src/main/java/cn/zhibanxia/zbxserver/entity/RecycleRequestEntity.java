@@ -144,7 +144,7 @@ public class RecycleRequestEntity {
     /**
      * 确认回收时间
      */
-    private Date confirmRecyleTime;
+    private Date confirmRecycleTime;
     /**
      * 完成回收时间
      */
@@ -320,12 +320,12 @@ public class RecycleRequestEntity {
         this.publishTime = publishTime;
     }
 
-    public Date getConfirmRecyleTime() {
-        return confirmRecyleTime;
+    public Date getConfirmRecycleTime() {
+        return confirmRecycleTime;
     }
 
-    public void setConfirmRecyleTime(Date confirmRecyleTime) {
-        this.confirmRecyleTime = confirmRecyleTime;
+    public void setConfirmRecycleTime(Date confirmRecycleTime) {
+        this.confirmRecycleTime = confirmRecycleTime;
     }
 
     public Date getGmtCreate() {
