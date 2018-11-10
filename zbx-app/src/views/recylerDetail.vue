@@ -72,7 +72,7 @@ export default {
      * 点击返回
      */
     handlerBack () {
-      this.$router.push(`/recyler?bizType=${this.params.biztype}`)
+      this.$router.push(`/recyler?bizType=${this.params.bizType}`)
       // this.$router.go(-1)
     }
   },
