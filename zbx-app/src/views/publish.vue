@@ -107,7 +107,7 @@
   </div>
 </template>
 <script>
-import {RECYLE_TYPE, RECYLE_AMOUNT, TAKE_GARBAGE} from '@/utils/constant'
+import {RECYLE_TYPE, RECYLE_AMOUNT, TAKE_GARBAGE, DEFAULT_ADDR} from '@/utils/constant'
 import { ImagePreview } from 'vant'
 import {dateFomatter} from '@/utils/formatter'
 import areaList from '@/utils/area'
@@ -189,11 +189,7 @@ export default {
       }
       // 获取业主信息
       await this.$ajax('getYezhuUserInfo').then(res => {
-        const defaultAddr = res.data.defaultAddr || {
-          areaId: '330102',
-          cityId: '330100',
-          provinceId: '330000'
-        }
+        const defaultAddr = res.data.defaultAddr || DEFAULT_ADDR
         // 电话
         this.form.mobilePhone = res.data.mobilePhone
         this.form.addr = defaultAddr
@@ -207,6 +203,7 @@ export default {
         provice !== city && area.push(city)
         area.push(areaId)
         this.selectArea = defaultAddr.areaId
+        console.log('dasdsada', areaList.province_list, defaultAddr.provinceId, provice)
         // 住址
         this.area = area.join('/')
         // 详细地址
