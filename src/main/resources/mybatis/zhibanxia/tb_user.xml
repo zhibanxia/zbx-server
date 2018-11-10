@@ -40,7 +40,7 @@
         where id=#{id}
     </select>
 
-    <update id="updateUserStatus" parameterType="Integer">
+    <update id="updateUserStatus" parameterType="java.util.Map">
         update tb_user
         set user_status=#{userStatus}
         where id=#{id}

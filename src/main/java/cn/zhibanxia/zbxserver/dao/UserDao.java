@@ -53,10 +53,10 @@ public interface UserDao {
      * 更新用户状态
      *
      * @param id
-     * @param userSatus
+     * @param userStatus
      * @return
      */
-    boolean updateUserStatus(Long id, int userSatus);
+    boolean updateUserStatus(Long id, int userStatus);
 
     /**
      * 增加手机号、审核头像

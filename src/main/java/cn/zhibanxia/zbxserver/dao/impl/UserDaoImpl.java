@@ -47,8 +47,11 @@ public class UserDaoImpl extends BaseDao implements UserDao {
     }
 
     @Override
-    public boolean updateUserStatus(Long id, int userSatus) {
-        int ret = update("updateUserStatus", userSatus);
+    public boolean updateUserStatus(Long id, int userStatus) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        params.put("userStatus", userStatus);
+        int ret = update("updateUserStatus", params);
         return ret >= 1;
     }
 

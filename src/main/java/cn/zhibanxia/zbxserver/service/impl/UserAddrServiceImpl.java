@@ -1,7 +1,6 @@
 package cn.zhibanxia.zbxserver.service.impl;
 
 import cn.zhibanxia.zbxserver.config.ZbxConfig;
-import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.dao.UserAddressDao;
 import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
 import cn.zhibanxia.zbxserver.exception.BizException;
@@ -85,11 +84,7 @@ public class UserAddrServiceImpl implements UserAddrService {
         }
 
         if (map == null) {
-            int count = userAddressDao.countAddr(uid, UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
-            if (zbxConfig.getMaxFocusAddrNum() - count < userAddressEntityList.size()) {
-                throw new BizException(ErrorCode.CODE_TOO_MANY_FOCUS_ADDR_ERROR);
-            }
-            return userAddressDao.batchInsert(userAddressEntityList);
+            return insertWithCheck(uid, userAddressEntityList);
         }
 
         final Map<Long, UserAddressEntity> internelMap = map;
@@ -109,12 +104,26 @@ public class UserAddrServiceImpl implements UserAddrService {
         if (insertList.isEmpty()) {
             return true;
         }
-        int count = userAddressDao.countAddr(uid, UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
-        if (zbxConfig.getMaxFocusAddrNum() - count < insertList.size()) {
-            throw new BizException(ErrorCode.CODE_TOO_MANY_FOCUS_ADDR_ERROR);
-        }
-        return userAddressDao.batchInsert(insertList);
+
+        return insertWithCheck(uid, insertList);
     }
+
+    private boolean insertWithCheck(Long uid, List<UserAddressEntity> userAddressEntityList) {
+        int count = userAddressDao.countAddr(uid, UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
+        if (zbxConfig.getMaxFocusAddrNum() - count < userAddressEntityList.size()) {
+            List<UserAddressEntity> existAddrs = userAddressDao.findAddrs(uid, UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
+            if (userAddressEntityList.size() < zbxConfig.getMaxFocusAddrNum()) {
+                int removeCnt = userAddressEntityList.size() + count - zbxConfig.getMaxFocusAddrNum();
+                List<UserAddressEntity> delAddrs = existAddrs.subList(existAddrs.size() - removeCnt, existAddrs.size());
+                userAddressDao.batchDelete(delAddrs.stream().map(UserAddressEntity::getId).collect(Collectors.toList()));
+            } else {
+                userAddressEntityList = userAddressEntityList.subList(0, zbxConfig.getMaxFocusAddrNum());
+                userAddressDao.batchDelete(existAddrs.stream().map(UserAddressEntity::getId).collect(Collectors.toList()));
+            }
+        }
+        return userAddressDao.batchInsert(userAddressEntityList);
+    }
+
 
     @Override
     public UserAddressEntity findOnlyAddr(Long userId, int bizType) {

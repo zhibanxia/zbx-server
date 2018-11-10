@@ -53,6 +53,11 @@ public class UserAddressEntity {
      * 详细地址
      */
     private String addrDetail;
+
+    /**
+     * 是否删除
+     */
+    private Boolean deleted;
     private Date gmtCreate;
     private Date gmtModified;
 
@@ -118,6 +123,14 @@ public class UserAddressEntity {
 
     public void setAddrDetail(String addrDetail) {
         this.addrDetail = addrDetail;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Date getGmtCreate() {

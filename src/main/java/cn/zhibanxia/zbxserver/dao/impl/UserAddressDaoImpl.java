@@ -52,4 +52,10 @@ public class UserAddressDaoImpl extends BaseDao implements UserAddressDao {
     public List<UserAddressEntity> batchFind(List<Long> ids) {
         return selectList("batchFind", ids);
     }
+
+    @Override
+    public boolean batchDelete(List<Long> ids) {
+        int ret = update("batchDelete", ids);
+        return ret == ids.size();
+    }
 }

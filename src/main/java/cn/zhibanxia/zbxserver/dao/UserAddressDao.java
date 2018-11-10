@@ -56,4 +56,13 @@ public interface UserAddressDao {
      * @return
      */
     List<UserAddressEntity> batchFind(List<Long> ids);
+
+
+    /**
+     * 批量删除
+     *
+     * @param ids
+     * @return
+     */
+    boolean batchDelete(List<Long> ids);
 }
