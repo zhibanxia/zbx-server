@@ -123,7 +123,8 @@ export default {
         this.area = area.join('/')
 
         this.defaultAddr = defaultAddr.addrDetail
-        this.form = res.data
+        const { focusAddrList, mobilePhone, verifyLogo } = res.data
+        this.form = { focusAddrList, mobilePhone, verifyLogo, defaultAddr }
         // this.form.focusAddrList =  [this.defaultAddr]
         // this.form.mobilePhone = res.data.mobilePhone
         // this.form.verifyLogo = res.data.verifyLogo
