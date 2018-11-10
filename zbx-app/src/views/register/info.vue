@@ -72,10 +72,10 @@
   </div>
 </template>
 <script>
+import {DEFAULT_ADDR} from '@/utils/constant'
 import areaList from '@/utils/area'
 const ERROR_MESSAGE = '请填写'
 export default {
-  
   data () {
     return {
       type: +this.$route.query.type,
@@ -98,16 +98,36 @@ export default {
       },
       areaList: areaList,
       areaSelectShow: false,
-      villages: [  // 小区地址
-        {village: '' }
+      villages: [ // 小区地址
+        { village: '' }
       ]
     }
   },
   created () {
     // console.log(this.$route.query.type)
     this.getType()
+    this.getRecylerInfo()
   },
   methods: {
+    getRecylerInfo () {
+      this.$ajax('getRecylerInfo').then(res => {
+        const defaultAddr = res.data.defaultAddr || DEFAULT_ADDR
+
+        let area = []
+        let provice = areaList.province_list[defaultAddr.provinceId]
+        let city = areaList.city_list[defaultAddr.cityId]
+        let areaId = areaList.county_list[defaultAddr.areaId]
+        area.push(provice)
+        provice !== city && area.push(city)
+        area.push(areaId)
+        this.area = area.join('/')
+
+        this.defaultAddr = defaultAddr.addrDetail
+        this.form.focusAddrList = [this.defaultAddr]
+        this.form.mobilePhone = res.data.mobilePhone
+        this.form.verifyLogo = res.data.verifyLogo
+      })
+    },
     getType () {
       this.$ajax('getUserType').then(res => {
         let userInfo = res.data
@@ -179,7 +199,7 @@ export default {
       if (this.form.mobilePhone) {
         !/^\d{11}$/.test(this.form.mobilePhone) ? (this.errors.mobilePhone = '格式不正确') : (this.errors.mobilePhone = null)
       }
-      
+
       // 默认住址验证
       this.defaultAddr ? (this.errors.defaultAddr = null) : (this.errors.defaultAddr = ERROR_MESSAGE)
 
@@ -208,11 +228,11 @@ export default {
       // 回收人员补充信息
       if (this.type === 2) {
         this.villages.map(item => {
-          this.form.focusAddrList.push(Object.assign({}, this.areaCode, {addrDetail: item.village}))    
+          this.form.focusAddrList.push(Object.assign({}, this.areaCode, {addrDetail: item.village}))
         })
       }
 
-      
+
       let params = {
         mobilePhone: this.form.mobilePhone,
         defaultAddr: this.form.defaultAddr
@@ -270,7 +290,7 @@ export default {
         font-size: 20px;
       }
       & > img {
-        
+
       }
     }
   }
@@ -286,7 +306,7 @@ export default {
       height: 50px;
       line-height: 50px;
     }
-    
+
   }
 }
 </style>

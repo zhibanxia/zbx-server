@@ -36,3 +36,9 @@ export const TAKE_GARBAGE = [
   {label: '是', id: true},
   {label: '否', id: false}
 ]
+
+export const DEFAULT_ADDR = {
+  areaId: '330102',
+  cityId: '330100',
+  provinceId: '330000'
+}
