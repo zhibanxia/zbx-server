@@ -50,12 +50,31 @@
         </layout>
     </appender>
 
+
+    <appender name="userAccessLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <File>${logpath}/http/user_access.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${logpath}/http/user_access.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{HH:mm:ss.SSS}|%msg%n</pattern>
+        </layout>
+    </appender>
+
     <logger name="httpRequest" level="INFO" additivity="false">
         <appender-ref ref="httpRequestLog"/>
     </logger>
 
     <logger name="adminAccess" level="INFO" additivity="false">
         <appender-ref ref="adminAccessLog"/>
+    </logger>
+
+    <logger name="userAccess" level="INFO" additivity="false">
+        <appender-ref ref="userAccessLog"/>
     </logger>
 
     <root level="INFO">

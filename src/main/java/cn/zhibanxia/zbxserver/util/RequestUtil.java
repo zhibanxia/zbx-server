@@ -70,6 +70,67 @@ public class RequestUtil implements InitializingBean {
         response.addCookie(cookie);
     }
 
+
+    public static String getIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip != null && ip.trim().length() > 0) {
+            String[] ips = ip.trim().split(",");
+            int size = ips.length;
+            if (size > 0) {
+                ip = ips[0].trim();
+            }
+        }
+
+        if (isInvalidIp(ip)) {
+            ip = request.getHeader("X-Real-IP");
+        }
+
+        if (isInvalidIp(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+
+        if (isInvalidIp(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+
+        if (isInvalidIp(ip)) {
+            ip = request.getHeader("Cdn-Src-Ip");
+        }
+
+        if (isInvalidIp(ip)) {
+            ip = request.getRemoteAddr();
+        }
+
+        if (ip != null && ip.startsWith("0:0:0:0")) {
+            ip = "127.0.0.1";
+        }
+
+        return ip;
+    }
+
+
+    private static boolean isInvalidIp(String ip) {
+        return ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip);
+    }
+
+    public static boolean isProxy(HttpServletRequest request) {
+        String httpVia = request.getHeader("HTTP_VIA");
+        if (httpVia != null && !"".equals(httpVia)) {
+            return true;
+        } else {
+            String xForwardedFor = request.getHeader("x-forwarded-for");
+            if (xForwardedFor != null && xForwardedFor.trim().length() > 0) {
+                String[] ips = xForwardedFor.trim().split(",");
+                long sizeOfForwardFor = (long) ips.length;
+                if (sizeOfForwardFor > 1L) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
     @Override
     public void afterPropertiesSet() {
         setCookieDomain(zbxConfig.getCookieDomain());
