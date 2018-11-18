@@ -23,6 +23,8 @@
         <result column="area_id" property="areaId"/>
         <result column="subdistrict_id" property="subdistrictId"/>
         <result column="addr_detail" property="addrDetail"/>
+        <result column="complex_id" property="complexId"/>
+        <result column="door_info" property="doorInfo" />
         <result column="mobile_phone" property="mobilePhone"/>
         <result column="publish_time" property="publishTime"/>
         <result column="confirm_recycle_time" property="confirmRecycleTime"/>
@@ -34,7 +36,7 @@
     <sql id="all_column">
         id, create_user_id, recycle_user_id, res_type, res_status, deleted, res_amount, res_images, take_garbage_flag,
         free_take_flag, res_note, door_serv_start_time, door_serv_end_time, province_id, city_id, area_id,
-        subdistrict_id, addr_detail, mobile_phone, publish_time, confirm_recycle_time, complete_recycle_time,
+        subdistrict_id, addr_detail, complex_id, door_info, mobile_phone, publish_time, confirm_recycle_time, complete_recycle_time,
         gmt_create,
         gmt_modified
     </sql>
@@ -44,12 +46,12 @@
         insert into tb_recycle_request (create_user_id, recycle_user_id, res_type, res_status, deleted, res_amount,
         res_images,
         take_garbage_flag, free_take_flag, res_note, door_serv_start_time, door_serv_end_time, province_id, city_id,
-        area_id, subdistrict_id, addr_detail, mobile_phone, publish_time, confirm_recycle_time, complete_recycle_time)
+        area_id, subdistrict_id, addr_detail, complex_id, door_info, mobile_phone, publish_time, confirm_recycle_time, complete_recycle_time)
         values
         (#{createUserId}, #{recycleUserId}, #{resType}, #{resStatus}, #{deleted}, #{resAmount}, #{resImages},
         #{takeGarbageFlag},
         #{freeTakeFlag}, #{resNote}, #{doorServStartTime}, #{doorServEndTime}, #{provinceId}, #{cityId}, #{areaId},
-        #{subdistrictId}, #{addrDetail}, #{mobilePhone}, now(), null, null)
+        #{subdistrictId}, #{addrDetail}, #{complexId}, #{doorInfo}, #{mobilePhone}, now(), null, null)
     </insert>
 
     <select id="findById" parameterType="Long" resultMap="RecycleRequestEntityMapper">
@@ -112,6 +114,12 @@
         </if>
         <if test="addrDetail!=null">
             addr_detail=#{addrDetail},
+        </if>
+        <if test="complexId!=null">
+            complex_id=#{complexId},
+        </if>
+        <if test="doorInfo!=null">
+            door_info=#{doorInfo},
         </if>
         <if test="mobilePhone!=null">
             mobile_phone=#{mobilePhone},

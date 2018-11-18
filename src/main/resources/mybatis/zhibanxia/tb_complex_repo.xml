@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="cn.zhibanxia.zbxserver.dao.impl.ComplexDaoImpl">
+
+    <resultMap id="ComplexEntityMapper"
+               type="cn.zhibanxia.zbxserver.entity.ComplexEntity">
+        <result column="id" property="id"/>
+        <result column="province_id" property="provinceId"/>
+        <result column="city_id" property="cityId"/>
+        <result column="area_id" property="areaId"/>
+        <result column="subdistrict_id" property="subdistrictId"/>
+        <result column="addr_block" property="addrBlock"/>
+        <result column="addr_detail" property="addrDetail"/>
+        <result column="complex_name" property="complexName"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+    </resultMap>
+
+    <sql id="all_column">
+        id, province_id, city_id, area_id, subdistrict_id, addr_block, addr_detail, complex_name,
+        gmt_create, gmt_modified
+    </sql>
+
+    <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.ComplexEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into tb_complex_repo (province_id, city_id, area_id, subdistrict_id, addr_block, addr_detail,
+        complex_name)
+        values
+        (#{provinceId}, #{cityId},
+        #{areaId}, #{subdistrictId}, #{addrBlock}, #{addrDetail}, #{complexName})
+    </insert>
+
+    <select id="searchComplex" parameterType="cn.zhibanxia.zbxserver.entity.ComplexEntity"
+            resultMap="ComplexEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_complex_repo
+        where province_id=#{provinceId}
+        and city_id=#{cityId} and area_id=#{areaId} and subdistrict_id=#{subdistrictId} and
+        complex_name like concat('%',#{complexName},'%') order by gmt_create
+    </select>
+
+    <select id="findByIds" parameterType="java.util.List" resultMap="ComplexEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_complex_repo
+        where id in
+        <foreach collection="list" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

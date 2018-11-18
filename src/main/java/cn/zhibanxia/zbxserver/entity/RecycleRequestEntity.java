@@ -134,6 +134,15 @@ public class RecycleRequestEntity {
     private String addrDetail;
 
     /**
+     * 小区库id
+     */
+    private Long complexId;
+
+    /**
+     * 门牌号信息
+     */
+    private String doorInfo;
+    /**
      * 业主手机号码，用于回收人员联系使用
      */
     private String mobilePhone;
@@ -302,6 +311,22 @@ public class RecycleRequestEntity {
 
     public void setAddrDetail(String addrDetail) {
         this.addrDetail = addrDetail;
+    }
+
+    public Long getComplexId() {
+        return complexId;
+    }
+
+    public void setComplexId(Long complexId) {
+        this.complexId = complexId;
+    }
+
+    public String getDoorInfo() {
+        return doorInfo;
+    }
+
+    public void setDoorInfo(String doorInfo) {
+        this.doorInfo = doorInfo;
     }
 
     public String getMobilePhone() {

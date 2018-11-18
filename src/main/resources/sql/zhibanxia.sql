@@ -53,6 +53,8 @@ city_id          		varchar(32)  	not null				comment '市id',
 area_id  		       	varchar(32)   	not null				comment '区id',
 subdistrict_id			varchar(32)		not null				comment '街道id',
 addr_detail				varchar(128)	default null			comment '详细地址',
+complex_id              bigint(20)      default null			    comment '小区库id',
+door_info               varchar(32)		default null			    comment '门牌号信息，小区库id+门牌号组成详细地址',
 mobile_phone			varchar(16)		default null			comment '手机号码',
 publish_time			datetime		default null 			comment '发布时间',
 confirm_recycle_time		datetime		default null 			comment '确认回收时间',
@@ -64,3 +66,23 @@ key inx_create (create_user_id,res_status),
 key inx_recycle (recycle_user_id,res_status),
 key inx_status (res_status)
 )ENGINE=InnoDB default charset=utf8 comment='回收请求';
+
+
+-- 小区库
+drop table if exists tb_complex_repo;
+create table tb_complex_repo (
+id              		bigint(20)  	unsigned NOT NULL auto_increment 	comment '主键自增',
+province_id             varchar(32)  	not null				comment '省份或直辖市id',
+city_id          		varchar(32)  	not null				comment '市id',
+area_id  		       	varchar(32)   	not null				comment '区id',
+subdistrict_id			varchar(32)		not null				comment '街道id',
+addr_block              varchar(32)		not null				comment '区块，比街道小一级',
+addr_detail				varchar(128)	not null			    comment '详细地址',
+complex_name            varchar(32)	    not null			    comment '小区名称',
+gmt_create      		datetime        DEFAULT CURRENT_TIMESTAMP	comment '创建时间',
+gmt_modified    		datetime        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	comment '修改时间',
+primary key (id),
+key inx_complex_name (complex_name),
+key inx_area (province_id,city_id,area_id,subdistrict_id),
+unique key unidx_complex (province_id,city_id,area_id,subdistrict_id,complex_name)
+)ENGINE=InnoDB default charset=utf8 comment='小区库';
