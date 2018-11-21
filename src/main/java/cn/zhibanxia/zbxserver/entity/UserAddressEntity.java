@@ -55,6 +55,15 @@ public class UserAddressEntity {
     private String addrDetail;
 
     /**
+     * 小区id
+     */
+    private Long complexId;
+    /**
+     * 门牌号
+     */
+    private String doorInfo;
+
+    /**
      * 是否删除
      */
     private Boolean deleted;
@@ -123,6 +132,22 @@ public class UserAddressEntity {
 
     public void setAddrDetail(String addrDetail) {
         this.addrDetail = addrDetail;
+    }
+
+    public Long getComplexId() {
+        return complexId;
+    }
+
+    public void setComplexId(Long complexId) {
+        this.complexId = complexId;
+    }
+
+    public String getDoorInfo() {
+        return doorInfo;
+    }
+
+    public void setDoorInfo(String doorInfo) {
+        this.doorInfo = doorInfo;
     }
 
     public Boolean getDeleted() {

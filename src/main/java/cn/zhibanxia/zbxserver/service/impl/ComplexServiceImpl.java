@@ -24,7 +24,12 @@ public class ComplexServiceImpl implements ComplexService {
     }
 
     @Override
-    public ComplexEntity findById(List<Long> ids) {
-        return complexDao.findById(ids);
+    public ComplexEntity find(Long id) {
+        return complexDao.find(id);
+    }
+
+    @Override
+    public List<ComplexEntity> findByIds(List<Long> ids) {
+        return complexDao.findByIds(ids);
     }
 }

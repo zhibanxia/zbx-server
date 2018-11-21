@@ -13,30 +13,33 @@
         <result column="area_id" property="areaId"/>
         <result column="subdistrict_id" property="subdistrictId"/>
         <result column="addr_detail" property="addrDetail"/>
+        <result column="complex_id" property="complexId"/>
+        <result column="door_info" property="doorInfo"/>
         <result column="deleted" property="deleted"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
 
     <sql id="all_column">
-        id, user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail, deleted,
+        id, user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail, complex_id, door_info,
+        deleted,
         gmt_create, gmt_modified
     </sql>
 
     <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.UserAddressEntity"
             useGeneratedKeys="true" keyProperty="id">
-        insert into tb_user_address (user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail)
+        insert into tb_user_address (user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail, complex_id, door_info)
         values
         (#{userId}, #{bizType}, #{provinceId}, #{cityId},
-        #{areaId}, #{subdistrictId}, #{addrDetail})
+        #{areaId}, #{subdistrictId}, #{addrDetail}, #{complexId}, #{doorInfo})
     </insert>
 
     <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id">
-        insert into tb_user_address (user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail)
+        insert into tb_user_address (user_id, biz_type, province_id, city_id, area_id, subdistrict_id, addr_detail, complex_id, door_info)
         values
         <foreach collection="list" item="addr" separator=",">
             (#{addr.userId}, #{addr.bizType}, #{addr.provinceId}, #{addr.cityId}, #{addr.areaId}, #{addr.subdistrictId},
-            #{addr.addrDetail})
+            #{addr.addrDetail}, #{addr.complexId}, #{addr.doorInfo})
         </foreach>
     </insert>
 
@@ -73,6 +76,12 @@
         </if>
         <if test="addrDetail!=null">
             addr_detail=#{addrDetail},
+        </if>
+        <if test="complexId!=null">
+            complex_id=#{complexId},
+        </if>
+        <if test="doorInfo!=null">
+            door_info=#{doorInfo},
         </if>
         gmt_modified=now()
         where id=#{id}

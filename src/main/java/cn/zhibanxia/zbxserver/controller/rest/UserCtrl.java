@@ -2,21 +2,25 @@ package cn.zhibanxia.zbxserver.controller.rest;
 
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.controller.param.*;
+import cn.zhibanxia.zbxserver.entity.ComplexEntity;
 import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.filter.RequestLocal;
+import cn.zhibanxia.zbxserver.service.ComplexService;
 import cn.zhibanxia.zbxserver.service.UserAddrService;
 import cn.zhibanxia.zbxserver.service.UserService;
 import cn.zhibanxia.zbxserver.util.BeanUtil;
 import cn.zhibanxia.zbxserver.util.LoggerUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -35,6 +39,9 @@ public class UserCtrl {
     private UserService userService;
     @Autowired
     private UserAddrService userAddrService;
+
+    @Autowired
+    private ComplexService complexService;
 
     /**
      * 增加个人信息详情，可用于用户首次登陆补充信息，含回收人员提交审核请求
@@ -57,6 +64,8 @@ public class UserCtrl {
                 userAddressEntity.setAreaId(addUserDetailReq.getDefaultAddr().getAreaId());
                 userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId() == null ? "-1" : addUserDetailReq.getDefaultAddr().getSubdistrictId());
                 userAddressEntity.setAddrDetail(addUserDetailReq.getDefaultAddr().getAddrDetail());
+                userAddressEntity.setComplexId(addUserDetailReq.getDefaultAddr().getComplexId());
+                userAddressEntity.setDoorInfo(addUserDetailReq.getDefaultAddr().getDoorInfo());
                 return Result.ResultBuilder.success(userAddrService.addOrUpdateOnlyAddr(userAddressEntity));
             } else {
                 if (Objects.equals(RequestLocal.get().getHuishouUserEntity().getUserStatus(), UserEntity.USER_STATUS_NORMAL)) {
@@ -73,6 +82,8 @@ public class UserCtrl {
                 // 街道id暂时没有，用-1填充
                 userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId() == null ? "-1" : addUserDetailReq.getDefaultAddr().getSubdistrictId());
                 userAddressEntity.setAddrDetail(addUserDetailReq.getDefaultAddr().getAddrDetail());
+                userAddressEntity.setComplexId(addUserDetailReq.getDefaultAddr().getComplexId());
+                userAddressEntity.setDoorInfo(addUserDetailReq.getDefaultAddr().getDoorInfo());
                 userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
 
                 List<UserAddressEntity> focusAddrs = addUserDetailReq.getFocusAddrList().stream().map(e -> {
@@ -85,6 +96,8 @@ public class UserCtrl {
                     temp.setAreaId(e.getAreaId());
                     temp.setSubdistrictId(e.getSubdistrictId() == null ? "-1" : e.getSubdistrictId());
                     temp.setAddrDetail(e.getAddrDetail());
+                    temp.setComplexId(e.getComplexId());
+                    temp.setDoorInfo(e.getDoorInfo());
                     return temp;
                 }).collect(Collectors.toList());
                 userAddrService.batchAddAddr(RequestLocal.get().getHuishouUid(), focusAddrs);
@@ -177,6 +190,13 @@ public class UserCtrl {
         addr.setAreaId(userAddressEntity.getAreaId());
         addr.setSubdistrictId(userAddressEntity.getSubdistrictId());
         addr.setAddrDetail(userAddressEntity.getAddrDetail());
+
+        if (userAddressEntity.getComplexId() != null) {
+            addr.setComplexId(userAddressEntity.getComplexId());
+            addr.setComplexVo(BeanUtil.copy(complexService.find(userAddressEntity.getComplexId()), ComplexVo.class));
+            addr.setDoorInfo(userAddressEntity.getDoorInfo());
+        }
+
         yezhuUserInfoRsp.setDefaultAddr(addr);
         return yezhuUserInfoRsp;
     }
@@ -251,11 +271,28 @@ public class UserCtrl {
         addr.setAreaId(userAddressEntity.getAreaId());
         addr.setSubdistrictId(userAddressEntity.getSubdistrictId());
         addr.setAddrDetail(userAddressEntity.getAddrDetail());
+
+        if (userAddressEntity.getComplexId() != null) {
+            addr.setComplexId(userAddressEntity.getComplexId());
+            addr.setComplexVo(BeanUtil.copy(complexService.find(userAddressEntity.getComplexId()), ComplexVo.class));
+            addr.setDoorInfo(userAddressEntity.getDoorInfo());
+        }
+
         huishouUserInfoRsp.setDefaultAddr(addr);
         List<UserAddressEntity> focusAddrs = userAddrService.findFocusAddrs(userEntity.getId());
         if (CollectionUtils.isEmpty(focusAddrs)) {
             Result.ResultBuilder.success(huishouUserInfoRsp);
         }
+
+        List<Long> complexIds = focusAddrs.stream().filter(e -> e.getComplexId() != null).map(UserAddressEntity::getComplexId).collect(Collectors.toList());
+        Map<Long, ComplexEntity> complexEntityMap = null;
+        if (CollectionUtils.isNotEmpty(complexIds)) {
+            List<ComplexEntity> complexEntityList = complexService.findByIds(complexIds);
+            if (CollectionUtils.isNotEmpty(complexEntityList)) {
+                complexEntityMap = complexEntityList.stream().collect(Collectors.toMap(ComplexEntity::getId, c -> c));
+            }
+        }
+        final Map<Long, ComplexEntity> fComplexEntityMap = complexEntityMap;
         List<Addr> addrs = focusAddrs.stream().map(e -> {
             Addr temp = new Addr();
             temp.setAddrId(e.getId());
@@ -264,6 +301,11 @@ public class UserCtrl {
             temp.setAreaId(e.getAreaId());
             temp.setSubdistrictId(e.getSubdistrictId());
             temp.setAddrDetail(e.getAddrDetail());
+            if (MapUtils.isNotEmpty(fComplexEntityMap) && e.getComplexId() != null) {
+                temp.setComplexId(e.getComplexId());
+                temp.setComplexVo(BeanUtil.copy(fComplexEntityMap.get(e.getComplexId()), ComplexVo.class));
+                temp.setDoorInfo(e.getDoorInfo());
+            }
             return temp;
         }).collect(Collectors.toList());
         huishouUserInfoRsp.setFocusAddrList(addrs);

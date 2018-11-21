@@ -41,6 +41,13 @@
         complex_name like concat('%',#{complexName},'%') order by gmt_create
     </select>
 
+    <select id="find" parameterType="java.lang.Long" resultMap="ComplexEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_complex_repo
+        where id = #{id}
+    </select>
+
     <select id="findByIds" parameterType="java.util.List" resultMap="ComplexEntityMapper">
         select
         <include refid="all_column"/>

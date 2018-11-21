@@ -18,7 +18,12 @@ public class ComplexDaoImpl extends BaseDao implements ComplexDao {
     }
 
     @Override
-    public ComplexEntity findById(List<Long> ids) {
-        return selectOne("findByIds", ids);
+    public ComplexEntity find(Long id) {
+        return selectOne("find", id);
+    }
+
+    @Override
+    public List<ComplexEntity> findByIds(List<Long> ids) {
+        return selectList("findByIds", ids);
     }
 }

@@ -20,8 +20,16 @@ public interface ComplexService {
     /**
      * 根据id查询小区信息
      *
+     * @param id 小区库id
+     * @return
+     */
+    ComplexEntity find(Long id);
+
+    /**
+     * 根据id查询小区信息
+     *
      * @param ids 小区库id
      * @return
      */
-    ComplexEntity findById(List<Long> ids);
+    List<ComplexEntity> findByIds(List<Long> ids);
 }

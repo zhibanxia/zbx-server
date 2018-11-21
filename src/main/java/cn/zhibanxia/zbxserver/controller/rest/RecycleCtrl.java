@@ -6,16 +6,19 @@ import cn.zhibanxia.zbxserver.controller.param.Addr;
 import cn.zhibanxia.zbxserver.controller.param.ConfirmRecycleReq;
 import cn.zhibanxia.zbxserver.controller.param.RecycleRequestVo;
 import cn.zhibanxia.zbxserver.controller.param.Result;
+import cn.zhibanxia.zbxserver.entity.ComplexEntity;
 import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
 import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.filter.RequestLocal;
+import cn.zhibanxia.zbxserver.service.ComplexService;
 import cn.zhibanxia.zbxserver.service.RecycleRequestService;
 import cn.zhibanxia.zbxserver.service.UserAddrService;
 import cn.zhibanxia.zbxserver.service.UserService;
 import cn.zhibanxia.zbxserver.util.DateUtil;
 import cn.zhibanxia.zbxserver.util.LoggerUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -37,12 +41,12 @@ public class RecycleCtrl {
     private static Logger adminAccessLogger = LoggerUtil.getAdminAccessLogger();
     @Autowired
     private RecycleRequestService recycleRequestService;
-
     @Autowired
     private UserAddrService userAddrService;
-
     @Autowired
     private UserService userService;
+    @Autowired
+    private ComplexService complexService;
 
     /**
      * 获取回收列表，根据参数不同，展示不同的数据：
@@ -145,21 +149,21 @@ public class RecycleCtrl {
             return Result.ResultBuilder.success(null);
         }
         if (Objects.equals(1, bizType)) {
-            return Result.ResultBuilder.success(buildRecycleRequestVo(e, true));
+            return Result.ResultBuilder.success(buildRecycleRequestVo(e, null, true));
         } else if (Objects.equals(2, bizType)) {
             // 不允许查询非自己确认的回收请求
             if (!RequestLocal.get().getHuishouUid().equals(e.getRecycleUserId())) {
                 return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
             }
-            return Result.ResultBuilder.success(buildRecycleRequestVo(e, false));
+            return Result.ResultBuilder.success(buildRecycleRequestVo(e, null, false));
         } else if (Objects.equals(3, bizType)) {
             // 不允许查询非自己创建的回收请求
             if (!RequestLocal.get().getYezhuUid().equals(e.getCreateUserId())) {
                 return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
             }
-            return Result.ResultBuilder.success(buildRecycleRequestVo(e, false));
+            return Result.ResultBuilder.success(buildRecycleRequestVo(e, null, false));
         } else if (bizType == null) {
-            return Result.ResultBuilder.success(buildRecycleRequestVo(e, false));
+            return Result.ResultBuilder.success(buildRecycleRequestVo(e, null, false));
         } else {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
@@ -187,6 +191,8 @@ public class RecycleCtrl {
             userAddressEntity.setAreaId(recycleRequestEntity.getAreaId());
             userAddressEntity.setSubdistrictId(recycleRequestEntity.getSubdistrictId() == null ? "-1" : recycleRequestEntity.getSubdistrictId());
             userAddressEntity.setAddrDetail(recycleRequestEntity.getAddrDetail());
+            userAddressEntity.setComplexId(recycleRequestEntity.getComplexId());
+            userAddressEntity.setDoorInfo(recycleRequestEntity.getDoorInfo());
             userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
 
             // 保存业主手机号，方便下次提交时不用再填
@@ -336,7 +342,10 @@ public class RecycleCtrl {
         if (CollectionUtils.isEmpty(requestEntityList)) {
             return Collections.emptyList();
         }
-        return requestEntityList.stream().map(e -> buildRecycleRequestVo(e, needHidden)).collect(Collectors.toList());
+        List<Long> complexIds = requestEntityList.stream().filter(e -> e.getComplexId() != null).map(RecycleRequestEntity::getComplexId).collect(Collectors.toList());
+        List<ComplexEntity> complexEntityList = complexService.findByIds(complexIds);
+        Map<Long, ComplexEntity> complexEntityMap = complexEntityList.stream().collect(Collectors.toMap(ComplexEntity::getId, e -> e));
+        return requestEntityList.stream().map(e -> buildRecycleRequestVo(e, complexEntityMap, needHidden)).collect(Collectors.toList());
     }
 
 
@@ -358,10 +367,12 @@ public class RecycleCtrl {
         recycleRequestEntity.setSubdistrictId(recycleRequestVo.getAddr().getSubdistrictId());
         recycleRequestEntity.setAddrDetail(recycleRequestVo.getAddr().getAddrDetail());
         recycleRequestEntity.setMobilePhone(recycleRequestVo.getMobilePhone());
+        recycleRequestEntity.setComplexId(recycleRequestVo.getAddr().getComplexId());
+        recycleRequestEntity.setDoorInfo(recycleRequestVo.getAddr().getDoorInfo());
         return recycleRequestEntity;
     }
 
-    private static RecycleRequestVo buildRecycleRequestVo(RecycleRequestEntity e, boolean needHidden) {
+    private RecycleRequestVo buildRecycleRequestVo(RecycleRequestEntity e, Map<Long, ComplexEntity> complexEntityMap, boolean needHidden) {
         RecycleRequestVo vo = new RecycleRequestVo();
         vo.setId(e.getId());
         vo.setCreateUserId(e.getCreateUserId());
@@ -376,20 +387,12 @@ public class RecycleCtrl {
             vo.setDoorServStartTime(DateUtil.getSecondStr(e.getDoorServStartTime()));
             vo.setDoorServEndTime(DateUtil.getSecondStr(e.getDoorServEndTime()));
         }
-        Addr addr = new Addr();
-        addr.setProvinceId(e.getProvinceId());
-        addr.setCityId(e.getCityId());
-        addr.setAreaId(e.getAreaId());
-        addr.setSubdistrictId(e.getSubdistrictId());
         if (needHidden) {
-            // 隐藏详细地址
-            addr.setAddrDetail("******");
             vo.setMobilePhone(getHiddenMobilePhone(e.getMobilePhone()));
         } else {
-            addr.setAddrDetail(e.getAddrDetail());
             vo.setMobilePhone(e.getMobilePhone());
         }
-        vo.setAddr(addr);
+        vo.setAddr(buildAddr(e, complexEntityMap, needHidden));
         if (e.getPublishTime() != null) {
             vo.setPublishTime(DateUtil.getSecondStr(e.getPublishTime()));
         }
@@ -397,5 +400,37 @@ public class RecycleCtrl {
             vo.setConfirmRecycleTime(DateUtil.getSecondStr(e.getConfirmRecycleTime()));
         }
         return vo;
+    }
+
+    private Addr buildAddr(RecycleRequestEntity e, Map<Long, ComplexEntity> complexEntityMap, boolean needHidden) {
+        Addr addr = new Addr();
+        if (e.getComplexId() != null) {
+            ComplexEntity complexEntity;
+            if (MapUtils.isNotEmpty(complexEntityMap)) {
+                complexEntity = complexEntityMap.get(e.getComplexId());
+            } else {
+                complexEntity = complexService.find(e.getComplexId());
+            }
+            if (complexEntity != null) {
+                addr.setProvinceId(complexEntity.getProvinceId());
+                addr.setCityId(complexEntity.getCityId());
+                addr.setAreaId(complexEntity.getAreaId());
+                addr.setSubdistrictId(complexEntity.getSubdistrictId());
+                addr.setAddrDetail(complexEntity.getAddrDetail());
+            }
+        } else {
+            addr.setProvinceId(e.getProvinceId());
+            addr.setCityId(e.getCityId());
+            addr.setAreaId(e.getAreaId());
+            addr.setSubdistrictId(e.getSubdistrictId());
+            addr.setAddrDetail(e.getAddrDetail());
+        }
+        if (needHidden) {
+            // 隐藏详细地址
+            addr.setAddrDetail("******");
+        } else {
+            addr.setAddrDetail(addr.getAddrDetail());
+        }
+        return addr;
     }
 }

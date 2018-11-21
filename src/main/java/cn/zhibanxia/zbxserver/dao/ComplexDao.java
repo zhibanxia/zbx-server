@@ -19,8 +19,16 @@ public interface ComplexDao {
     /**
      * 根据id查询小区信息
      *
-     * @param ids 小区库id
+     * @param id 小区库id
      * @return
      */
-    ComplexEntity findById(List<Long> ids);
+    ComplexEntity find(Long id);
+
+    /**
+     * 根据id查询小区信息
+     *
+     * @param ids 小区库id列表
+     * @return
+     */
+    List<ComplexEntity> findByIds(List<Long> ids);
 }

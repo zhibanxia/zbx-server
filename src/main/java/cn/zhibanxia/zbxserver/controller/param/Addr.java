@@ -41,6 +41,20 @@ public class Addr implements Serializable {
     @NotEmpty
     private String addrDetail;
 
+    /**
+     * 小区id
+     */
+    private Long complexId;
+
+    /**
+     * 小区信息
+     */
+    private ComplexVo complexVo;
+    /**
+     * 门牌号
+     */
+    private String doorInfo;
+
     public Long getAddrId() {
         return addrId;
     }
@@ -87,6 +101,30 @@ public class Addr implements Serializable {
 
     public void setAddrDetail(String addrDetail) {
         this.addrDetail = addrDetail;
+    }
+
+    public Long getComplexId() {
+        return complexId;
+    }
+
+    public void setComplexId(Long complexId) {
+        this.complexId = complexId;
+    }
+
+    public ComplexVo getComplexVo() {
+        return complexVo;
+    }
+
+    public void setComplexVo(ComplexVo complexVo) {
+        this.complexVo = complexVo;
+    }
+
+    public String getDoorInfo() {
+        return doorInfo;
+    }
+
+    public void setDoorInfo(String doorInfo) {
+        this.doorInfo = doorInfo;
     }
 
     @Override
