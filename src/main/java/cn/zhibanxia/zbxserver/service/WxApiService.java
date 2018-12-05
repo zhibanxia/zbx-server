@@ -1,5 +1,6 @@
 package cn.zhibanxia.zbxserver.service;
 
+import cn.zhibanxia.zbxserver.bo.WxTemplateMsgReqBo;
 import cn.zhibanxia.zbxserver.bo.WxUserAuthBo;
 import cn.zhibanxia.zbxserver.bo.WxUserInfoBo;
 import cn.zhibanxia.zbxserver.exception.BizException;
@@ -25,4 +26,19 @@ public interface WxApiService {
      * @return
      */
     WxUserInfoBo getUserInfo(String accessToken, String openId) throws BizException;
+
+
+    /**
+     * 获取access_token
+     *
+     * @return
+     * @throws BizException
+     */
+    String getAccessToken() throws BizException;
+
+    /**
+     * @param wxTemplateMsgReqBo
+     * @throws BizException
+     */
+    void sendTemplateMsg(WxTemplateMsgReqBo wxTemplateMsgReqBo) throws BizException;
 }

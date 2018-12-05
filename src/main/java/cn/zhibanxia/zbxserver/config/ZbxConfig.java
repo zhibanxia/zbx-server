@@ -29,6 +29,9 @@ public class ZbxConfig {
     @Value("${zbx.admin.openIds}")
     private String adminOpenIds;
 
+    @Value("${zbx.push.templateId}")
+    private String templateId;
+
     private final Splitter splitter = Splitter.on(',');
 
     private Set<String> adminOpenIdSet;
@@ -47,6 +50,10 @@ public class ZbxConfig {
 
     public int getMaxFocusAddrNum() {
         return maxFocusAddrNum;
+    }
+
+    public String getTemplateId() {
+        return templateId;
     }
 
     public Set<String> getAdminOpenIdSet() {

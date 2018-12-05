@@ -23,6 +23,15 @@ public interface UserDao {
      */
     UserEntity selectById(Long id);
 
+
+    /**
+     * 根据主键id查询列表
+     *
+     * @param ids
+     * @return
+     */
+    List<UserEntity> selectByIds(List<Long> ids);
+
     /**
      * 根据wOpenId和类型查找用户
      *

@@ -14,6 +14,8 @@ public class WxPropConfig {
     private String authRedirectUrl;
     private String userAuthUrl;
     private String userInfoUrl;
+    private String accessTokenUrl;
+    private String sendTemplateUrl;
 
     public String getAppId() {
         return appId;
@@ -53,5 +55,21 @@ public class WxPropConfig {
 
     public void setUserInfoUrl(String userInfoUrl) {
         this.userInfoUrl = userInfoUrl;
+    }
+
+    public String getAccessTokenUrl() {
+        return accessTokenUrl;
+    }
+
+    public void setAccessTokenUrl(String accessTokenUrl) {
+        this.accessTokenUrl = accessTokenUrl;
+    }
+
+    public String getSendTemplateUrl() {
+        return sendTemplateUrl;
+    }
+
+    public void setSendTemplateUrl(String sendTemplateUrl) {
+        this.sendTemplateUrl = sendTemplateUrl;
     }
 }

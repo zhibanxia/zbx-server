@@ -1,5 +1,6 @@
 package cn.zhibanxia.zbxserver.service.impl;
 
+import cn.zhibanxia.zbxserver.bo.WxTemplateMsgReqBo;
 import cn.zhibanxia.zbxserver.bo.WxUserAuthBo;
 import cn.zhibanxia.zbxserver.bo.WxUserInfoBo;
 import cn.zhibanxia.zbxserver.config.WxPropConfig;
@@ -8,12 +9,16 @@ import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.service.WxApiService;
 import cn.zhibanxia.zbxserver.util.HttpClientUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zzy on  2018/10/02 11:08
@@ -24,6 +29,8 @@ public class WxApiServiceImpl implements WxApiService {
 
     @Autowired
     private WxPropConfig wxPropConfig;
+
+    private final Cache<String, String> accessTokenCache = CacheBuilder.newBuilder().expireAfterWrite(90, TimeUnit.MINUTES).maximumSize(1000).build();
 
     @Override
     public WxUserAuthBo userAuth(String code) throws BizException {
@@ -65,5 +72,31 @@ public class WxApiServiceImpl implements WxApiService {
         wxUserInfoBo.setProvince(jsonObject.getString("province"));
         wxUserInfoBo.setCity(jsonObject.getString("city"));
         return wxUserInfoBo;
+    }
+
+    @Override
+    public String getAccessToken() throws BizException {
+        try {
+            return accessTokenCache.get(wxPropConfig.getAppId(), () -> {
+                String url = MessageFormat.format(wxPropConfig.getAccessTokenUrl(), wxPropConfig.getAppId(), wxPropConfig.getSecret());
+                String body = HttpClientUtil.get(url);
+                JSONObject jsonObject;
+                try {
+                    jsonObject = JSONObject.parseObject(body);
+                } catch (Exception e) {
+                    logger.warn("", e);
+                    throw new BizException(ErrorCode.CODE_JSON_PASER_ERROR, e);
+                }
+                return jsonObject.getString("access_token");
+            });
+        } catch (Exception e) {
+            logger.warn("", e);
+            throw new BizException(ErrorCode.CODE_UNKONWN_ERROR, e);
+        }
+    }
+
+    @Override
+    public void sendTemplateMsg(WxTemplateMsgReqBo wxTemplateMsgReqBo) throws BizException {
+
     }
 }

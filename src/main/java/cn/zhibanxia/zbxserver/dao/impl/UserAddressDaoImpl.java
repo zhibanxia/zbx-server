@@ -58,4 +58,9 @@ public class UserAddressDaoImpl extends BaseDao implements UserAddressDao {
         int ret = update("batchDelete", ids);
         return ret == ids.size();
     }
+
+    @Override
+    public List<UserAddressEntity> findByComplexId(Long complexId) {
+        return selectList("findByComplexId", complexId);
+    }
 }

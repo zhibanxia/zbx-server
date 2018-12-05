@@ -65,4 +65,10 @@ public interface UserAddressDao {
      * @return
      */
     boolean batchDelete(List<Long> ids);
+
+    /**
+     * @param complexId
+     * @return
+     */
+    List<UserAddressEntity> findByComplexId(Long complexId);
 }

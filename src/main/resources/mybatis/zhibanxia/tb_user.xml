@@ -40,6 +40,16 @@
         where id=#{id}
     </select>
 
+    <select id="selectByIds" parameterType="java.util.List" resultMap="UserEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_user
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id" >
+            #{id}
+        </foreach>
+    </select>
+
     <update id="updateUserStatus" parameterType="java.util.Map">
         update tb_user
         set user_status=#{userStatus}

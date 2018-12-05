@@ -3,6 +3,7 @@ package cn.zhibanxia.zbxserver.controller.rest;
 import cn.zhibanxia.zbxserver.bo.ListRecycleRequestBo;
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.controller.param.Addr;
+import cn.zhibanxia.zbxserver.controller.param.ComplexVo;
 import cn.zhibanxia.zbxserver.controller.param.ConfirmRecycleReq;
 import cn.zhibanxia.zbxserver.controller.param.RecycleRequestVo;
 import cn.zhibanxia.zbxserver.controller.param.Result;
@@ -15,6 +16,7 @@ import cn.zhibanxia.zbxserver.service.ComplexService;
 import cn.zhibanxia.zbxserver.service.RecycleRequestService;
 import cn.zhibanxia.zbxserver.service.UserAddrService;
 import cn.zhibanxia.zbxserver.service.UserService;
+import cn.zhibanxia.zbxserver.util.BeanUtil;
 import cn.zhibanxia.zbxserver.util.DateUtil;
 import cn.zhibanxia.zbxserver.util.LoggerUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -412,12 +414,9 @@ public class RecycleCtrl {
                 complexEntity = complexService.find(e.getComplexId());
             }
             if (complexEntity != null) {
-                addr.setProvinceId(complexEntity.getProvinceId());
-                addr.setCityId(complexEntity.getCityId());
-                addr.setAreaId(complexEntity.getAreaId());
-                addr.setSubdistrictId(complexEntity.getSubdistrictId());
-                addr.setAddrDetail(complexEntity.getAddrDetail());
+                addr.setComplexVo(BeanUtil.copy(complexEntity, ComplexVo.class));
             }
+            addr.setDoorInfo(e.getDoorInfo());
         } else {
             addr.setProvinceId(e.getProvinceId());
             addr.setCityId(e.getCityId());
@@ -427,9 +426,7 @@ public class RecycleCtrl {
         }
         if (needHidden) {
             // 隐藏详细地址
-            addr.setAddrDetail("******");
-        } else {
-            addr.setAddrDetail(addr.getAddrDetail());
+            addr.setDoorInfo("******");
         }
         return addr;
     }
