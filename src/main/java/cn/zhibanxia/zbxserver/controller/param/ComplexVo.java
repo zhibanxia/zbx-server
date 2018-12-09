@@ -9,6 +9,11 @@ import java.io.Serializable;
  */
 public class ComplexVo implements Serializable {
     private static final long serialVersionUID = 1174299488652691456L;
+
+    /**
+     * 小区id
+     */
+    private Long id;
     /**
      * 省份id
      */
@@ -38,6 +43,14 @@ public class ComplexVo implements Serializable {
      * 小区名称
      */
     private String complexName;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getProvinceId() {
         return provinceId;
