@@ -2,7 +2,7 @@
  * @Author: wangmangmang 
  * @Date: 2018-10-07 11:33:20 
  * @Last Modified by: wangmangmang
- * @Last Modified time: 2018-10-19 12:16:49
+ * @Last Modified time: 2018-12-11 11:49:58
  * 业主进入自己的回收列表
  */
 
@@ -55,15 +55,17 @@ export default {
       await this.$ajax('recyleDetail', this.params).then(res => {
         this.data = res.data
         this.data.resImages = this.data.resImages.split(',')
-        let area = []
-        let provice = areaList.province_list[this.data.addr.provinceId]
-        let city = areaList.city_list[this.data.addr.cityId]
-        let areaId = areaList.county_list[this.data.addr.areaId]
-        area.push(provice)
-        provice !== city && area.push(city)
-        area.push(areaId)
-        area.push(this.data.addr.addrDetail)
-        this.data.area = area.join('')
+        // let area = []
+        // let provice = areaList.province_list[this.data.addr.provinceId]
+        // let city = areaList.city_list[this.data.addr.cityId]
+        // let areaId = areaList.county_list[this.data.addr.areaId]
+        // area.push(provice)
+        // provice !== city && area.push(city)
+        // area.push(areaId)
+        // area.push(this.data.addr.addrDetail)
+        // this.data.area = area.join('')
+        let addr = this.data.addr
+        this.data.area = addr.complexVo.addrDetail + addr.complexVo.complexName + addr.doorInfo
       })
     },
     /**

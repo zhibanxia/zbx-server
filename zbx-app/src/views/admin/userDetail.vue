@@ -88,15 +88,22 @@ export default {
       return stt.length ? stt[0].label : '--'
     },
     formatArea (item) {
-      let area = []
-      let provice = areaList.province_list[item.provinceId]
-      let city = areaList.city_list[item.cityId]
-      let areaId = areaList.county_list[item.areaId]
-      area.push(provice)
-      provice !== city && area.push(city)
-      area.push(areaId)
-      area.push(item.addrDetail)
-      return area.join('')
+      // let area = []
+      // let provice = areaList.province_list[item.provinceId]
+      // let city = areaList.city_list[item.cityId]
+      // let areaId = areaList.county_list[item.areaId]
+      // area.push(provice)
+      // provice !== city && area.push(city)
+      // area.push(areaId)
+      // area.push(item.addrDetail)
+      if (item.complexVo) {
+        let addr = item.complexVo.addrDetail + item.complexVo.complexName
+        if (item.doorInfo) {
+          addr += item.doorInfo
+        }
+        return  addr
+      }
+      return ''
     },
     onClickLeft () {
       this.$router.push(`/admin/?user=1&timestamp=${new Date().getTime()}`)

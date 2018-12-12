@@ -33,7 +33,9 @@ const urls = {
     // 管理员-审核回收
     verifyHuishou: '/rest/user/verifyHuishou',
     // 管理员 -修改用户状态
-    modifyUserStatus: '/rest/user/modifyUserStatus'
+    modifyUserStatus: '/rest/user/modifyUserStatus',
+    // 匹配小区信息
+    searchByComplexName: '/rest/complex/searchByComplexName'
   },
   patch: {},
   delete: {}

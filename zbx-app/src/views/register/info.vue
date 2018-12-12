@@ -14,7 +14,7 @@
         </template>
       </van-cell>
 
-      <van-field
+      <!-- <van-field
         v-model="area"
         label="所在地区"
         readonly
@@ -23,16 +23,34 @@
         placeholder="选择 省 / 市 / 区"
         :error-message="errors.area"
         @focus.prevent="areaSelectShow = true"
-      />
+      /> -->
 
       <!-- 业主或回收人员住址 -->
       <van-field
-        v-model="defaultAddr"
+        v-model="defaultAddrTxt"
         v-if="type === 1 || type === 2"
         label="住址"
         required
+        readonly
+        rows="1"
+        type="textarea"
+        autosize
+        @focus.prevent="clickDefaultAddrHandle"
         placeholder="请输入您的小区地址"
-        :error-message="errors.defaultAddr"
+        :error-message="errors.defaultAddrTxt"
+      >
+      </van-field>
+
+      <van-field
+        v-model="form.defaultAddr.doorInfo"
+        v-if="type === 1 || type === 2"
+        label="门牌号"
+        required
+        rows="1"
+        type="textarea"
+        autosize
+        placeholder="请输入您的小区门牌号"
+        :error-message="errors.doorInfo"
       >
       </van-field>
 
@@ -44,9 +62,13 @@
         v-if="type === 2"
         label="服务小区"
         required
+        rows="1"
+        type="textarea"
+        autosize
         placeholder="请输入小区详细地址"
         :error-message="errors.villages[index]"
         @click-icon="handleAddOrRemoveVillage(item, index)"
+        @focus.prevent="clickFocusAddrHandle(item, index)"
       >
         <van-icon name="add" slot="icon" v-if="index === 0"/>
         <van-icon name="delete" slot="icon" v-else/>
@@ -65,10 +87,11 @@
         <van-button type="primary" block @click="submit">提交信息</van-button>
       </van-col>
     </van-row>
-    <van-popup v-model="areaSelectShow" position="bottom" :overlay="true">
+    <!-- <van-popup v-model="areaSelectShow" position="bottom" :overlay="true">
       <van-area :area-list="areaList" @confirm="handleAreaSelect" @cancel="areaSelectShow = false"/>
-    </van-popup>
+    </van-popup> -->
     <van-loading v-if="loading" class="loading" color="white"/>
+    <search :show.sync="searchDialog.show" :province-id="searchDialog.provinceId" :city-id="searchDialog.cityId" :area-id="searchDialog.areaId" @select="searchHandle"></search>
   </div>
 </template>
 <script>
@@ -79,7 +102,7 @@ export default {
   data () {
     return {
       type: +this.$route.query.type,
-      defaultAddr: '',
+      defaultAddrTxt: '',
       areaCode: {},
       area: '',
       loading: false,
@@ -87,20 +110,32 @@ export default {
         verifyLogo: '',
         focusAddrList: [],
         mobilePhone: '',
-        defaultAddr: ''
+        // 默认地址
+        defaultAddr: {
+          complexId: '',
+          doorInfo: ''
+        }
       },
       errors: {
         area: '',
         mobilePhone: '',
         focusAddrList: [],
-        defaultAddr: '',
-        villages: []
+        defaultAddrTxt: '',
+        villages: [],
+        doorInfo: ''
       },
       areaList: areaList,
       areaSelectShow: false,
       villages: [ // 小区地址
         { village: '' }
-      ]
+      ],
+      // 查询框
+      searchDialog: {
+        show: false,
+        provinceId: '',
+        cityId: '',
+        areaId: ''
+      }
     }
   },
   created () {
@@ -111,27 +146,23 @@ export default {
   methods: {
     getRecylerInfo () {
       this.$ajax('getRecylerInfo').then(res => {
-        const defaultAddr = res.data.defaultAddr || DEFAULT_ADDR
-
-        let area = []
-        let provice = areaList.province_list[defaultAddr.provinceId]
-        let city = areaList.city_list[defaultAddr.cityId]
-        let areaId = areaList.county_list[defaultAddr.areaId]
-        area.push(provice)
-        provice !== city && area.push(city)
-        area.push(areaId)
-        this.area = area.join('/')
-
-        this.defaultAddr = defaultAddr.addrDetail
-        this.areaCode = defaultAddr
-        const { focusAddrList, mobilePhone, verifyLogo } = res.data
-        this.form = { focusAddrList, mobilePhone, verifyLogo, defaultAddr }
-        if (focusAddrList && focusAddrList.length) {
-          this.villages = focusAddrList.map(v => ({ village: v.addrDetail }))
+        const defaultAddr = res.data.defaultAddr || {}
+        if (!defaultAddr.complexVo) {
+          defaultAddr.complexVo = {}
         }
-        // this.form.focusAddrList =  [this.defaultAddr]
-        // this.form.mobilePhone = res.data.mobilePhone
-        // this.form.verifyLogo = res.data.verifyLogo
+        if (!res.data.focusAddrList) {
+          res.data.focusAddrList = []
+        }
+        const { focusAddrList, mobilePhone, verifyLogo } = res.data
+        
+        this.form = Object.assign({}, this.form, {focusAddrList, mobilePhone, verifyLogo, defaultAddr })
+        
+        // 住址 回填 具体地址
+        this.defaultAddrTxt = defaultAddr.complexVo.addrDetail ? defaultAddr.complexVo.addrDetail + defaultAddr.doorInfo : ''
+        // 关注小区 过滤 具体地址和complexId
+        if (focusAddrList && focusAddrList.length) {
+          this.villages = focusAddrList.map(v => ({ village: v.complexVo.addrDetail + v.complexVo.complexName, complexVo: v.complexVo }))
+        }
       })
     },
     getType () {
@@ -159,22 +190,22 @@ export default {
     /**
      * 处理地址选择器 确认后的回调
      */
-    handleAreaSelect (item) {
-      let area = []
-      let areaCode = []
+    // handleAreaSelect (item) {
+    //   let area = []
+    //   let areaCode = []
 
-      item.map(item => {
-        areaCode.push(item.code)
-        area.indexOf(item.name) === -1 && (area.push(item.name))
-      })
-      this.area = area.join('/')
-      this.areaCode = {
-        provinceId: areaCode[0],
-        cityId: areaCode[1],
-        areaId: areaCode[2]
-      }
-      this.areaSelectShow = false
-    },
+    //   item.map(item => {
+    //     areaCode.push(item.code)
+    //     area.indexOf(item.name) === -1 && (area.push(item.name))
+    //   })
+    //   this.area = area.join('/')
+    //   this.areaCode = {
+    //     provinceId: areaCode[0],
+    //     cityId: areaCode[1],
+    //     areaId: areaCode[2]
+    //   }
+    //   this.areaSelectShow = false
+    // },
     /**
      * 服务小区，最多新增5个，除第一个外，其他right-icon 删除操作
      */
@@ -185,20 +216,17 @@ export default {
           this.$dialog.alert({ title: '提醒', message: '服务小区最多添加3个'})
           return false
         }
-        this.villages.push({village: '' })
+        this.villages.push({})
       }
       // 执行删除
       else {
-        this.villages.splice(index, 1);
+        this.villages.splice(index, 1)
       }
     },
     /**
      * 点击提交信息
      */
     async submit () {
-      this.form.focusAddrList = []
-      // 省市区 验证
-      this.area ? (this.errors.area = null) : (this.errors.area = ERROR_MESSAGE)
       // 手机不为空验证
       this.form.mobilePhone ? (this.errors.mobilePhone = null) : (this.errors.mobilePhone = ERROR_MESSAGE)
       // 手机格式验证
@@ -207,7 +235,10 @@ export default {
       }
 
       // 默认住址验证
-      this.defaultAddr ? (this.errors.defaultAddr = null) : (this.errors.defaultAddr = ERROR_MESSAGE)
+      this.defaultAddrTxt ? (this.errors.defaultAddrTxt = null) : (this.errors.defaultAddrTxt = ERROR_MESSAGE)
+
+      // 门牌号验证
+      this.form.defaultAddr.doorInfo ? (this.errors.doorInfo = null) : (this.errors.doorInfo = ERROR_MESSAGE)
 
       // 回收人员，关注小区验证
       if (this.type === 2) {
@@ -227,29 +258,58 @@ export default {
       if (hasError.length) {
         return false
       }
-
-      // 住址
-      this.form.defaultAddr = Object.assign({}, this.areaCode, {addrDetail: this.defaultAddr})
-
-      // 回收人员补充信息
-      if (this.type === 2) {
-        this.villages.map(item => {
-          this.form.focusAddrList.push(Object.assign({}, this.areaCode, {addrId: '', addrDetail: item.village}))
-        })
-      }
-
+      
       let params = {
         mobilePhone: this.form.mobilePhone,
-        defaultAddr: this.form.defaultAddr
+        defaultAddr: {
+          doorInfo: this.form.defaultAddr.doorInfo,
+          complexId: this.form.defaultAddr.complexId
+        }
       }
       if (this.type === 2) {
         params.verifyLogo = this.form.verifyLogo
-        params.focusAddrList = this.form.focusAddrList
+        let _focusAdrs = []
+        this.form.focusAddrList.map(item => {
+          _focusAdrs.push({complexId: item.complexId})
+        })
+        params.focusAddrList = _focusAdrs
       }
 
       await this.$ajax('addUserDetail', params)
       await this.$dialog.alert({message: '操作成功'})
       window.location.href = '/'
+    },
+    // 默认地址小区点击进行搜索
+    clickDefaultAddrHandle () {
+      this.searchDialog = Object.assign({}, {show: false}, this.form.defaultAddr.complexVo || {})
+      this.searchDialog.show = true
+      this.searchDialog.type = 'default'
+    },
+    // 关注小区点击进行搜索
+    clickFocusAddrHandle (item, index) {
+      let focusAddr = item.complexVo || {}
+      this.searchDialog = Object.assign({}, {show: false}, focusAddr)
+      this.searchDialog.type = 'focus'
+      this.searchDialog.index = index
+      this.searchDialog.show = true
+    },
+    // 小区搜索结果
+    searchHandle (item) {
+      // 住址
+      if (this.searchDialog.type === 'default') {
+        this.form.defaultAddr = Object.assign({}, this.form.defaultAddr, {complexVo: item, complexId: item.id})
+        this.defaultAddrTxt = item.addrDetail + item.complexName
+      }
+      // 关注小区
+      else if (this.searchDialog.type === 'focus') {
+        debugger
+        let index = this.searchDialog.index
+        this.villages[index] = {
+          village: item.addrDetail + item.complexName,
+          complexVo: item
+        }
+        this.form.focusAddrList[index] = {complexId: item.id}
+      }
     }
   }
 }

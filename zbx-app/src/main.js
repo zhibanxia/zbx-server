@@ -8,15 +8,21 @@ import router from './router'
 import '@/styles/index.less'
 // import * as components from './components'
 import Vant from 'vant'
-import 'vant/lib/vant-css/index.css'
-
+// import 'vant/lib/vant-css/index.css'
+// import icons from 'vant/lib/icon/config'
 import request from '@/api'
 // lib-flexible + rem
 import 'lib-flexible'
 
+import Search from './views/components/Search'
+
+Vue.component('search', Search)
 Vue.config.productionTip = false
 // Vue.use(ElementUI, { size: 'medium' })
 Vue.use(Vant)
+// let basic = icons.basic.map(icon => icon.css)
+// console.log(basic)
+// Vue.use(basic)
 // const convertName = (name) =>
 //   name.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`).replace(/^-/, '')
 // Object.entries(components).forEach(

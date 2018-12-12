@@ -21,7 +21,7 @@
           <van-button slot="right-icon" @click="handlePreviw(resImages)" type="default" size="small">预览</van-button>
         </van-cell>
 
-        <van-field
+        <!-- <van-field
           v-model="area"
           label="所在地区"
           required
@@ -30,16 +30,40 @@
           readonly
           :error-message="errors.area"
           autosize
-        />
+        /> -->
         <van-field
+        v-model="defaultAddrTxt"
+        label="住址"
+        required
+        readonly
+        rows="1"
+        type="textarea"
+        autosize
+        @focus.prevent="clickDefaultAddrHandle"
+        placeholder="请输入您的小区地址"
+        :error-message="errors.defaultAddrTxt"
+      >
+      </van-field>
+      <van-field
+        v-model="form.addr.doorInfo"
+        label="门牌号"
+        required
+        rows="1"
+        type="textarea"
+        autosize
+        placeholder="请输入您的小区门牌号"
+        :error-message="errors.doorInfo"
+      >
+      </van-field>
+      <!-- <van-field
           v-model="defaultAddr"
           label="住址"
           required
           placeholder="请输入您的小区地址"
           autosize
           :error-message="errors.defaultAddr"
-        >
-        </van-field>
+      >
+      </van-field> -->
         <!-- icon="goods-collect" -->
         <van-cell title="是否帮忙带扔垃圾"  :value="formatTakegarbage(form.takeGarbageFlag)" @click="takeGarbagePopShow = true"/>
         <!-- icon="pending-deliver" -->
@@ -99,15 +123,16 @@
           @cancel="doorServEndTimePopShow = false"
         />
       </van-popup>
-      <van-popup v-model="areaSelectShow" position="bottom" :overlay="true">
+      <!-- <van-popup v-model="areaSelectShow" position="bottom" :overlay="true">
         <van-area :area-list="areaList" :value="selectArea" @confirm="handleAreaSelect" @cancel="handleCancel"/>
-      </van-popup>
+      </van-popup> -->
     </div>
     <van-loading v-if="loading" class="loading" color="white"/>
+    <search :show.sync="searchDialog.show" :province-id="searchDialog.provinceId" :city-id="searchDialog.cityId" :area-id="searchDialog.areaId" @select="searchHandle"></search>
   </div>
 </template>
 <script>
-import {RECYLE_TYPE, RECYLE_AMOUNT, TAKE_GARBAGE, DEFAULT_ADDR} from '@/utils/constant'
+import {RECYLE_TYPE, RECYLE_AMOUNT, TAKE_GARBAGE } from '@/utils/constant'
 import { ImagePreview } from 'vant'
 import {dateFomatter} from '@/utils/formatter'
 import areaList from '@/utils/area'
@@ -123,22 +148,24 @@ export default {
       takeGarbagePopShow: false,
       doorServStartTimePopShow: false,
       doorServEndTimePopShow: false,
-      form: {},
+      form: {addr: {}},
       startDate: new Date(),
       endDate: new Date(),
       errors: {
-        defaultAddr: '',
+        defaultAddrTxt: '',
         mobilePhone: '',
-        area: ''
+        area: '',
+        doorInfo: ''
       },
       areaSelectShow: false,
       areaList: areaList,
       id: this.$route.params.id,
       area: '',
       selectArea: '',
-      defaultAddr: '',
+      defaultAddrTxt: '',
       loading: false,
-      resImages: []
+      resImages: [],
+      searchDialog: {show: false}
     }
   },
   computed: {
@@ -171,43 +198,24 @@ export default {
           this.resImages = this.form.resImages.split(',')
           // 地区
           this.form.addr = res.data.addr
-
-          let area = []
-          let provice = areaList.province_list[res.data.addr.provinceId]
-          let city = areaList.city_list[res.data.addr.cityId]
-          let areaId = areaList.county_list[res.data.addr.areaId]
-          area.push(provice)
-          provice !== city && area.push(city)
-          area.push(areaId)
-          this.selectArea = res.data.addr.areaId
-          // 住址
-          this.area = area.join('/')
           // 详细地址
-          this.defaultAddr = res.data.addr.addrDetail
+          if (this.form.addr.complexVo) {
+            this.defaultAddrTxt = this.form.addr.complexVo.addrDetail + this.form.addr.complexVo.complexName
+          }
         })
         return
       }
       // 获取业主信息
       await this.$ajax('getYezhuUserInfo').then(res => {
-        const defaultAddr = res.data.defaultAddr || DEFAULT_ADDR
+        const defaultAddr = res.data.defaultAddr || {}
         // 电话
         this.form.mobilePhone = res.data.mobilePhone
         this.form.addr = defaultAddr
         this.form.takeGarbageFlag = false
-
-        let area = []
-        let provice = areaList.province_list[defaultAddr.provinceId]
-        let city = areaList.city_list[defaultAddr.cityId]
-        let areaId = areaList.county_list[defaultAddr.areaId]
-        area.push(provice)
-        provice !== city && area.push(city)
-        area.push(areaId)
-        this.selectArea = defaultAddr.areaId
-        console.log('dasdsada', areaList.province_list, defaultAddr.provinceId, provice)
-        // 住址
-        this.area = area.join('/')
         // 详细地址
-        this.defaultAddr = defaultAddr.addrDetail
+        if (defaultAddr.complexVo) {
+          this.defaultAddrTxt = defaultAddr.complexVo.addrDetail + defaultAddr.complexVo.complexName
+        }
       })
     },
     handleRestypeConfirm (item) {
@@ -289,7 +297,7 @@ export default {
     /**
      * 处理地址选择器 确认后的回调
      */
-    handleAreaSelect (item) {
+    /** handleAreaSelect (item) {
       let area = []
       let areaCode = []
 
@@ -307,10 +315,9 @@ export default {
       })
       this.areaSelectShow = false
       console.log(this.form)
-    },
+    },*/
     async submit () {
-      // 省市区 验证
-      this.area ? (this.errors.area = null) : (this.errors.area = ERROR_MESSAGE)
+      
       // 手机不为空验证
       this.form.mobilePhone ? (this.errors.mobilePhone = null) : (this.errors.mobilePhone = ERROR_MESSAGE)
       // 手机格式验证
@@ -318,7 +325,7 @@ export default {
         !/^\d{11}$/.test(this.form.mobilePhone) ? (this.errors.mobilePhone = '格式不正确') : (this.errors.mobilePhone = null)
       }
       // 默认住址验证
-      this.defaultAddr ? (this.errors.defaultAddr = null) : (this.errors.defaultAddr = ERROR_MESSAGE)
+      this.defaultAddrTxt ? (this.errors.defaultAddrTxt = null) : (this.errors.defaultAddrTxt = ERROR_MESSAGE)
       // 错误信息提示
       let hasError = []
       Object.keys(this.errors).map((key) => {
@@ -354,15 +361,36 @@ export default {
         }
       }
       this.form.resImages = this.resImages.join(',')
-      this.form.addr = Object.assign(this.form.addr, {addrDetail: this.defaultAddr})
+      let addr = {
+        complexId: this.form.addr.complexId,
+        doorInfo: this.form.addr.doorInfo
+      }
+      // 更新操作，addr 多了参数 addrId
+      if (this.id) {
+        addr.addrId = this.form.addr.addrId
+      }
+      this.form.addr = addr
       console.log(this.form)
 
       let url = this.id ? 'updateRecyle' : 'createRecyle'
       await this.$ajax(url, this.form, {showSuccessMsg: true})
       this.$router.push(`/owner`)
     },
-    handleCancel () {
-      this.areaSelectShow = false
+    // handleCancel () {
+    //   this.areaSelectShow = false
+    // },
+    // 默认地址小区点击进行搜索
+    clickDefaultAddrHandle () {
+      debugger
+      this.searchDialog = Object.assign({}, {show: false}, this.form.addr.complexVo || {})
+      this.searchDialog.show = true
+    },
+    // 小区搜索结果
+    searchHandle (item) {
+      // 住址
+      debugger
+      this.form.addr = Object.assign({}, this.form.addr, {complexVo: item, complexId: item.id})
+      this.defaultAddrTxt = item.addrDetail + item.complexName
     }
   }
 }
