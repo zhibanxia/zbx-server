@@ -59,7 +59,6 @@ export default {
   watch: {
     'show' (val) {
       val && this.$nextTick(() => {
-        debugger
         this.areaObj = Object.assign({}, {provinceId: this.provinceId, cityId: this.cityId, areaId: this.areaId})
         if (!this.areaObj.areaId) {
           this.areaObj = DEFAULT_ADDR
