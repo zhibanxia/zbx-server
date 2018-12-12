@@ -1,6 +1,5 @@
 package cn.zhibanxia.zbxserver.service.impl;
 
-import cn.zhibanxia.zbxserver.bo.WxTemplateMsgReqBo;
 import cn.zhibanxia.zbxserver.bo.WxUserAuthBo;
 import cn.zhibanxia.zbxserver.bo.WxUserInfoBo;
 import cn.zhibanxia.zbxserver.config.WxPropConfig;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -93,10 +91,5 @@ public class WxApiServiceImpl implements WxApiService {
             logger.warn("", e);
             throw new BizException(ErrorCode.CODE_UNKONWN_ERROR, e);
         }
-    }
-
-    @Override
-    public void sendTemplateMsg(WxTemplateMsgReqBo wxTemplateMsgReqBo) throws BizException {
-
     }
 }
