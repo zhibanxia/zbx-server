@@ -8,7 +8,7 @@ import router from './router'
 import '@/styles/index.less'
 // import * as components from './components'
 import Vant from 'vant'
-// import 'vant/lib/vant-css/index.css'
+import 'vant/lib/index.css'
 // import icons from 'vant/lib/icon/config'
 import request from '@/api'
 // lib-flexible + rem
