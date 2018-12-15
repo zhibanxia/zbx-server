@@ -2,6 +2,7 @@ package cn.zhibanxia.zbxserver.service.impl;
 
 import cn.zhibanxia.zbxserver.bo.WxTemplateMsgReqBo;
 import cn.zhibanxia.zbxserver.config.WxPropConfig;
+import cn.zhibanxia.zbxserver.config.ZbxConfig;
 import cn.zhibanxia.zbxserver.dao.UserDao;
 import cn.zhibanxia.zbxserver.entity.ComplexEntity;
 import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
@@ -65,6 +66,9 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
     @Autowired
     private ComplexService complexService;
 
+    @Autowired
+    private ZbxConfig zbxConfig;
+
     private ExecutorService executorService;
 
     private final Cache<String, String> sentTempleatWxOpenId = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(1000).build();
@@ -89,6 +93,8 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
         }
 
         WxTemplateMsgReqBo wxTemplateMsgReqBo = new WxTemplateMsgReqBo();
+        wxTemplateMsgReqBo.setTemplate_id(zbxConfig.getTemplateId());
+        
         wxTemplateMsgReqBo.setFirst("你关注的小区有新的回收请求。");
         //回收小区
         wxTemplateMsgReqBo.setKeyword1(getComplexStr(recycleRequestEntity.getComplexId()));
