@@ -36,6 +36,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -71,7 +72,7 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
 
     private ExecutorService executorService;
 
-    private final Cache<String, String> sentTempleatWxOpenId = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(1000).build();
+    private final Cache<String, AtomicInteger> sentTempleatWxOpenId = CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.HOURS).maximumSize(1000).build();
 
 
     @Override
@@ -83,9 +84,15 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
     public void notifyHuishou(RecycleRequestEntity recycleRequestEntity, List<Long> huishouUids) {
         List<UserEntity> userEntityList = userDao.selectByIds(huishouUids);
         Set<String> wxOpenIds = userEntityList.stream().map(UserEntity::getWxOpenId).collect(Collectors.toSet());
-        ImmutableMap<String, String> map = sentTempleatWxOpenId.getAllPresent(wxOpenIds);
+        ImmutableMap<String, AtomicInteger> map = sentTempleatWxOpenId.getAllPresent(wxOpenIds);
         if (MapUtils.isNotEmpty(map)) {
-            wxOpenIds.removeAll(map.keySet());
+            Set<String> needRemoveSet = map.entrySet().stream().filter(e -> {
+                if (e.getValue() == null) {
+                    return false;
+                }
+                return e.getValue().get() >= 5;
+            }).map(e -> e.getKey()).collect(Collectors.toSet());
+            wxOpenIds.removeAll(needRemoveSet);
         }
         if (wxOpenIds.isEmpty()) {
             logger.warn("no huishou need to push.");
@@ -94,36 +101,53 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
 
         WxTemplateMsgReqBo wxTemplateMsgReqBo = new WxTemplateMsgReqBo();
         wxTemplateMsgReqBo.setTemplate_id(zbxConfig.getTemplateId());
-        
+
         wxTemplateMsgReqBo.setFirst("你关注的小区有新的回收请求。");
         //回收小区
-        wxTemplateMsgReqBo.setKeyword1(getComplexStr(recycleRequestEntity.getComplexId()));
+        wxTemplateMsgReqBo.setKeyword1(
+
+                getComplexStr(recycleRequestEntity.getComplexId()));
         //回收类型
-        wxTemplateMsgReqBo.setKeyword2(getResTypeStr(recycleRequestEntity.getResType()));
+        wxTemplateMsgReqBo.setKeyword2(
+
+                getResTypeStr(recycleRequestEntity.getResType()));
         //重量
-        wxTemplateMsgReqBo.setKeyword3(getHuishouWeight(recycleRequestEntity.getResAmount()));
+        wxTemplateMsgReqBo.setKeyword3(
+
+                getHuishouWeight(recycleRequestEntity.getResAmount()));
         //上门时间
-        wxTemplateMsgReqBo.setKeyword4(getServTime(recycleRequestEntity.getDoorServStartTime(), recycleRequestEntity.getDoorServEndTime()));
+        wxTemplateMsgReqBo.setKeyword4(
+
+                getServTime(recycleRequestEntity.getDoorServStartTime(), recycleRequestEntity.
+
+                        getDoorServEndTime()));
         //详情
         wxTemplateMsgReqBo.setRemark("点击查看详情。");
 
         try {
             wxTemplateMsgReqBo.setUrl(MessageFormat.format(redirectUrl, URLEncoder.encode(MessageFormat.format(detailUrl, String.valueOf(recycleRequestEntity.getId())), "utf-8")));
-        } catch (UnsupportedEncodingException e) {
+        } catch (
+                UnsupportedEncodingException e) {
             logger.warn("", e);
         }
 
-        executorService.execute(() -> {
-            wxOpenIds.forEach(id -> {
-                try {
-                    String url = MessageFormat.format(wxPropConfig.getSendTemplateUrl(), wxApiService.getAccessToken());
-                    wxTemplateMsgReqBo.setTouser(id);
-                    HttpClientUtil.post(url, JSONObject.toJSONString(wxTemplateMsgReqBo));
-                } catch (BizException e) {
-                    logger.warn("", e);
-                }
-            });
-        });
+        executorService.execute(() ->
+                wxOpenIds.forEach(id -> {
+                    try {
+                        String url = MessageFormat.format(wxPropConfig.getSendTemplateUrl(), wxApiService.getAccessToken());
+                        wxTemplateMsgReqBo.setTouser(id);
+                        HttpClientUtil.post(url, JSONObject.toJSONString(wxTemplateMsgReqBo));
+                    } catch (BizException e) {
+                        logger.warn("", e);
+                    } finally {
+                        try {
+                            AtomicInteger atomicInteger = sentTempleatWxOpenId.get(id, () -> new AtomicInteger(0));
+                            atomicInteger.incrementAndGet();
+                        } catch (Exception e) {
+                            logger.warn("", e);
+                        }
+                    }
+                }));
     }
 
     private String getResTypeStr(Integer resType) {
@@ -168,7 +192,7 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
     }
 
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         executorService.shutdown();
     }
 }
