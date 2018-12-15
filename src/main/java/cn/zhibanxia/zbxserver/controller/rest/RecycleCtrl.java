@@ -5,6 +5,7 @@ import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.controller.param.Addr;
 import cn.zhibanxia.zbxserver.controller.param.ComplexVo;
 import cn.zhibanxia.zbxserver.controller.param.ConfirmRecycleReq;
+import cn.zhibanxia.zbxserver.controller.param.DeleteRecyleReq;
 import cn.zhibanxia.zbxserver.controller.param.RecycleRequestVo;
 import cn.zhibanxia.zbxserver.controller.param.Result;
 import cn.zhibanxia.zbxserver.entity.ComplexEntity;
@@ -230,11 +231,15 @@ public class RecycleCtrl {
     }
 
     @PostMapping("delete")
-    public Result<Boolean> delete(@RequestParam("id") Long id) {
+    public Result<Boolean> delete(@RequestBody DeleteRecyleReq deleteRecyleReq) {
         // 如果不是业主则拒绝请求
         if (!RequestLocal.get().isYezhu()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
+        if (deleteRecyleReq == null) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+        }
+        Long id = deleteRecyleReq.getId();
         RecycleRequestEntity recycleRequestEntity = recycleRequestService.find(id);
         if (recycleRequestEntity == null) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
