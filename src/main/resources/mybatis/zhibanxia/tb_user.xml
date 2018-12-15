@@ -45,7 +45,7 @@
         <include refid="all_column"/>
         from tb_user
         where id in
-        <foreach collection="ids" open="(" close=")" separator="," item="id" >
+        <foreach collection="list" open="(" close=")" separator="," item="id" >
             #{id}
         </foreach>
     </select>
