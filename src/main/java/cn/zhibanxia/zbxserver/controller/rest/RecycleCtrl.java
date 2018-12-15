@@ -301,14 +301,9 @@ public class RecycleCtrl {
             logger.info("resAmount is null or invalid");
             return false;
         }
-        if (recycleRequestVo.getAddr() == null || StringUtils.isBlank(recycleRequestVo.getAddr().getProvinceId()) || StringUtils.isBlank(recycleRequestVo.getAddr().getCityId()) || StringUtils.isBlank(recycleRequestVo.getAddr().getAreaId())
-                || StringUtils.isBlank(recycleRequestVo.getAddr().getAddrDetail())) {
+        if (recycleRequestVo.getAddr() == null || recycleRequestVo.getAddr().getComplexId() == null || StringUtils.isBlank(recycleRequestVo.getAddr().getDoorInfo())) {
             logger.info("location info is null or empty");
             return false;
-        }
-        // 针对没有街道id的情况，暂时填充-1
-        if (StringUtils.isBlank(recycleRequestVo.getAddr().getSubdistrictId())) {
-            recycleRequestVo.getAddr().setSubdistrictId("-1");
         }
         if (StringUtils.isBlank(recycleRequestVo.getMobilePhone())) {
             logger.info("mobilePhone is null or empty");
