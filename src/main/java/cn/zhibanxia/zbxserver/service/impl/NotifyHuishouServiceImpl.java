@@ -186,6 +186,8 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
         } else if (Objects.equals(3, resAmount)) {
             return "1 ~ 3KG";
         } else if (Objects.equals(4, resAmount)) {
+            return "3 ~ 5KG";
+        } else if (Objects.equals(5, resAmount)) {
             return "5KG以上";
         }
         return "未知数量";
