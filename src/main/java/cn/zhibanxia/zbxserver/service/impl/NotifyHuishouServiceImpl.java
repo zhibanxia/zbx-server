@@ -102,7 +102,7 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
         wxTemplateMsgReqBo.setRemark("点击查看详情。");
 
         try {
-            wxTemplateMsgReqBo.setUrl(MessageFormat.format(redirectUrl, URLEncoder.encode(MessageFormat.format(detailUrl, recycleRequestEntity.getId()), "utf-8")));
+            wxTemplateMsgReqBo.setUrl(MessageFormat.format(redirectUrl, URLEncoder.encode(MessageFormat.format(detailUrl, String.valueOf(recycleRequestEntity.getId())), "utf-8")));
         } catch (UnsupportedEncodingException e) {
             logger.warn("", e);
         }
