@@ -47,7 +47,7 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
     /**
      * 重定向页面
      */
-    private static final String redirectUrl = "https://wx.zhibanxia.cn/weixin/redirect?url={}";
+    private static final String redirectUrl = "https://wx.zhibanxia.cn/weixin/redirect?url={0}";
     /**
      * 详情页
      */
