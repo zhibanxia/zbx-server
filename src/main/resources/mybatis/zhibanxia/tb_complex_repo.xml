@@ -53,7 +53,7 @@
         <include refid="all_column"/>
         from tb_complex_repo
         where id in
-        <foreach collection="list" separator="," open="(" close=")">
+        <foreach collection="list" separator="," item="id" open="(" close=")">
             #{id}
         </foreach>
     </select>

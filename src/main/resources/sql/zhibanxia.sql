@@ -27,7 +27,7 @@ area_id  		       	varchar(32)   	not null				comment '区id',
 subdistrict_id			varchar(32)		not null				comment '街道id',
 addr_detail				varchar(128)	default null			comment '详细地址',
 complex_id              bigint(20)      default null			    comment '小区库id',
-door_info               varchar(32)		default null			    comment '门牌号信息，小区库id+门牌号组成详细地址'
+door_info               varchar(32)		default null			    comment '门牌号信息，小区库id+门牌号组成详细地址',
 deleted					tinyint(1)		not null default 0		comment '删除状态：0否，1是',
 gmt_create      		datetime        DEFAULT CURRENT_TIMESTAMP	comment '创建时间',
 gmt_modified    		datetime        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	comment '修改时间',
