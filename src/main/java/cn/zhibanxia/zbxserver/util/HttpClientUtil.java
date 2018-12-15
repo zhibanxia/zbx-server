@@ -70,11 +70,11 @@ public class HttpClientUtil {
             success = true;
             return responseBody;
         } catch (Exception e) {
-            logger.warn("http get fail, url={}", url, e);
+            logger.warn("http post fail, url={}, json={}", url, json, e);
             throw new BizException(ErrorCode.CODE_HTTP_GET_ERROR, e);
         } finally {
             // 日志格式：时间|请求方式|url|参数|结果|response
-            httpRequestlogger.info("GET|{}||{}|{}", url, success, responseBody);
+            httpRequestlogger.info("POST|{}|{}|{}|{}", url, json, success, responseBody);
         }
     }
 }
