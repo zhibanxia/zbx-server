@@ -157,7 +157,8 @@ public class RecycleRequestEntity {
     /**
      * 完成回收时间
      */
-    private Date completeRecyleTime;
+    private Date completeRecycleTime;
+
     private Date gmtCreate;
     private Date gmtModified;
 
@@ -233,12 +234,12 @@ public class RecycleRequestEntity {
         this.freeTakeFlag = freeTakeFlag;
     }
 
-    public Date getCompleteRecyleTime() {
-        return completeRecyleTime;
+    public Date getCompleteRecycleTime() {
+        return completeRecycleTime;
     }
 
-    public void setCompleteRecyleTime(Date completeRecyleTime) {
-        this.completeRecyleTime = completeRecyleTime;
+    public void setCompleteRecycleTime(Date completeRecycleTime) {
+        this.completeRecycleTime = completeRecycleTime;
     }
 
     public boolean isTakeGarbageFlag() {

@@ -90,7 +90,7 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
                 if (e.getValue() == null) {
                     return false;
                 }
-                return e.getValue().get() >= 5;
+                return e.getValue().get() >= 10000;
             }).map(e -> e.getKey()).collect(Collectors.toSet());
             wxOpenIds.removeAll(needRemoveSet);
         }
