@@ -3,9 +3,10 @@ package cn.zhibanxia.zbxserver.controller.rest;
 import cn.zhibanxia.zbxserver.bo.ListRecycleRequestBo;
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.controller.param.Addr;
+import cn.zhibanxia.zbxserver.controller.param.CompleteRecycleReq;
 import cn.zhibanxia.zbxserver.controller.param.ComplexVo;
 import cn.zhibanxia.zbxserver.controller.param.ConfirmRecycleReq;
-import cn.zhibanxia.zbxserver.controller.param.DeleteRecyleReq;
+import cn.zhibanxia.zbxserver.controller.param.DeleteRecycleReq;
 import cn.zhibanxia.zbxserver.controller.param.RecycleRequestVo;
 import cn.zhibanxia.zbxserver.controller.param.Result;
 import cn.zhibanxia.zbxserver.entity.ComplexEntity;
@@ -231,15 +232,15 @@ public class RecycleCtrl {
     }
 
     @PostMapping("delete")
-    public Result<Boolean> delete(@RequestBody DeleteRecyleReq deleteRecyleReq) {
+    public Result<Boolean> delete(@RequestBody DeleteRecycleReq deleteRecycleReq) {
         // 如果不是业主则拒绝请求
         if (!RequestLocal.get().isYezhu()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
-        if (deleteRecyleReq == null) {
+        if (deleteRecycleReq == null || deleteRecycleReq.getId() == null) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
         }
-        Long id = deleteRecyleReq.getId();
+        Long id = deleteRecycleReq.getId();
         RecycleRequestEntity recycleRequestEntity = recycleRequestService.find(id);
         if (recycleRequestEntity == null) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
@@ -277,11 +278,15 @@ public class RecycleCtrl {
     }
 
     @PostMapping("completeRecycle")
-    public Result<Boolean> completeRecycle(@RequestParam("id") Long id) {
+    public Result<Boolean> completeRecycle(@RequestBody CompleteRecycleReq completeRecycleReq) {
         // 如果不是业主则拒绝请求
         if (!RequestLocal.get().isYezhu()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
+        if (completeRecycleReq == null || completeRecycleReq.getId() == null) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+        }
+        Long id = completeRecycleReq.getId();
         RecycleRequestEntity recycleRequestEntity = recycleRequestService.find(id);
         if (recycleRequestEntity == null) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
