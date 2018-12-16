@@ -152,6 +152,7 @@
         <if test="end!=null">
             and gmt_create &lt; #{end}
         </if>
+        order by res_status, gmt_create desc
         limit #{startPage}, #{endPage}
     </select>
 
