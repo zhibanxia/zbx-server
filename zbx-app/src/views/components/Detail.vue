@@ -26,7 +26,10 @@
         <!-- icon="pending-deliver" -->
         <van-cell v-else title="上门服务时间段"  value="任意时间段"/>
         <van-cell title="回收地址" icon="location" :value="data.area"/>
-        <van-cell title="联系电话" icon="phone" :value="data.mobilePhone"/>
+        <van-cell title="联系电话" icon="phone">
+          <a v-if="mobilePhone" :href="mobilePhone">{{data.mobilePhone}}</a>
+          <span v-else>{{data.mobilePhone}}</span>
+        </van-cell>
         <van-cell title="回收人员" icon="contact" v-if="data.recyleUserLogo">
           <img :src="data.recyleUserLogo" class="logo"/>{{data.recyleUserNickname}}
         </van-cell>
@@ -50,6 +53,19 @@ export default {
   props: {
     data: {
       type: Object
+    }
+  },
+  computed: {
+    mobilePhone() {
+      return "tel:" + this.data.mobilePhone
+      // var u = navigator.userAgent;
+      // var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+      // var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+      // if (isiOS) {
+      //   return "callto:[" + this.data.mobilePhone + "]"
+      // } else {
+      //   return "wtai://wp/mc;[" + this.data.mobilePhone + "]"
+      // }
     }
   },
   methods: {

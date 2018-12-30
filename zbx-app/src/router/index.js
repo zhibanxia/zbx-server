@@ -25,6 +25,11 @@ const initRouterMap = [
     path: '/error',
     meta: { title: '审核' },
     component: _import('error')
+  },
+  {
+    path: '/usercenter/recylerarea',
+    meta: { title: '个人中心' },
+    component: _import('usercenter/recylerArea')
   }
 ]
 

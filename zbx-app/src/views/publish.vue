@@ -381,14 +381,12 @@ export default {
     // },
     // 默认地址小区点击进行搜索
     clickDefaultAddrHandle () {
-      debugger
       this.searchDialog = Object.assign({}, {show: false}, this.form.addr.complexVo || {})
       this.searchDialog.show = true
     },
     // 小区搜索结果
     searchHandle (item) {
       // 住址
-      debugger
       this.form.addr = Object.assign({}, this.form.addr, {complexVo: item, complexId: item.id})
       this.defaultAddrTxt = item.addrDetail + item.complexName
     }

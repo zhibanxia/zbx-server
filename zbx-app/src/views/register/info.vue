@@ -28,7 +28,7 @@
       <!-- 业主或回收人员住址 -->
       <van-field
         v-model="defaultAddrTxt"
-        v-if="type === 1 || type === 2"
+        v-if="type === 1"
         label="住址"
         required
         readonly
@@ -43,7 +43,7 @@
 
       <van-field
         v-model="form.defaultAddr.doorInfo"
-        v-if="type === 1 || type === 2"
+        v-if="type === 1"
         label="门牌号"
         required
         rows="1"
@@ -59,9 +59,11 @@
         v-for="(item, index) in villages"
         :key="index"
         v-model="item.village"
+        class="blur"
         v-if="type === 2"
         label="服务小区"
         required
+        readonly
         rows="1"
         type="textarea"
         autosize
@@ -75,13 +77,17 @@
       </van-field>
 
       <van-field
+        class="blur"
         v-model="form.mobilePhone"
         label="手机号"
         required
         placeholder="请输入手机号"
         :error-message="errors.mobilePhone"
       />
-    </van-cell-group>
+
+      <van-cell v-if="type === 2" title="电话通知订单"  :value="formatVoiceNotifyFlag(form.voiceNotifyFlag)" @click="voiceNotifyFlagPopShow = true"/>
+   
+   </van-cell-group>
     <van-row>
       <van-col span="24">
         <van-button type="primary" block @click="submit">提交信息</van-button>
@@ -92,10 +98,14 @@
     </van-popup> -->
     <van-loading v-if="loading" class="loading" color="white"/>
     <search :show.sync="searchDialog.show" :province-id="searchDialog.provinceId" :city-id="searchDialog.cityId" :area-id="searchDialog.areaId" @select="searchHandle"></search>
+    <!-- 电话通知订单 -->
+    <van-popup v-model="voiceNotifyFlagPopShow" position="bottom">
+      <van-picker :columns="voiceNotifyFlags" value-key="label" @confirm="handleVoiceNotifyFlagConfirm" show-toolbar title="电话通知订单" @cancel="voiceNotifyFlagPopShow = false"/>
+    </van-popup>
   </div>
 </template>
 <script>
-import {DEFAULT_ADDR} from '@/utils/constant'
+import {DEFAULT_ADDR, VOICE_NOTIFYFLAG} from '@/utils/constant'
 import areaList from '@/utils/area'
 const ERROR_MESSAGE = '请填写'
 export default {
@@ -114,7 +124,9 @@ export default {
         defaultAddr: {
           complexId: '',
           doorInfo: ''
-        }
+        },
+        // 电话通知订单
+        voiceNotifyFlag: 1
       },
       errors: {
         area: '',
@@ -135,7 +147,10 @@ export default {
         provinceId: '',
         cityId: '',
         areaId: ''
-      }
+      },
+      // 电话通知订单
+      voiceNotifyFlags: VOICE_NOTIFYFLAG,
+      voiceNotifyFlagPopShow: false,
     }
   },
   created () {
@@ -273,6 +288,7 @@ export default {
           _focusAdrs.push({complexId: item.complexId})
         })
         params.focusAddrList = _focusAdrs
+        params.voiceNotifyFlag = this.form.voiceNotifyFlag
       }
 
       await this.$ajax('addUserDetail', params)
@@ -284,6 +300,8 @@ export default {
       this.searchDialog = Object.assign({}, {show: false}, this.form.defaultAddr.complexVo || {})
       this.searchDialog.show = true
       this.searchDialog.type = 'default'
+      // document.getElementsByClassName('blur').blur()
+      // document.getElementById('search').focus()
     },
     // 关注小区点击进行搜索
     clickFocusAddrHandle (item, index) {
@@ -292,6 +310,8 @@ export default {
       this.searchDialog.type = 'focus'
       this.searchDialog.index = index
       this.searchDialog.show = true
+      // document.getElementsByClassName('blur').blur()
+      // document.getElementById('search').focus()
     },
     // 小区搜索结果
     searchHandle (item) {
@@ -302,7 +322,6 @@ export default {
       }
       // 关注小区
       else if (this.searchDialog.type === 'focus') {
-        debugger
         let index = this.searchDialog.index
         this.villages[index] = {
           village: item.addrDetail + item.complexName,
@@ -310,7 +329,15 @@ export default {
         }
         this.form.focusAddrList[index] = {complexId: item.id}
       }
-    }
+    },
+    formatVoiceNotifyFlag (val) {
+      let stt = VOICE_NOTIFYFLAG.filter(item => item.id === val)
+      return stt.length ? stt[0].label : '请选择'
+    },
+    handleVoiceNotifyFlagConfirm (item) {
+      this.form.voiceNotifyFlag = item.id
+      this.voiceNotifyFlagPopShow = false
+    },
   }
 }
 </script>

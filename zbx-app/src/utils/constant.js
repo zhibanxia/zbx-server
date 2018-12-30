@@ -5,7 +5,7 @@ export const RECYLE_TYPE = [
 ]
 export const RECYLE_STATUS = [
   {label: '已发布', id: 1},
-  {label: '待回收', id: 2},
+  {label: '已接单', id: 2},
   {label: '已回收', id: 3},
   {label: '已取消', id: 4}
 ]
@@ -35,6 +35,11 @@ export const USER_STATUS4ADMIN = [
 export const TAKE_GARBAGE = [
   {label: '是', id: true},
   {label: '否', id: false}
+]
+// 电话通知订单
+export const VOICE_NOTIFYFLAG = [
+  {label: '是', id: 1},
+  {label: '否', id: 0}
 ]
 
 export const DEFAULT_ADDR = {

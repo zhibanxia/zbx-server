@@ -1,20 +1,23 @@
 <template>
 <div>
-   <van-popup v-model="show" position="right" :overlay="true"  get-container="#app" :overlay-style="{'backgroundColor': '#fff'}">
+   <van-popup v-model="show" :overlay="true"  get-container="#app" :lazy-render="false" :overlay-style="{'backgroundColor': '#fff'}">
     <div class="search-wrap">
+      <van-nav-bar title="小区搜索" left-text="返回" right-text="" left-arrow @click-left="onCancel" />
       <div class="top">
         <div class="area" @click="areaSelectShow = true">
-          <p v-if="areatxt">{{areatxt}}</p>
-          <p v-else>请选择</p>
-          <van-icon name="arrow-down" />
+          <p v-if="areatxt">{{areatxt}}<van-icon name="arrow-down" /></p>
+          <p v-else>请选择<van-icon name="arrow-down" /></p>
         </div>
         <van-search
+          id="search"
+          ref="search"
           v-model="seaval"
           placeholder="请输入小区名字"
           show-action
-          @search="onSearch"
-          @cancel="onCancel"
-        />
+          v-focus
+          @search="onSearch">
+            <div slot="action" @click="onSearch">搜索</div>
+        </van-search>
       </div>
       <div class="content">
         <ul class="search-list" v-if="list.length > 0">
@@ -56,6 +59,14 @@ export default {
       type: String
     }
   },
+  directives: {
+    focus: {
+      // 指令的定义
+      inserted: function (el) {
+        el.focus()
+      }
+    }
+  },
   watch: {
     'show' (val) {
       val && this.$nextTick(() => {
@@ -68,6 +79,10 @@ export default {
         // 根据areaId 得出areatxt
         this.areatxt = this.areaList.county_list[this.areaObj.areaId]
         this.onSearch()
+        document.getElementById('search').focus()
+        // setTimeout(() => {
+        //   document.getElementById('search').focus()
+        // }, 180)
       })
     }
   },
@@ -131,8 +146,11 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.van-popup--right {
-  // position: fixed;
+.van-nav-bar__left {
+  left: 0!important;
+}
+.van-popup {
+  position: absolute;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -144,19 +162,20 @@ export default {
   height: 100%;
   overflow: scroll;
   & > .top {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+    // position: fixed;
+    // top: 0;
+    // left: 0;
+    position: relative;
+    padding: 0 10px;
     height: 44px;
     background: rgb(242, 242, 242);
     z-index: 2;
     & > .area {
       display: inline-block;
       position: absolute;
-      left: 5px;
+      left: 10px;
       top: 0;
-      width: 80px;
+      width: 60px;
       padding-right: 3px;
       & > p {
         white-space: nowrap;
@@ -164,24 +183,21 @@ export default {
         text-overflow: ellipsis;
         line-height: 44px;
         margin: 0;
-        padding-right: 20px;
       }
-      & > i {
-        position: absolute;
-        right: 3px;
-        top: 50%;
-        width: 20px;
-        height: 20px;
-        margin-top: -10px;
-      }
+      // & > i {
+      //   position: absolute;
+      //   right: 3px;
+      //   top: 50%;
+      //   margin-top: -8px;
+      // }
     }
     & > .van-search {
-      padding-left: 83px;
+      padding-left: 60px;
       background: none;
     }
   }
   & > .content {
-    padding-top: 44px;
+    // padding-top: 44px;
     li {
       height: 60px;
       

@@ -12,6 +12,7 @@
 <van-tabbar v-model="active" @change="handleTabbar">
   <van-tabbar-item icon="wap-home">回收列表</van-tabbar-item>
   <van-tabbar-item icon="records" :dot="isupdate">我的回收</van-tabbar-item>
+  <van-tabbar-item icon="contact">个人中心</van-tabbar-item>
 </van-tabbar>
 <van-loading v-if="loading" class="loading" color="white"/>
 </div>
@@ -67,13 +68,17 @@ export default {
       if (index === 0) {
        this.params.bizType = 1
        this.params.page = 1
-      }else {
+       this.getList() 
+      }else if (index === 1) {
         // 查看回收人员的历史列表
         this.params.bizType = 2
         this.params.page = 1
         this.isupdate = false
+        this.getList() 
       }
-      this.getList() 
+      else {
+        window.location.href = '/#/usercenter/recylerarea'
+      }
     },
     /**
      * 点击进入详情页
