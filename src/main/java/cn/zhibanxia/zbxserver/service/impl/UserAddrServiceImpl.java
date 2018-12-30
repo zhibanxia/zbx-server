@@ -1,15 +1,18 @@
 package cn.zhibanxia.zbxserver.service.impl;
 
 import cn.zhibanxia.zbxserver.config.ZbxConfig;
+import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.dao.UserAddressDao;
 import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
 import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.service.UserAddrService;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,24 +43,13 @@ public class UserAddrServiceImpl implements UserAddrService {
         } else {
             UserAddressEntity existOne = userAddressEntityList.get(0);
             boolean needUpdate = false;
-            if (userAddressEntity.getProvinceId() != null) {
-                existOne.setProvinceId(userAddressEntity.getProvinceId());
+
+            if (userAddressEntity.getComplexId() != null) {
+                existOne.setComplexId(userAddressEntity.getComplexId());
                 needUpdate = true;
             }
-            if (userAddressEntity.getCityId() != null) {
-                existOne.setCityId(userAddressEntity.getCityId());
-                needUpdate = true;
-            }
-            if (userAddressEntity.getAreaId() != null) {
-                existOne.setAreaId(userAddressEntity.getAreaId());
-                needUpdate = true;
-            }
-            if (userAddressEntity.getSubdistrictId() != null) {
-                existOne.setSubdistrictId(userAddressEntity.getSubdistrictId());
-                needUpdate = true;
-            }
-            if (userAddressEntity.getAddrDetail() != null) {
-                existOne.setAddrDetail(userAddressEntity.getAddrDetail());
+            if (userAddressEntity.getDoorInfo() != null) {
+                existOne.setDoorInfo(userAddressEntity.getDoorInfo());
                 needUpdate = true;
             }
             if (needUpdate) {
@@ -141,4 +133,24 @@ public class UserAddrServiceImpl implements UserAddrService {
     public List<UserAddressEntity> findFocusAddrs(Long userId) {
         return userAddressDao.findAddrs(userId, UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
     }
+
+    @Override
+    public UserAddressEntity find(Long id) {
+        return userAddressDao.find(id);
+    }
+
+    @Override
+    public boolean updateUserAddr(UserAddressEntity userAddressEntity) throws BizException {
+        if (userAddressEntity == null || userAddressEntity.getId() == null) {
+            throw new BizException(ErrorCode.CODE_INVALID_PARAM_ERROR);
+        }
+        return userAddressDao.update(userAddressEntity);
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        return userAddressDao.batchDelete(Arrays.asList(id));
+    }
+
+
 }

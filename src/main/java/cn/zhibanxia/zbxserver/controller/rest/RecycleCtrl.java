@@ -21,6 +21,8 @@ import cn.zhibanxia.zbxserver.service.UserService;
 import cn.zhibanxia.zbxserver.util.BeanUtil;
 import cn.zhibanxia.zbxserver.util.DateUtil;
 import cn.zhibanxia.zbxserver.util.LoggerUtil;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +35,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +56,13 @@ public class RecycleCtrl {
     private UserService userService;
     @Autowired
     private ComplexService complexService;
+
+    private final Cache<Long, AtomicInteger> createOrderCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).maximumSize(2000).build();
+
+    /**
+     * 单个用户每分钟最多创建的回收请求个数
+     */
+    private static final int MAX_CREATE_QPM = 5;
 
     /**
      * 获取回收列表，根据参数不同，展示不同的数据：
@@ -82,6 +94,8 @@ public class RecycleCtrl {
             ListRecycleRequestBo listRecycleRequestBo = new ListRecycleRequestBo();
             listRecycleRequestBo.setResStatus(RecycleRequestEntity.RES_STATUS_PUBLISH);
             listRecycleRequestBo.setDeleted(false);
+            List<Long> focusComplexIdList = userAddrService.findFocusAddrs(RequestLocal.get().getHuishouUid()).stream().map(UserAddressEntity::getComplexId).collect(Collectors.toList());
+            listRecycleRequestBo.setFocusComplexIdList(focusComplexIdList);
             return Result.ResultBuilder.success(buildRecycleRequestVoList(listRecycleRequestBo, page, size, true));
         } else if (Objects.equals(2, bizType)) {
             ListRecycleRequestBo listRecycleRequestBo = new ListRecycleRequestBo();
@@ -153,7 +167,8 @@ public class RecycleCtrl {
             return Result.ResultBuilder.success(null);
         }
         if (Objects.equals(1, bizType)) {
-            return Result.ResultBuilder.success(buildRecycleRequestVo(e, null, true));
+            boolean needShow = RequestLocal.get().getHuishouUid() != null && RequestLocal.get().getHuishouUid().equals(e.getRecycleUserId());
+            return Result.ResultBuilder.success(buildRecycleRequestVo(e, null, !needShow));
         } else if (Objects.equals(2, bizType)) {
             // 不允许查询非自己确认的回收请求
             if (!RequestLocal.get().getHuishouUid().equals(e.getRecycleUserId())) {
@@ -181,6 +196,16 @@ public class RecycleCtrl {
         if (!(checkParam(recycleRequestVo))) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
         }
+        AtomicInteger count;
+        try {
+            count = createOrderCache.get(RequestLocal.get().getYezhuUid(), () -> new AtomicInteger(0));
+            if (count.get() > MAX_CREATE_QPM) {
+                return Result.ResultBuilder.fail(ErrorCode.CODE_CREATE_FREQUENT_LIMIT);
+            }
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        }
         try {
             RecycleRequestEntity recycleRequestEntity = convertVo2Entity(recycleRequestVo);
             recycleRequestEntity.setCreateUserId(RequestLocal.get().getYezhuUid());
@@ -190,19 +215,17 @@ public class RecycleCtrl {
             UserAddressEntity userAddressEntity = new UserAddressEntity();
             userAddressEntity.setBizType(UserAddressEntity.BIZ_TYPE_YEZHU);
             userAddressEntity.setUserId(RequestLocal.get().getYezhuUid());
-            userAddressEntity.setProvinceId(recycleRequestEntity.getProvinceId());
-            userAddressEntity.setCityId(recycleRequestEntity.getCityId());
-            userAddressEntity.setAreaId(recycleRequestEntity.getAreaId());
-            userAddressEntity.setSubdistrictId(recycleRequestEntity.getSubdistrictId() == null ? "-1" : recycleRequestEntity.getSubdistrictId());
-            userAddressEntity.setAddrDetail(recycleRequestEntity.getAddrDetail());
             userAddressEntity.setComplexId(recycleRequestEntity.getComplexId());
             userAddressEntity.setDoorInfo(recycleRequestEntity.getDoorInfo());
             userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
 
             // 保存业主手机号，方便下次提交时不用再填
-            userService.addMobileAndVerify(RequestLocal.get().getYezhuUid(), recycleRequestEntity.getMobilePhone(), null);
+            userService.addMobileAndVerify(RequestLocal.get().getYezhuUid(), recycleRequestEntity.getMobilePhone(), null, null, null);
 
             Long id = recycleRequestService.create(recycleRequestEntity);
+            // 下单成功则计数次数+1;
+            count.incrementAndGet();
+
             return Result.ResultBuilder.success(id);
         } catch (Exception e) {
             logger.warn("", e);
@@ -368,11 +391,6 @@ public class RecycleCtrl {
             recycleRequestEntity.setDoorServStartTime(DateUtil.getSecondDate(recycleRequestVo.getDoorServStartTime()));
             recycleRequestEntity.setDoorServEndTime(DateUtil.getSecondDate(recycleRequestVo.getDoorServEndTime()));
         }
-        recycleRequestEntity.setProvinceId(recycleRequestVo.getAddr().getProvinceId());
-        recycleRequestEntity.setCityId(recycleRequestVo.getAddr().getCityId());
-        recycleRequestEntity.setAreaId(recycleRequestVo.getAddr().getAreaId());
-        recycleRequestEntity.setSubdistrictId(recycleRequestVo.getAddr().getSubdistrictId());
-        recycleRequestEntity.setAddrDetail(recycleRequestVo.getAddr().getAddrDetail());
         recycleRequestEntity.setMobilePhone(recycleRequestVo.getMobilePhone());
         recycleRequestEntity.setComplexId(recycleRequestVo.getAddr().getComplexId());
         recycleRequestEntity.setDoorInfo(recycleRequestVo.getAddr().getDoorInfo());
@@ -422,12 +440,6 @@ public class RecycleCtrl {
                 addr.setComplexVo(BeanUtil.copy(complexEntity, ComplexVo.class));
             }
             addr.setDoorInfo(e.getDoorInfo());
-        } else {
-            addr.setProvinceId(e.getProvinceId());
-            addr.setCityId(e.getCityId());
-            addr.setAreaId(e.getAreaId());
-            addr.setSubdistrictId(e.getSubdistrictId());
-            addr.setAddrDetail(e.getAddrDetail());
         }
         if (needHidden) {
             // 隐藏详细地址

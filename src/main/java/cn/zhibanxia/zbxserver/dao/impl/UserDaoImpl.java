@@ -61,11 +61,13 @@ public class UserDaoImpl extends BaseDao implements UserDao {
     }
 
     @Override
-    public boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo) {
+    public boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo, Integer wxNotifyFlag, Integer voiceNotifyFlag) {
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         params.put("mobilePhone", mobilePhone);
         params.put("verifyLogo", verifyLogo);
+        params.put("wxNotifyFlag", wxNotifyFlag);
+        params.put("voiceNotifyFlag", voiceNotifyFlag);
         int ret = update("addMobileAndVerify", params);
         return ret >= 1;
     }
@@ -90,6 +92,12 @@ public class UserDaoImpl extends BaseDao implements UserDao {
         params.put("userStatus", verifyResult ? UserEntity.USER_STATUS_NORMAL : UserEntity.USER_STATUS_NOT_PERMIT);
         params.put("verifyRemark", remark);
         int ret = update("verifyHuishou", params);
+        return ret == 1;
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        int ret = update("delete", id);
         return ret == 1;
     }
 

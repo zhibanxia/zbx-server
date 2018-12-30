@@ -32,8 +32,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo) {
-        return userDao.addMobileAndVerify(id, mobilePhone, verifyLogo);
+    public boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo, Integer wxNotifyFlag, Integer voiceNotifyFlag) {
+        return userDao.addMobileAndVerify(id, mobilePhone, verifyLogo, wxNotifyFlag, voiceNotifyFlag);
     }
 
     @Override
@@ -54,5 +54,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateUserStatus(Long id, int userStatus) {
         return userDao.updateUserStatus(id, userStatus);
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        return userDao.delete(id);
     }
 }

@@ -29,6 +29,16 @@ public class AddUserDetailReq implements Serializable {
      */
     private String verifyLogo;
 
+    /**
+     * 是否微信通知，默认通知
+     */
+    private Integer wxNotifyFlag = 1;
+
+    /**
+     * 是否语音通知，默认不通知
+     */
+    private Integer voiceNotifyFlag = 0;
+
     public String getMobilePhone() {
         return mobilePhone;
     }
@@ -59,6 +69,22 @@ public class AddUserDetailReq implements Serializable {
 
     public void setVerifyLogo(String verifyLogo) {
         this.verifyLogo = verifyLogo;
+    }
+
+    public Integer getVoiceNotifyFlag() {
+        return voiceNotifyFlag;
+    }
+
+    public void setVoiceNotifyFlag(Integer voiceNotifyFlag) {
+        this.voiceNotifyFlag = voiceNotifyFlag;
+    }
+
+    public Integer getWxNotifyFlag() {
+        return wxNotifyFlag;
+    }
+
+    public void setWxNotifyFlag(Integer wxNotifyFlag) {
+        this.wxNotifyFlag = wxNotifyFlag;
     }
 
     @Override

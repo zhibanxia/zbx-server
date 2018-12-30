@@ -39,7 +39,7 @@ public interface UserService {
      *
      * @return
      */
-    boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo);
+    boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo, Integer wxNotifyFlag, Integer voiceNotifyFlag);
 
 
     /**
@@ -76,4 +76,12 @@ public interface UserService {
      * @return
      */
     boolean updateUserStatus(Long id, int userStatus);
+
+    /**
+     * 删除用户
+     *
+     * @param id
+     * @return
+     */
+    boolean delete(Long id);
 }

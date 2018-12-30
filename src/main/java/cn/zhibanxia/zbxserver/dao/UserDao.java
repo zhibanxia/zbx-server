@@ -72,7 +72,7 @@ public interface UserDao {
      *
      * @return
      */
-    boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo);
+    boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo, Integer wxNotifyFlag, Integer voiceNotifyFlag);
 
 
     /**
@@ -101,4 +101,12 @@ public interface UserDao {
      * @return
      */
     boolean verifyHuishou(Long id, boolean verifyResult, String remark);
+
+    /**
+     * 删除用户
+     *
+     * @param id
+     * @return
+     */
+    boolean delete(Long id);
 }

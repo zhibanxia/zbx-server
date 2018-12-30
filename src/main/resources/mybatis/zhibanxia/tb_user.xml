@@ -15,13 +15,15 @@
         <result column="mobile_phone" property="mobilePhone"/>
         <result column="verify_logo" property="verifyLogo"/>
         <result column="verify_remark" property="verifyRemark"/>
+        <result column="wx_notify_flag" property="wxNotifyFlag"/>
+        <result column="voice_notify_flag" property="voiceNotifyFlag"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
 
     <sql id="all_column">
         id, user_type, wx_open_id, wx_nick_name, wx_logo, wx_id, user_status, mobile_phone,
-        verify_logo, verify_remark, gmt_create, gmt_modified
+        verify_logo, verify_remark, wx_notify_flag, voice_notify_flag, gmt_create, gmt_modified
     </sql>
 
     <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.UserEntity"
@@ -45,7 +47,7 @@
         <include refid="all_column"/>
         from tb_user
         where id in
-        <foreach collection="list" open="(" close=")" separator="," item="id" >
+        <foreach collection="list" open="(" close=")" separator="," item="id">
             #{id}
         </foreach>
     </select>
@@ -74,6 +76,12 @@
         </if>
         <if test="verifyLogo!=null">
             verify_logo=#{verifyLogo},
+        </if>
+        <if test="wxNotifyFlag!=null">
+            wx_notify_flag=${wxNotifyFlag},
+        </if>
+        <if test="voiceNotifyFlag!=null">
+            voice_notify_flag=#{voiceNotifyFlag}
         </if>
         gmt_modified=now()
         where id=#{id}
@@ -105,5 +113,9 @@
         user_status=#{userStatus}
         where id=#{id}
     </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        delete from tb_user where id = #{id}
+    </delete>
 
 </mapper>

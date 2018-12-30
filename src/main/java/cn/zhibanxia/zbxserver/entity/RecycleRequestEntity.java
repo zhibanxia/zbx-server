@@ -113,27 +113,6 @@ public class RecycleRequestEntity {
      */
     private Date doorServEndTime;
     /**
-     * 省id
-     */
-    private String provinceId;
-    /**
-     * 市id
-     */
-    private String cityId;
-    /**
-     * 区id
-     */
-    private String areaId;
-    /**
-     * 街道id
-     */
-    private String subdistrictId;
-    /**
-     * 详细地址
-     */
-    private String addrDetail;
-
-    /**
      * 小区库id
      */
     private Long complexId;
@@ -272,46 +251,6 @@ public class RecycleRequestEntity {
 
     public void setDoorServEndTime(Date doorServEndTime) {
         this.doorServEndTime = doorServEndTime;
-    }
-
-    public String getProvinceId() {
-        return provinceId;
-    }
-
-    public void setProvinceId(String provinceId) {
-        this.provinceId = provinceId;
-    }
-
-    public String getCityId() {
-        return cityId;
-    }
-
-    public void setCityId(String cityId) {
-        this.cityId = cityId;
-    }
-
-    public String getAreaId() {
-        return areaId;
-    }
-
-    public void setAreaId(String areaId) {
-        this.areaId = areaId;
-    }
-
-    public String getSubdistrictId() {
-        return subdistrictId;
-    }
-
-    public void setSubdistrictId(String subdistrictId) {
-        this.subdistrictId = subdistrictId;
-    }
-
-    public String getAddrDetail() {
-        return addrDetail;
-    }
-
-    public void setAddrDetail(String addrDetail) {
-        this.addrDetail = addrDetail;
     }
 
     public Long getComplexId() {

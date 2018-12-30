@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zzy on  2018/10/05 21:31
@@ -35,6 +36,11 @@ public class ListRecycleRequestBo implements Serializable {
      * 确认回收人id
      */
     private Long recycleUserId;
+
+    /**
+     * 关注的小区id列表
+     */
+    private List<Long> focusComplexIdList;
     /**
      * 起始页码
      */
@@ -90,6 +96,14 @@ public class ListRecycleRequestBo implements Serializable {
 
     public void setRecycleUserId(Long recycleUserId) {
         this.recycleUserId = recycleUserId;
+    }
+
+    public List<Long> getFocusComplexIdList() {
+        return focusComplexIdList;
+    }
+
+    public void setFocusComplexIdList(List<Long> focusComplexIdList) {
+        this.focusComplexIdList = focusComplexIdList;
     }
 
     public int getStartPage() {
