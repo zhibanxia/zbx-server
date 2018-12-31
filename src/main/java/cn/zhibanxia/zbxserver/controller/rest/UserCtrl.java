@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,31 +63,18 @@ public class UserCtrl {
                 userAddressEntity.setDoorInfo(addUserDetailReq.getDefaultAddr().getDoorInfo());
                 return Result.ResultBuilder.success(userAddrService.addOrUpdateOnlyAddr(userAddressEntity));
             } else {
-                if (Objects.equals(RequestLocal.get().getHuishouUserEntity().getUserStatus(), UserEntity.USER_STATUS_NORMAL)) {
-                    // 资料已经审核通过，不能修改
-                    return Result.ResultBuilder.fail(ErrorCode.CODE_USER_CANNOT_MODIFY_ADDR_ERROR);
+                // 未审核通过
+                if (!Objects.equals(RequestLocal.get().getHuishouUserEntity().getUserStatus(), UserEntity.USER_STATUS_NORMAL)) {
+                    userService.addMobileAndVerify(RequestLocal.get().getHuishouUid(), addUserDetailReq.getMobilePhone(), addUserDetailReq.getVerifyLogo(), addUserDetailReq.getWxNotifyFlag(), addUserDetailReq.getVoiceNotifyFlag());
+                    modifyHuishouAddrInfo(addUserDetailReq);
+                    // 最终修改回收人员状态为审核中
+                    return Result.ResultBuilder.success(userService.updateUserStatus(RequestLocal.get().getHuishouUid(), UserEntity.USER_STATUS_PERMIT_PROCESS));
+                } else { // 资料已经审核通过，只能修改关注小区、通知配置
+                    // 可以修改手机号、语音和微信通知配置，认证头像不能修改
+                    userService.addMobileAndVerify(RequestLocal.get().getHuishouUid(), addUserDetailReq.getMobilePhone(), null, addUserDetailReq.getWxNotifyFlag(), addUserDetailReq.getVoiceNotifyFlag());
+                    modifyHuishouAddrInfo(addUserDetailReq);
+                    return Result.ResultBuilder.success(true);
                 }
-                userService.addMobileAndVerify(RequestLocal.get().getHuishouUid(), addUserDetailReq.getMobilePhone(), addUserDetailReq.getVerifyLogo(), addUserDetailReq.getWxNotifyFlag(), addUserDetailReq.getVoiceNotifyFlag());
-                UserAddressEntity userAddressEntity = new UserAddressEntity();
-                userAddressEntity.setUserId(RequestLocal.get().getHuishouUid());
-                userAddressEntity.setBizType(UserAddressEntity.BIZ_TYPE_HUISHOU);
-                userAddressEntity.setComplexId(addUserDetailReq.getDefaultAddr().getComplexId());
-                userAddressEntity.setDoorInfo(addUserDetailReq.getDefaultAddr().getDoorInfo());
-                userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
-
-                List<UserAddressEntity> focusAddrs = addUserDetailReq.getFocusAddrList().stream().map(e -> {
-                    UserAddressEntity temp = new UserAddressEntity();
-                    temp.setId(e.getAddrId());
-                    temp.setUserId(RequestLocal.get().getHuishouUid());
-                    temp.setBizType(UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
-                    temp.setComplexId(e.getComplexId());
-                    temp.setDoorInfo(e.getDoorInfo());
-                    return temp;
-                }).collect(Collectors.toList());
-                userAddrService.batchAddAddr(RequestLocal.get().getHuishouUid(), focusAddrs);
-
-                // 最终修改回收人员状态为审核中
-                return Result.ResultBuilder.success(userService.updateUserStatus(RequestLocal.get().getHuishouUid(), UserEntity.USER_STATUS_PERMIT_PROCESS));
             }
         } catch (BizException e) {
             logger.warn("", e);
@@ -97,6 +83,26 @@ public class UserCtrl {
             logger.warn("", e);
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
         }
+    }
+
+    private void modifyHuishouAddrInfo(AddUserDetailReq addUserDetailReq) throws BizException {
+        UserAddressEntity userAddressEntity = new UserAddressEntity();
+        userAddressEntity.setUserId(RequestLocal.get().getHuishouUid());
+        userAddressEntity.setBizType(UserAddressEntity.BIZ_TYPE_HUISHOU);
+        userAddressEntity.setComplexId(addUserDetailReq.getDefaultAddr().getComplexId());
+        userAddressEntity.setDoorInfo(addUserDetailReq.getDefaultAddr().getDoorInfo());
+        userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
+
+        List<UserAddressEntity> focusAddrs = addUserDetailReq.getFocusAddrList().stream().map(e -> {
+            UserAddressEntity temp = new UserAddressEntity();
+            temp.setId(e.getAddrId());
+            temp.setUserId(RequestLocal.get().getHuishouUid());
+            temp.setBizType(UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
+            temp.setComplexId(e.getComplexId());
+            temp.setDoorInfo(e.getDoorInfo());
+            return temp;
+        }).collect(Collectors.toList());
+        userAddrService.batchAddAddr(RequestLocal.get().getHuishouUid(), focusAddrs);
     }
 
     @GetMapping("getUserType")
@@ -388,101 +394,6 @@ public class UserCtrl {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
         } finally {
             adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "getAllUser", "page=" + page + ", size=" + size);
-        }
-    }
-
-
-    @PostMapping("editFocusConplex")
-    public Result<Boolean> editFocusConplex(@RequestBody Addr addr) {
-        if (!RequestLocal.get().isHuishou()) {
-            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
-        }
-        if (addr.getAddrId() == null || addr.getComplexId() == null) {
-            logger.warn("addrId is null or complexId is null, addrId={}, complexId={}", addr.getAddrId(), addr.getComplexId());
-            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
-        }
-        UserAddressEntity userAddressEntity = userAddrService.find(addr.getAddrId());
-        // 非法参数校验
-        // 1.数据不存在
-        // 2.处于删除状态
-        // 3.不是本人关注的回收地址
-        // 4.不是回收关注地址
-        if (userAddressEntity == null || userAddressEntity.getDeleted() ||
-                !RequestLocal.get().getHuishouUid().equals(userAddressEntity.getUserId()) ||
-                !Objects.equals(userAddressEntity.getBizType(), UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS)) {
-            logger.warn("addr is not exist, or has been deleted, id={}, addr={}", addr.getAddrId(), userAddressEntity);
-            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
-        }
-
-        // 没有做变更，直接返回成功
-        if (addr.getComplexId().equals(userAddressEntity.getComplexId())) {
-            return Result.ResultBuilder.success(true);
-        }
-        try {
-            UserAddressEntity updateUserAddressEntity = new UserAddressEntity();
-            updateUserAddressEntity.setId(addr.getAddrId());
-            updateUserAddressEntity.setComplexId(addr.getComplexId());
-            return Result.ResultBuilder.success(userAddrService.updateUserAddr(updateUserAddressEntity));
-        } catch (BizException e) {
-            return Result.ResultBuilder.fail(e.getErrorCode());
-        } catch (Exception e) {
-            logger.warn("", e);
-            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
-        }
-    }
-
-
-    @PostMapping("deleteFocusConplex")
-    public Result<Boolean> deleteFocusConplex(@RequestBody Long addrId) {
-        if (!RequestLocal.get().isHuishou()) {
-            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
-        }
-        if (addrId == null) {
-            logger.warn("addrId is null");
-            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
-        }
-        UserAddressEntity userAddressEntity = userAddrService.find(addrId);
-        // 非法参数校验
-        // 1.数据不存在
-        // 2.处于删除状态
-        // 3.不是本人关注的回收地址
-        // 4.不是回收关注地址
-        if (userAddressEntity == null || userAddressEntity.getDeleted() ||
-                !RequestLocal.get().getHuishouUid().equals(userAddressEntity.getUserId()) ||
-                !Objects.equals(userAddressEntity.getBizType(), UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS)) {
-            logger.warn("addr is not exist, or has been deleted, id={}, addr={}", addrId, userAddressEntity);
-            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
-        }
-
-        try {
-            return Result.ResultBuilder.success(userAddrService.delete(addrId));
-        } catch (Exception e) {
-            logger.warn("", e);
-            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
-        }
-    }
-
-
-    @PostMapping("addFocusConplex")
-    public Result<Boolean> addFocusConplex(@RequestBody Long complexId) {
-        if (!RequestLocal.get().isHuishou()) {
-            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
-        }
-        if (complexId == null) {
-            logger.warn("complexId is null");
-            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
-        }
-        try {
-            UserAddressEntity userAddressEntity = new UserAddressEntity();
-            userAddressEntity.setComplexId(complexId);
-            userAddressEntity.setUserId(RequestLocal.get().getHuishouUid());
-            userAddressEntity.setBizType(UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
-            return Result.ResultBuilder.success(userAddrService.batchAddAddr(RequestLocal.get().getHuishouUid(), Arrays.asList(userAddressEntity)));
-        } catch (BizException e) {
-            return Result.ResultBuilder.fail(e.getErrorCode());
-        } catch (Exception e) {
-            logger.warn("", e);
-            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
         }
     }
 }

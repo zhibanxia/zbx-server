@@ -6,7 +6,6 @@ import cn.zhibanxia.zbxserver.dao.UserAddressDao;
 import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
 import cn.zhibanxia.zbxserver.exception.BizException;
 import cn.zhibanxia.zbxserver.service.UserAddrService;
-import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,11 +51,15 @@ public class UserAddrServiceImpl implements UserAddrService {
                 existOne.setDoorInfo(userAddressEntity.getDoorInfo());
                 needUpdate = true;
             }
+            if (userAddressEntityList.size() > 1) {
+                List<Long> needDelIds = userAddressEntityList.subList(1, userAddressEntityList.size()).stream().map(UserAddressEntity::getId).collect(Collectors.toList());
+                userAddressDao.batchDelete(needDelIds);
+            }
             if (needUpdate) {
                 return userAddressDao.update(existOne);
             }
         }
-        return false;
+        return true;
     }
 
     @Override
