@@ -1,5 +1,7 @@
 package cn.zhibanxia.zbxserver.dao.impl;
 
+import cn.zhibanxia.zbxserver.bo.SearchUserBo;
+import cn.zhibanxia.zbxserver.controller.param.SearchUserReq;
 import cn.zhibanxia.zbxserver.dao.BaseDao;
 import cn.zhibanxia.zbxserver.dao.UserDao;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
@@ -83,6 +85,16 @@ public class UserDaoImpl extends BaseDao implements UserDao {
     @Override
     public int countAllUser() {
         return selectOne("countAllUser");
+    }
+
+    @Override
+    public List<UserEntity> searchUser(SearchUserBo searchUserBo) {
+        return selectList("searchUser", searchUserBo);
+    }
+
+    @Override
+    public int countSearchUser(SearchUserBo searchUserBo) {
+        return selectOne("countSearchUser", searchUserBo);
     }
 
     @Override

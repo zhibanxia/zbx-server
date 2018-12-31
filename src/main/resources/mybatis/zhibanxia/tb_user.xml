@@ -104,6 +104,45 @@
         where user_status!=6
     </select>
 
+    <select id="searchUser" parameterType="cn.zhibanxia.zbxserver.bo.SearchUserBo"
+            resultMap="UserEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_user
+        where
+        user_type=#{userType} and
+        user_status=#{userStatus}
+        <if test="searchContent!=null">
+            <!-- 只会有一个条件成立 -->
+            <if test="searchType==1">
+                and wx_nick_name like '%#{searchContent}%'
+            </if>
+            <if test="searchType==2">
+                and mobile_phone=#{searchContent}
+            </if>
+        </if>
+        order by gmt_create desc
+        limit #{startPage}, #{endPage}
+    </select>
+
+    <select id="countSearchUser" parameterType="cn.zhibanxia.zbxserver.bo.SearchUserBo" resultType="java.lang.Integer">
+        select
+        count(1)
+        from tb_user
+        where
+        user_type=#{userType} and
+        user_status=#{userStatus}
+        <if test="searchContent!=null">
+            <!-- 只会有一个条件成立 -->
+            <if test="searchType==1">
+                and wx_nick_name like '%#{searchContent}%'
+            </if>
+            <if test="searchType==2">
+                and mobile_phone=#{searchContent}
+            </if>
+        </if>
+    </select>
+
     <update id="verifyHuishou" parameterType="java.util.Map">
         update tb_user
         set

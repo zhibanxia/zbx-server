@@ -1,5 +1,6 @@
 package cn.zhibanxia.zbxserver.service.impl;
 
+import cn.zhibanxia.zbxserver.bo.SearchUserBo;
 import cn.zhibanxia.zbxserver.dao.UserDao;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.service.UserService;
@@ -39,6 +40,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserEntity> listAllUser(int startPage, int endPage) {
         return userDao.listAllUser(startPage, endPage);
+    }
+
+    @Override
+    public List<UserEntity> searchUser(SearchUserBo searchUserBo) {
+        return userDao.searchUser(searchUserBo);
+    }
+
+    @Override
+    public int countSearchUser(SearchUserBo searchUserBo) {
+        return userDao.countSearchUser(searchUserBo);
     }
 
     @Override

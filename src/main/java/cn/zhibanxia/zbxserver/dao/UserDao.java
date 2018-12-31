@@ -1,6 +1,7 @@
 package cn.zhibanxia.zbxserver.dao;
 
 
+import cn.zhibanxia.zbxserver.bo.SearchUserBo;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 
 import java.util.List;
@@ -91,6 +92,23 @@ public interface UserDao {
      */
     int countAllUser();
 
+
+    /**
+     * 分页检索用户列表
+     *
+     * @param searchUserBo
+     * @return
+     */
+    List<UserEntity> searchUser(SearchUserBo searchUserBo);
+
+
+    /**
+     * 根据检索条件查询用户数
+     *
+     * @param searchUserBo
+     * @return
+     */
+    int countSearchUser(SearchUserBo searchUserBo);
 
     /**
      * 审核回收人员

@@ -1,5 +1,6 @@
 package cn.zhibanxia.zbxserver.controller.rest;
 
+import cn.zhibanxia.zbxserver.bo.SearchUserBo;
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.controller.param.*;
 import cn.zhibanxia.zbxserver.entity.ComplexEntity;
@@ -396,4 +397,60 @@ public class UserCtrl {
             adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "getAllUser", "page=" + page + ", size=" + size);
         }
     }
+
+
+    @GetMapping("searchUser")
+    public Result<ListRsp<UserDetail4Admin>> searchUser(@RequestBody SearchUserReq searchUserReq) {
+        if (!RequestLocal.get().isAdmin()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        Integer page = searchUserReq.getPage();
+        Integer size = searchUserReq.getSize();
+        int pageVal = (page == null || page <= 0) ? 1 : page.intValue();
+        int pageSize = (size == null || size <= 0) ? 10 : size.intValue();
+        int startPage = (pageVal - 1) * pageSize;
+        int endPage = pageVal * pageSize;
+
+        SearchUserBo searchUserBo = new SearchUserBo();
+        searchUserBo.setStartPage(startPage);
+        searchUserBo.setEndPage(endPage);
+        searchUserBo.setUserType(getParamUserType(searchUserReq.getUserType()));
+        searchUserBo.setUserStatus(getParamUserStatus(searchUserReq.getUserStatus()));
+        searchUserBo.setSearchType(getParamSearchType(searchUserReq.getSearchType()));
+        try {
+            List<UserEntity> entityList = userService.searchUser(searchUserBo);
+            int count = userService.countSearchUser(searchUserBo);
+            ListRsp<UserDetail4Admin> listRsp = new ListRsp<>();
+            listRsp.setTotalCount(count);
+            listRsp.setList(BeanUtil.copyList(entityList, UserDetail4Admin.class));
+            return Result.ResultBuilder.success(listRsp);
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        } finally {
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "searchUser", searchUserReq);
+        }
+    }
+
+    private int getParamUserType(Integer userType) {
+        if (userType == null || userType < 1 || userType > 2) {
+            return UserEntity.USER_TYPE_HUISHOU;
+        }
+        return userType;
+    }
+
+    private int getParamUserStatus(Integer userStatus) {
+        if (userStatus == null || userStatus < 1 || userStatus > 6) {
+            return UserEntity.USER_STATUS_NORMAL;
+        }
+        return userStatus;
+    }
+
+    private int getParamSearchType(Integer searchType) {
+        if (searchType == null || searchType < 1 || searchType > 2) {
+            return 1;
+        }
+        return searchType;
+    }
+
 }
