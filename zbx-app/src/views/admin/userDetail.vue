@@ -41,6 +41,7 @@
       <van-col span="24" v-if="(data.status !== 6 && data.status !== 5) || data.status === 5">
         <van-button type="primary" block @click="handleYezhu(5)" v-if="data.status !== 6 && data.status !== 5">禁用账号</van-button>
         <van-button type="primary" block @click="handleYezhu(1)" v-if="data.status === 5">恢复账号</van-button>
+        <van-button block @click="handleDelete" style="margin-top:20px;">删除用户</van-button>
       </van-col>
     </van-row>
   </div>
@@ -135,6 +136,13 @@ export default {
     async handleYezhu (status) {
       await this.$dialog.confirm({message: `确定${status === 5 ? '禁用' : '恢复'}吗？`})
       await this.$ajax('modifyUserStatus', {id: this.id, status: status})
+      await this.$dialog.alert({message: `操作成功`})
+      this.$router.push(`/admin/?user=1&timestamp=${new Date().getTime()}`)
+    },
+
+    async handleDelete () {
+      await this.$dialog.confirm({message: `删除后该用户需重新注册，确定删除？`})
+      await this.$ajax('deleteUser', {id: this.id})
       await this.$dialog.alert({message: `操作成功`})
       this.$router.push(`/admin/?user=1&timestamp=${new Date().getTime()}`)
     }

@@ -35,7 +35,9 @@ const urls = {
     // 管理员 -修改用户状态
     modifyUserStatus: '/rest/user/modifyUserStatus',
     // 匹配小区信息
-    searchByComplexName: '/rest/complex/searchByComplexName'
+    searchByComplexName: '/rest/complex/searchByComplexName',
+    // 管理员 -删除用户
+    deleteUser: '/rest/user/deleteUser'
   },
   patch: {},
   delete: {}
