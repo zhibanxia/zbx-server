@@ -86,7 +86,8 @@
       />
 
       <van-cell v-if="type === 2" title="电话通知订单"  :value="formatVoiceNotifyFlag(form.voiceNotifyFlag)" @click="voiceNotifyFlagPopShow = true"/>
-   
+      <van-cell v-if="type === 2" title="微信通知订单"  :value="formatWxNotifyFlag(form.wxNotifyFlag)" @click="wxNotifyFlagPopShow = true"/>
+      
    </van-cell-group>
     <van-row>
       <van-col span="24">
@@ -100,7 +101,11 @@
     <search :show.sync="searchDialog.show" :province-id="searchDialog.provinceId" :city-id="searchDialog.cityId" :area-id="searchDialog.areaId" @select="searchHandle"></search>
     <!-- 电话通知订单 -->
     <van-popup v-model="voiceNotifyFlagPopShow" position="bottom">
-      <van-picker :columns="voiceNotifyFlags" value-key="label" @confirm="handleVoiceNotifyFlagConfirm" show-toolbar title="电话通知订单" @cancel="voiceNotifyFlagPopShow = false"/>
+      <van-picker :columns="[{values: voiceNotifyFlags, defaultIndex: form.voiceNotifyFlag ? 0: 1}]" value-key="label" @confirm="handleVoiceNotifyFlagConfirm" show-toolbar title="电话通知订单" @cancel="voiceNotifyFlagPopShow = false"/>
+    </van-popup>
+    <!-- 微信通知订单 -->
+    <van-popup v-model="wxNotifyFlagPopShow" position="bottom">
+      <van-picker :columns="[{values: wxNotifyFlags, defaultIndex: form.wxNotifyFlag ? 0 : 1}]" value-key="label" @confirm="handleWxNotifyFlagConfirm" show-toolbar title="微信通知订单" @cancel="wxNotifyFlagPopShow = false"/>
     </van-popup>
   </div>
 </template>
@@ -126,7 +131,9 @@ export default {
           doorInfo: ''
         },
         // 电话通知订单
-        voiceNotifyFlag: 1
+        voiceNotifyFlag: 1,
+        // 微信通知订单
+        wxNotifyFlag: 1
       },
       errors: {
         area: '',
@@ -151,6 +158,9 @@ export default {
       // 电话通知订单
       voiceNotifyFlags: VOICE_NOTIFYFLAG,
       voiceNotifyFlagPopShow: false,
+      // 微信通知订单
+      wxNotifyFlags: VOICE_NOTIFYFLAG,
+      wxNotifyFlagPopShow: false
     }
   },
   created () {
@@ -168,9 +178,9 @@ export default {
         if (!res.data.focusAddrList) {
           res.data.focusAddrList = []
         }
-        const { focusAddrList, mobilePhone, verifyLogo } = res.data
+        const { focusAddrList, mobilePhone, verifyLogo, wxNotifyFlag, voiceNotifyFlag } = res.data
         
-        this.form = Object.assign({}, this.form, {focusAddrList, mobilePhone, verifyLogo, defaultAddr })
+        this.form = Object.assign({}, this.form, {focusAddrList, mobilePhone, verifyLogo, defaultAddr, wxNotifyFlag, voiceNotifyFlag })
         
         // 住址 回填 具体地址
         this.defaultAddrTxt = defaultAddr.complexVo.addrDetail ? defaultAddr.complexVo.addrDetail + defaultAddr.doorInfo : ''
@@ -289,6 +299,7 @@ export default {
         })
         params.focusAddrList = _focusAdrs
         params.voiceNotifyFlag = this.form.voiceNotifyFlag
+        params.wxNotifyFlag = this.form.wxNotifyFlag
       }
 
       await this.$ajax('addUserDetail', params)
@@ -335,8 +346,16 @@ export default {
       return stt.length ? stt[0].label : '请选择'
     },
     handleVoiceNotifyFlagConfirm (item) {
-      this.form.voiceNotifyFlag = item.id
+      this.form.voiceNotifyFlag = item[0].id
       this.voiceNotifyFlagPopShow = false
+    },
+    formatWxNotifyFlag (val) {
+      let stt = VOICE_NOTIFYFLAG.filter(item => item.id === val)
+      return stt.length ? stt[0].label : '请选择'
+    },
+    handleWxNotifyFlagConfirm (item) {
+      this.form.wxNotifyFlag = item[0].id
+      this.wxNotifyFlagPopShow = false
     },
   }
 }

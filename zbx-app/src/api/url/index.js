@@ -10,8 +10,6 @@ const urls = {
     getYezhuUserInfo: '/rest/user/getYezhuUserInfo',
     // 管理员- 回收列表
     recylerListByAdmin: '/rest/recycle/list4Admin',
-    // 管理员 -用户列表
-    getAllUser: '/rest/user/getAllUser',
     // 管理员 - 获取回收人员信息
     getRecylerInfo: '/rest/user/getHuishouUserInfo',
     // 管理员 - 获取业主信息
@@ -37,7 +35,9 @@ const urls = {
     // 匹配小区信息
     searchByComplexName: '/rest/complex/searchByComplexName',
     // 管理员 -删除用户
-    deleteUser: '/rest/user/deleteUser'
+    deleteUser: '/rest/user/deleteUser',
+    // 管理员 -查询用户列表
+    searchUser: '/rest/user/searchUser'
   },
   patch: {},
   delete: {}

@@ -1,6 +1,6 @@
 <template>
 <div id="admin-wrap">
-<van-nav-bar :title="active === 0 ? '回收列表' : '用户列表'" />
+<van-nav-bar :title="active === 0 ? '回收列表' : '用户列表'" :right-text="active === 1 ? '筛选' : ''" @click-right="searchDialog.show=true"/>
 <!-- 回收列表 -->
 <van-pull-refresh v-model="loading" @refresh="onRefresh" class="admin-content" v-if="active === 0">
   <recyle-list :data="data" @click="handleRecylerClick"></recyle-list>
@@ -32,7 +32,7 @@
       </van-col>
     </van-row>
   </div>
-  <p class="loadmore" @click="getAllUser" v-if="!finished">点击加载更多</p>
+  <p class="loadmore" @click="searchUser" v-if="!finished">点击加载更多</p>
   <p class="loadmore" v-else>没有更多了</p>
 </van-pull-refresh>
 
@@ -41,14 +41,17 @@
   <van-tabbar-item icon="records">用户列表</van-tabbar-item>
 </van-tabbar>
 <van-loading v-if="loading" class="loading" color="white"/>
+<search :show.sync="searchDialog.show" :search="searchDialog.search" @search="handleSearch"></search>
 </div>
 </template>
 <script>
 import RecyleList from './../components/RecyleList'
 import {USER_STATUS4ADMIN} from '@/utils/constant'
+import Search from './components/Search'
 export default {
   components: {
-    RecyleList
+    RecyleList,
+    Search
   },
   data () {
     return {
@@ -64,6 +67,15 @@ export default {
       params2: {
         page: 1,
         size: 10
+      },
+      searchDialog: {
+        show: false,
+        search: {
+          userType: '',
+          userStatus: '',
+          searchType: '',
+          searchContent: ''
+        }
       }
     }
   },
@@ -95,13 +107,15 @@ export default {
     /**
      * 用户列表
      */
-    async getAllUser () {
+    async searchUser () {
       this.loading = true
-      let params = {
+      // const {userType, userStatus, searchType, searchContent} = this.searchDialog.search
+      let params = Object.assign({}, this.searchDialog.search, {
         page: this.params2.page,
         size: this.params2.size
-      }
-      await this.$ajax('getAllUser', params).then(res => {
+      })
+
+      await this.$ajax('searchUser', params).then(res => {
         // this.finished = true
         if (res.data.list.length === 0) {
           this.finished = true
@@ -121,7 +135,7 @@ export default {
     },
     async onRefresh2 () {
       this.params2.page = 1
-      await this.getAllUser()
+      await this.searchUser()
     },
     handleTabbar (index) {
       this.active = index
@@ -131,7 +145,7 @@ export default {
         return
       }
       this.params2.page = 1
-      this.getAllUser()
+      this.searchUser()
     },
     /**
      * 点击进入回收详情页
@@ -156,6 +170,13 @@ export default {
       let stt = USER_STATUS4ADMIN.filter(item => item.id === +status)
       return stt.length ? stt[0].label : '--'
     },
+
+    // 内容搜索
+    handleSearch(form) {
+      this.params2.page = 1
+      this.searchDialog.search = form
+      this.searchUser()
+    }
   }
 }
 </script>
@@ -178,6 +199,10 @@ export default {
     padding: 10px;
     border-radius: 3px;
     background-color: rgba(0, 0, 0, .5);
+  }
+  .user-search {
+    text-align: right;
+    border-bottom: 1px solid #f8f8f8;
   }
 }
 .user-item {
