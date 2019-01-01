@@ -33,26 +33,6 @@ public class UserAddressEntity {
      * 3.回收人员关注的小区信息
      */
     private Integer bizType = 0;
-    /**
-     * 省份id
-     */
-    private String provinceId;
-    /**
-     * 地级市id
-     */
-    private String cityId;
-    /**
-     * 区id
-     */
-    private String areaId;
-    /**
-     * 街道id
-     */
-    private String subdistrictId;
-    /**
-     * 详细地址
-     */
-    private String addrDetail;
 
     /**
      * 小区id
@@ -92,46 +72,6 @@ public class UserAddressEntity {
 
     public void setBizType(Integer bizType) {
         this.bizType = bizType;
-    }
-
-    public String getProvinceId() {
-        return provinceId;
-    }
-
-    public void setProvinceId(String provinceId) {
-        this.provinceId = provinceId;
-    }
-
-    public String getCityId() {
-        return cityId;
-    }
-
-    public void setCityId(String cityId) {
-        this.cityId = cityId;
-    }
-
-    public String getAreaId() {
-        return areaId;
-    }
-
-    public void setAreaId(String areaId) {
-        this.areaId = areaId;
-    }
-
-    public String getSubdistrictId() {
-        return subdistrictId;
-    }
-
-    public void setSubdistrictId(String subdistrictId) {
-        this.subdistrictId = subdistrictId;
-    }
-
-    public String getAddrDetail() {
-        return addrDetail;
-    }
-
-    public void setAddrDetail(String addrDetail) {
-        this.addrDetail = addrDetail;
     }
 
     public Long getComplexId() {

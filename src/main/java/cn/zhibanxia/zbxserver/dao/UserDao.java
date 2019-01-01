@@ -1,6 +1,7 @@
 package cn.zhibanxia.zbxserver.dao;
 
 
+import cn.zhibanxia.zbxserver.bo.SearchUserBo;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 
 import java.util.List;
@@ -72,7 +73,7 @@ public interface UserDao {
      *
      * @return
      */
-    boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo);
+    boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo, Integer wxNotifyFlag, Integer voiceNotifyFlag);
 
 
     /**
@@ -93,6 +94,23 @@ public interface UserDao {
 
 
     /**
+     * 分页检索用户列表
+     *
+     * @param searchUserBo
+     * @return
+     */
+    List<UserEntity> searchUser(SearchUserBo searchUserBo);
+
+
+    /**
+     * 根据检索条件查询用户数
+     *
+     * @param searchUserBo
+     * @return
+     */
+    int countSearchUser(SearchUserBo searchUserBo);
+
+    /**
      * 审核回收人员
      *
      * @param id           回收人员id
@@ -101,4 +119,12 @@ public interface UserDao {
      * @return
      */
     boolean verifyHuishou(Long id, boolean verifyResult, String remark);
+
+    /**
+     * 删除用户
+     *
+     * @param id
+     * @return
+     */
+    boolean delete(Long id);
 }

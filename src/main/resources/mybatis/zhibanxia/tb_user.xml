@@ -15,13 +15,15 @@
         <result column="mobile_phone" property="mobilePhone"/>
         <result column="verify_logo" property="verifyLogo"/>
         <result column="verify_remark" property="verifyRemark"/>
+        <result column="wx_notify_flag" property="wxNotifyFlag"/>
+        <result column="voice_notify_flag" property="voiceNotifyFlag"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
 
     <sql id="all_column">
         id, user_type, wx_open_id, wx_nick_name, wx_logo, wx_id, user_status, mobile_phone,
-        verify_logo, verify_remark, gmt_create, gmt_modified
+        verify_logo, verify_remark, wx_notify_flag, voice_notify_flag, gmt_create, gmt_modified
     </sql>
 
     <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.UserEntity"
@@ -45,7 +47,7 @@
         <include refid="all_column"/>
         from tb_user
         where id in
-        <foreach collection="list" open="(" close=")" separator="," item="id" >
+        <foreach collection="list" open="(" close=")" separator="," item="id">
             #{id}
         </foreach>
     </select>
@@ -75,6 +77,12 @@
         <if test="verifyLogo!=null">
             verify_logo=#{verifyLogo},
         </if>
+        <if test="wxNotifyFlag!=null">
+            wx_notify_flag=${wxNotifyFlag},
+        </if>
+        <if test="voiceNotifyFlag!=null">
+            voice_notify_flag=#{voiceNotifyFlag}
+        </if>
         gmt_modified=now()
         where id=#{id}
     </update>
@@ -96,6 +104,45 @@
         where user_status!=6
     </select>
 
+    <select id="searchUser" parameterType="cn.zhibanxia.zbxserver.bo.SearchUserBo"
+            resultMap="UserEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_user
+        where
+        user_type=#{userType} and
+        user_status=#{userStatus}
+        <if test="searchContent!=null">
+            <!-- 只会有一个条件成立 -->
+            <if test="searchType==1">
+                and wx_nick_name like '%#{searchContent}%'
+            </if>
+            <if test="searchType==2">
+                and mobile_phone=#{searchContent}
+            </if>
+        </if>
+        order by gmt_create desc
+        limit #{startPage}, #{endPage}
+    </select>
+
+    <select id="countSearchUser" parameterType="cn.zhibanxia.zbxserver.bo.SearchUserBo" resultType="java.lang.Integer">
+        select
+        count(1)
+        from tb_user
+        where
+        user_type=#{userType} and
+        user_status=#{userStatus}
+        <if test="searchContent!=null">
+            <!-- 只会有一个条件成立 -->
+            <if test="searchType==1">
+                and wx_nick_name like '%#{searchContent}%'
+            </if>
+            <if test="searchType==2">
+                and mobile_phone=#{searchContent}
+            </if>
+        </if>
+    </select>
+
     <update id="verifyHuishou" parameterType="java.util.Map">
         update tb_user
         set
@@ -105,5 +152,9 @@
         user_status=#{userStatus}
         where id=#{id}
     </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        delete from tb_user where id = #{id}
+    </delete>
 
 </mapper>

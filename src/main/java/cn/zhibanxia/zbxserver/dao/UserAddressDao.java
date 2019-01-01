@@ -17,6 +17,15 @@ public interface UserAddressDao {
      */
     Long insert(UserAddressEntity userAddressEntity);
 
+
+    /**
+     * 根据主键id查询
+     *
+     * @param id
+     * @return
+     */
+    UserAddressEntity find(Long id);
+
     /**
      * 查询用户地址
      *
@@ -59,7 +68,7 @@ public interface UserAddressDao {
 
 
     /**
-     * 批量删除
+     * 批量删除，软删除
      *
      * @param ids
      * @return

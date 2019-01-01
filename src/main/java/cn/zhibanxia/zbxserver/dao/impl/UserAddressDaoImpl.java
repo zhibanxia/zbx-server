@@ -21,6 +21,11 @@ public class UserAddressDaoImpl extends BaseDao implements UserAddressDao {
     }
 
     @Override
+    public UserAddressEntity find(Long id) {
+        return selectOne("find", id);
+    }
+
+    @Override
     public List<UserAddressEntity> findAddrs(Long userId, int bizType) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);

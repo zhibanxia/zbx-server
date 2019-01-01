@@ -101,6 +101,17 @@ public class UserEntity {
      * 审核备注，用于审核拒绝时的原因填写
      */
     private String verifyRemark;
+
+    /**
+     * 是否微信通知，默认通知
+     */
+    private Integer wxNotifyFlag = 1;
+
+    /**
+     * 是否语音通知，默认不通知
+     */
+    private Integer voiceNotifyFlag = 0;
+
     private Date gmtCreate;
     private Date gmtModified;
 
@@ -182,6 +193,22 @@ public class UserEntity {
 
     public void setVerifyRemark(String verifyRemark) {
         this.verifyRemark = verifyRemark;
+    }
+
+    public Integer getWxNotifyFlag() {
+        return wxNotifyFlag;
+    }
+
+    public void setWxNotifyFlag(Integer wxNotifyFlag) {
+        this.wxNotifyFlag = wxNotifyFlag;
+    }
+
+    public Integer getVoiceNotifyFlag() {
+        return voiceNotifyFlag;
+    }
+
+    public void setVoiceNotifyFlag(Integer voiceNotifyFlag) {
+        this.voiceNotifyFlag = voiceNotifyFlag;
     }
 
     public Date getGmtCreate() {

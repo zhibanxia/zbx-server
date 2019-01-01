@@ -1,6 +1,7 @@
 package cn.zhibanxia.zbxserver.bo;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
@@ -126,5 +127,11 @@ public class WxTemplateMsgReqBo implements Serializable {
 
     public Map<String, JSONObject> getData() {
         return data;
+    }
+
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
     }
 }

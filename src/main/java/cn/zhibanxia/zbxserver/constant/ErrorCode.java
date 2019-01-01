@@ -55,6 +55,11 @@ public enum ErrorCode {
     CODE_INVALID_PARAM_ERROR("301001", "参数不合法"),
 
     /**
+     * 频繁创建回收订单
+     */
+    CODE_CREATE_FREQUENT_LIMIT("302001", "下单太过频繁"),
+
+    /**
      * 回收请求已经被处理
      */
     CODE_RECYCLE_HAS_HANDLED_ERROR("401001", "回收已经被处理"),

@@ -104,23 +104,14 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
 
         wxTemplateMsgReqBo.setFirst("你关注的小区有新的回收请求。");
         //回收小区
-        wxTemplateMsgReqBo.setKeyword1(
-
-                getComplexStr(recycleRequestEntity.getComplexId()));
+        wxTemplateMsgReqBo.setKeyword1(getComplexStr(recycleRequestEntity.getComplexId()));
         //回收类型
-        wxTemplateMsgReqBo.setKeyword2(
-
-                getResTypeStr(recycleRequestEntity.getResType()));
+        wxTemplateMsgReqBo.setKeyword2(getResTypeStr(recycleRequestEntity.getResType()));
         //重量
-        wxTemplateMsgReqBo.setKeyword3(
-
-                getHuishouWeight(recycleRequestEntity.getResAmount()));
+        wxTemplateMsgReqBo.setKeyword3(getHuishouWeight(recycleRequestEntity.getResAmount()));
         //上门时间
         wxTemplateMsgReqBo.setKeyword4(
-
-                getServTime(recycleRequestEntity.getDoorServStartTime(), recycleRequestEntity.
-
-                        getDoorServEndTime()));
+                getServTime(recycleRequestEntity.getDoorServStartTime(), recycleRequestEntity.getDoorServEndTime()));
         //详情
         wxTemplateMsgReqBo.setRemark("点击查看详情。");
 

@@ -43,4 +43,30 @@ public interface UserAddrService {
      */
     List<UserAddressEntity> findFocusAddrs(Long userId);
 
+
+    /**
+     * 根据主键id查询
+     *
+     * @param id 主键id
+     * @return
+     */
+    UserAddressEntity find(Long id);
+
+    /**
+     * 更新单条用户地址信息
+     *
+     * @param userAddressEntity id不能为空
+     * @return
+     * @throws
+     */
+    boolean updateUserAddr(UserAddressEntity userAddressEntity) throws BizException;
+
+    /**
+     * 删除关注的小区
+     *
+     * @param id
+     * @return
+     */
+    boolean delete(Long id);
+
 }

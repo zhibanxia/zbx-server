@@ -1,5 +1,6 @@
 package cn.zhibanxia.zbxserver.controller.rest;
 
+import cn.zhibanxia.zbxserver.bo.SearchUserBo;
 import cn.zhibanxia.zbxserver.constant.ErrorCode;
 import cn.zhibanxia.zbxserver.controller.param.*;
 import cn.zhibanxia.zbxserver.entity.ComplexEntity;
@@ -55,55 +56,26 @@ public class UserCtrl {
         }
         try {
             if (RequestLocal.get().isYezhu()) {
-                userService.addMobileAndVerify(RequestLocal.get().getYezhuUid(), addUserDetailReq.getMobilePhone(), null);
+                userService.addMobileAndVerify(RequestLocal.get().getYezhuUid(), addUserDetailReq.getMobilePhone(), null, null, null);
                 UserAddressEntity userAddressEntity = new UserAddressEntity();
                 userAddressEntity.setUserId(RequestLocal.get().getYezhuUid());
                 userAddressEntity.setBizType(UserAddressEntity.BIZ_TYPE_YEZHU);
-                userAddressEntity.setProvinceId(addUserDetailReq.getDefaultAddr().getProvinceId());
-                userAddressEntity.setCityId(addUserDetailReq.getDefaultAddr().getCityId());
-                userAddressEntity.setAreaId(addUserDetailReq.getDefaultAddr().getAreaId());
-                userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId() == null ? "-1" : addUserDetailReq.getDefaultAddr().getSubdistrictId());
-                userAddressEntity.setAddrDetail(addUserDetailReq.getDefaultAddr().getAddrDetail());
                 userAddressEntity.setComplexId(addUserDetailReq.getDefaultAddr().getComplexId());
                 userAddressEntity.setDoorInfo(addUserDetailReq.getDefaultAddr().getDoorInfo());
                 return Result.ResultBuilder.success(userAddrService.addOrUpdateOnlyAddr(userAddressEntity));
             } else {
-                if (Objects.equals(RequestLocal.get().getHuishouUserEntity().getUserStatus(), UserEntity.USER_STATUS_NORMAL)) {
-                    // 资料已经审核通过，不能修改
-                    return Result.ResultBuilder.fail(ErrorCode.CODE_USER_CANNOT_MODIFY_ADDR_ERROR);
+                // 未审核通过
+                if (!Objects.equals(RequestLocal.get().getHuishouUserEntity().getUserStatus(), UserEntity.USER_STATUS_NORMAL)) {
+                    userService.addMobileAndVerify(RequestLocal.get().getHuishouUid(), addUserDetailReq.getMobilePhone(), addUserDetailReq.getVerifyLogo(), addUserDetailReq.getWxNotifyFlag(), addUserDetailReq.getVoiceNotifyFlag());
+                    modifyHuishouAddrInfo(addUserDetailReq);
+                    // 最终修改回收人员状态为审核中
+                    return Result.ResultBuilder.success(userService.updateUserStatus(RequestLocal.get().getHuishouUid(), UserEntity.USER_STATUS_PERMIT_PROCESS));
+                } else { // 资料已经审核通过，只能修改关注小区、通知配置
+                    // 可以修改手机号、语音和微信通知配置，认证头像不能修改
+                    userService.addMobileAndVerify(RequestLocal.get().getHuishouUid(), addUserDetailReq.getMobilePhone(), null, addUserDetailReq.getWxNotifyFlag(), addUserDetailReq.getVoiceNotifyFlag());
+                    modifyHuishouAddrInfo(addUserDetailReq);
+                    return Result.ResultBuilder.success(true);
                 }
-                userService.addMobileAndVerify(RequestLocal.get().getHuishouUid(), addUserDetailReq.getMobilePhone(), addUserDetailReq.getVerifyLogo());
-                UserAddressEntity userAddressEntity = new UserAddressEntity();
-                userAddressEntity.setUserId(RequestLocal.get().getHuishouUid());
-                userAddressEntity.setBizType(UserAddressEntity.BIZ_TYPE_HUISHOU);
-                userAddressEntity.setProvinceId(addUserDetailReq.getDefaultAddr().getProvinceId());
-                userAddressEntity.setCityId(addUserDetailReq.getDefaultAddr().getCityId());
-                userAddressEntity.setAreaId(addUserDetailReq.getDefaultAddr().getAreaId());
-                // 街道id暂时没有，用-1填充
-                userAddressEntity.setSubdistrictId(addUserDetailReq.getDefaultAddr().getSubdistrictId() == null ? "-1" : addUserDetailReq.getDefaultAddr().getSubdistrictId());
-                userAddressEntity.setAddrDetail(addUserDetailReq.getDefaultAddr().getAddrDetail());
-                userAddressEntity.setComplexId(addUserDetailReq.getDefaultAddr().getComplexId());
-                userAddressEntity.setDoorInfo(addUserDetailReq.getDefaultAddr().getDoorInfo());
-                userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
-
-                List<UserAddressEntity> focusAddrs = addUserDetailReq.getFocusAddrList().stream().map(e -> {
-                    UserAddressEntity temp = new UserAddressEntity();
-                    temp.setId(e.getAddrId());
-                    temp.setUserId(RequestLocal.get().getHuishouUid());
-                    temp.setBizType(UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
-                    temp.setProvinceId(e.getProvinceId());
-                    temp.setCityId(e.getCityId());
-                    temp.setAreaId(e.getAreaId());
-                    temp.setSubdistrictId(e.getSubdistrictId() == null ? "-1" : e.getSubdistrictId());
-                    temp.setAddrDetail(e.getAddrDetail());
-                    temp.setComplexId(e.getComplexId());
-                    temp.setDoorInfo(e.getDoorInfo());
-                    return temp;
-                }).collect(Collectors.toList());
-                userAddrService.batchAddAddr(RequestLocal.get().getHuishouUid(), focusAddrs);
-
-                // 最终修改回收人员状态为审核中
-                return Result.ResultBuilder.success(userService.updateUserStatus(RequestLocal.get().getHuishouUid(), UserEntity.USER_STATUS_PERMIT_PROCESS));
             }
         } catch (BizException e) {
             logger.warn("", e);
@@ -112,6 +84,26 @@ public class UserCtrl {
             logger.warn("", e);
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
         }
+    }
+
+    private void modifyHuishouAddrInfo(AddUserDetailReq addUserDetailReq) throws BizException {
+        UserAddressEntity userAddressEntity = new UserAddressEntity();
+        userAddressEntity.setUserId(RequestLocal.get().getHuishouUid());
+        userAddressEntity.setBizType(UserAddressEntity.BIZ_TYPE_HUISHOU);
+        userAddressEntity.setComplexId(addUserDetailReq.getDefaultAddr().getComplexId());
+        userAddressEntity.setDoorInfo(addUserDetailReq.getDefaultAddr().getDoorInfo());
+        userAddrService.addOrUpdateOnlyAddr(userAddressEntity);
+
+        List<UserAddressEntity> focusAddrs = addUserDetailReq.getFocusAddrList().stream().map(e -> {
+            UserAddressEntity temp = new UserAddressEntity();
+            temp.setId(e.getAddrId());
+            temp.setUserId(RequestLocal.get().getHuishouUid());
+            temp.setBizType(UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
+            temp.setComplexId(e.getComplexId());
+            temp.setDoorInfo(e.getDoorInfo());
+            return temp;
+        }).collect(Collectors.toList());
+        userAddrService.batchAddAddr(RequestLocal.get().getHuishouUid(), focusAddrs);
     }
 
     @GetMapping("getUserType")
@@ -185,12 +177,6 @@ public class UserCtrl {
         }
         Addr addr = new Addr();
         addr.setAddrId(userAddressEntity.getId());
-        addr.setProvinceId(userAddressEntity.getProvinceId());
-        addr.setCityId(userAddressEntity.getCityId());
-        addr.setAreaId(userAddressEntity.getAreaId());
-        addr.setSubdistrictId(userAddressEntity.getSubdistrictId());
-        addr.setAddrDetail(userAddressEntity.getAddrDetail());
-
         if (userAddressEntity.getComplexId() != null) {
             addr.setComplexId(userAddressEntity.getComplexId());
             addr.setComplexVo(BeanUtil.copy(complexService.find(userAddressEntity.getComplexId()), ComplexVo.class));
@@ -266,12 +252,6 @@ public class UserCtrl {
         }
         Addr addr = new Addr();
         addr.setAddrId(userAddressEntity.getId());
-        addr.setProvinceId(userAddressEntity.getProvinceId());
-        addr.setCityId(userAddressEntity.getCityId());
-        addr.setAreaId(userAddressEntity.getAreaId());
-        addr.setSubdistrictId(userAddressEntity.getSubdistrictId());
-        addr.setAddrDetail(userAddressEntity.getAddrDetail());
-
         if (userAddressEntity.getComplexId() != null) {
             addr.setComplexId(userAddressEntity.getComplexId());
             addr.setComplexVo(BeanUtil.copy(complexService.find(userAddressEntity.getComplexId()), ComplexVo.class));
@@ -296,11 +276,6 @@ public class UserCtrl {
         List<Addr> addrs = focusAddrs.stream().map(e -> {
             Addr temp = new Addr();
             temp.setAddrId(e.getId());
-            temp.setProvinceId(e.getProvinceId());
-            temp.setCityId(e.getCityId());
-            temp.setAreaId(e.getAreaId());
-            temp.setSubdistrictId(e.getSubdistrictId());
-            temp.setAddrDetail(e.getAddrDetail());
             if (MapUtils.isNotEmpty(fComplexEntityMap) && e.getComplexId() != null) {
                 temp.setComplexId(e.getComplexId());
                 temp.setComplexVo(BeanUtil.copy(fComplexEntityMap.get(e.getComplexId()), ComplexVo.class));
@@ -343,11 +318,14 @@ public class UserCtrl {
      *
      * @return
      */
-    @GetMapping("modifyUserStatus")
-    public Result<Boolean> modifyUserStatus(@RequestParam("id") Long id, @RequestParam("status") int status, @RequestParam(value = "remark", required = false) String remark) {
+    @PostMapping("modifyUserStatus")
+    public Result<Boolean> modifyUserStatus(@RequestBody ModifyUserStatusReq modifyUserStatusReq) {
         if (!RequestLocal.get().isAdmin()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
         }
+        Long id = modifyUserStatusReq.getId();
+        Integer status = modifyUserStatusReq.getStatus();
+        String remark = modifyUserStatusReq.getRemark();
         if (!UserEntity.STATUS_SET.contains(status)) {
             logger.warn("status() is invalid", status);
             return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
@@ -364,6 +342,33 @@ public class UserCtrl {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
         } finally {
             adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "modifyUserStatus", "id=" + id + ", status=" + status + ", remark=" + remark);
+        }
+    }
+
+    /**
+     * 删除用户账户，硬删除
+     *
+     * @return
+     */
+    @PostMapping("deleteUser")
+    public Result<Boolean> deleteUser(@RequestBody DeleteUserReq deleteUserReq) {
+        if (!RequestLocal.get().isAdmin()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        Long id = deleteUserReq.getId();
+        String remark = deleteUserReq.getRemark();
+        try {
+            UserEntity userEntity = userService.findById(id);
+            if (userEntity == null) {
+                logger.warn("user({id}) not exist, or status is not in permit process", id);
+                return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+            }
+            return Result.ResultBuilder.success(userService.delete(id));
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        } finally {
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "deleteUser", "id=" + id + ", remark=" + remark);
         }
     }
 
@@ -391,6 +396,61 @@ public class UserCtrl {
         } finally {
             adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "getAllUser", "page=" + page + ", size=" + size);
         }
+    }
+
+
+    @GetMapping("searchUser")
+    public Result<ListRsp<UserDetail4Admin>> searchUser(@RequestBody SearchUserReq searchUserReq) {
+        if (!RequestLocal.get().isAdmin()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        Integer page = searchUserReq.getPage();
+        Integer size = searchUserReq.getSize();
+        int pageVal = (page == null || page <= 0) ? 1 : page.intValue();
+        int pageSize = (size == null || size <= 0) ? 10 : size.intValue();
+        int startPage = (pageVal - 1) * pageSize;
+        int endPage = pageVal * pageSize;
+
+        SearchUserBo searchUserBo = new SearchUserBo();
+        searchUserBo.setStartPage(startPage);
+        searchUserBo.setEndPage(endPage);
+        searchUserBo.setUserType(getParamUserType(searchUserReq.getUserType()));
+        searchUserBo.setUserStatus(getParamUserStatus(searchUserReq.getUserStatus()));
+        searchUserBo.setSearchType(getParamSearchType(searchUserReq.getSearchType()));
+        try {
+            List<UserEntity> entityList = userService.searchUser(searchUserBo);
+            int count = userService.countSearchUser(searchUserBo);
+            ListRsp<UserDetail4Admin> listRsp = new ListRsp<>();
+            listRsp.setTotalCount(count);
+            listRsp.setList(BeanUtil.copyList(entityList, UserDetail4Admin.class));
+            return Result.ResultBuilder.success(listRsp);
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        } finally {
+            adminAccessLogger.info("uid={}|it={}|param={}", RequestLocal.get().getAdminUid(), "searchUser", searchUserReq);
+        }
+    }
+
+    private int getParamUserType(Integer userType) {
+        if (userType == null || userType < 1 || userType > 2) {
+            return UserEntity.USER_TYPE_HUISHOU;
+        }
+        return userType;
+    }
+
+    private int getParamUserStatus(Integer userStatus) {
+        if (userStatus == null || userStatus < 1 || userStatus > 6) {
+            return UserEntity.USER_STATUS_NORMAL;
+        }
+        return userStatus;
+    }
+
+    private int getParamSearchType(Integer searchType) {
+        if (searchType == null || searchType < 1 || searchType > 2) {
+            return 1;
+        }
+        return searchType;
     }
 
 }

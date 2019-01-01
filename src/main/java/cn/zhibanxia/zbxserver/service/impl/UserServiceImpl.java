@@ -1,5 +1,6 @@
 package cn.zhibanxia.zbxserver.service.impl;
 
+import cn.zhibanxia.zbxserver.bo.SearchUserBo;
 import cn.zhibanxia.zbxserver.dao.UserDao;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.service.UserService;
@@ -32,13 +33,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo) {
-        return userDao.addMobileAndVerify(id, mobilePhone, verifyLogo);
+    public boolean addMobileAndVerify(Long id, String mobilePhone, String verifyLogo, Integer wxNotifyFlag, Integer voiceNotifyFlag) {
+        return userDao.addMobileAndVerify(id, mobilePhone, verifyLogo, wxNotifyFlag, voiceNotifyFlag);
     }
 
     @Override
     public List<UserEntity> listAllUser(int startPage, int endPage) {
         return userDao.listAllUser(startPage, endPage);
+    }
+
+    @Override
+    public List<UserEntity> searchUser(SearchUserBo searchUserBo) {
+        return userDao.searchUser(searchUserBo);
+    }
+
+    @Override
+    public int countSearchUser(SearchUserBo searchUserBo) {
+        return userDao.countSearchUser(searchUserBo);
     }
 
     @Override
@@ -54,5 +65,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateUserStatus(Long id, int userStatus) {
         return userDao.updateUserStatus(id, userStatus);
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        return userDao.delete(id);
     }
 }
