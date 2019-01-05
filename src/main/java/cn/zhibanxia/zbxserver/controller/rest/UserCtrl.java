@@ -411,11 +411,10 @@ public class UserCtrl {
         int pageVal = (page == null || page <= 0) ? 1 : page.intValue();
         int pageSize = (size == null || size <= 0) ? 10 : size.intValue();
         int startPage = (pageVal - 1) * pageSize;
-        int endPage = pageVal * pageSize;
 
         SearchUserBo searchUserBo = new SearchUserBo();
         searchUserBo.setStartPage(startPage);
-        searchUserBo.setEndPage(endPage);
+        searchUserBo.setSize(pageSize);
         searchUserBo.setUserType(getParamUserType(searchUserReq.getUserType()));
         searchUserBo.setUserStatus(getParamUserStatus(searchUserReq.getUserStatus()));
         searchUserBo.setSearchType(getParamSearchType(searchUserReq.getSearchType()));

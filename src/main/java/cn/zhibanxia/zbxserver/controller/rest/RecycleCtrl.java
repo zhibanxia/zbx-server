@@ -365,9 +365,8 @@ public class RecycleCtrl {
         int pageVal = (page == null || page <= 0) ? 1 : page.intValue();
         int pageSize = (size == null || size <= 0) ? 10 : size.intValue();
         int startPage = (pageVal - 1) * pageSize;
-        int endPage = pageVal * pageSize;
         listRecycleRequestBo.setStartPage(startPage);
-        listRecycleRequestBo.setEndPage(endPage);
+        listRecycleRequestBo.setSize(pageSize);
         List<RecycleRequestEntity> requestEntityList = recycleRequestService.list(listRecycleRequestBo);
         if (CollectionUtils.isEmpty(requestEntityList)) {
             return Collections.emptyList();

@@ -122,7 +122,7 @@
             </if>
         </if>
         order by gmt_create desc
-        limit #{startPage}, #{endPage}
+        limit #{startPage}, #{size}
     </select>
 
     <select id="countSearchUser" parameterType="cn.zhibanxia.zbxserver.bo.SearchUserBo" resultType="java.lang.Integer">
@@ -132,7 +132,7 @@
         where
         user_type=#{userType} and
         user_status=#{userStatus}
-        <if test="searchContent!=null">
+        <if test="searchType!=null &amp;&amp; searchContent!=null &amp;&amp; searchContent.length()>0">
             <!-- 只会有一个条件成立 -->
             <if test="searchType==1">
                 and wx_nick_name like '%#{searchContent}%'

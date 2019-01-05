@@ -46,9 +46,9 @@ public class ListRecycleRequestBo implements Serializable {
      */
     private int startPage;
     /**
-     * 结束页码
+     * 范围
      */
-    private int endPage;
+    private int size;
 
     public Date getStart() {
         return start;
@@ -114,12 +114,12 @@ public class ListRecycleRequestBo implements Serializable {
         this.startPage = startPage;
     }
 
-    public int getEndPage() {
-        return endPage;
+    public int getSize() {
+        return size;
     }
 
-    public void setEndPage(int endPage) {
-        this.endPage = endPage;
+    public void setSize(int size) {
+        this.size = size;
     }
 
     @Override
