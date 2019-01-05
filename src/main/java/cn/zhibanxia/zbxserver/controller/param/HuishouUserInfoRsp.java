@@ -44,6 +44,17 @@ public class HuishouUserInfoRsp implements Serializable {
      */
     private List<Addr> focusAddrList;
 
+
+    /**
+     * 是否微信通知，默认通知
+     */
+    private Integer wxNotifyFlag;
+
+    /**
+     * 是否语音通知，默认不通知
+     */
+    private Integer voiceNotifyFlag;
+
     public Long getUid() {
         return uid;
     }
@@ -106,6 +117,22 @@ public class HuishouUserInfoRsp implements Serializable {
 
     public void setFocusAddrList(List<Addr> focusAddrList) {
         this.focusAddrList = focusAddrList;
+    }
+
+    public Integer getWxNotifyFlag() {
+        return wxNotifyFlag;
+    }
+
+    public void setWxNotifyFlag(Integer wxNotifyFlag) {
+        this.wxNotifyFlag = wxNotifyFlag;
+    }
+
+    public Integer getVoiceNotifyFlag() {
+        return voiceNotifyFlag;
+    }
+
+    public void setVoiceNotifyFlag(Integer voiceNotifyFlag) {
+        this.voiceNotifyFlag = voiceNotifyFlag;
     }
 
     @Override

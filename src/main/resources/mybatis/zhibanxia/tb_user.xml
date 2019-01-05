@@ -81,7 +81,7 @@
             wx_notify_flag=${wxNotifyFlag},
         </if>
         <if test="voiceNotifyFlag!=null">
-            voice_notify_flag=#{voiceNotifyFlag}
+            voice_notify_flag=#{voiceNotifyFlag},
         </if>
         gmt_modified=now()
         where id=#{id}

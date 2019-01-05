@@ -129,7 +129,7 @@
             and deleted = #{deleted}
         </if>
         <if test="focusComplexIdList!=null &amp;&amp; focusComplexIdList.size() > 0">
-            complex_id in
+            and complex_id in
             <foreach collection="focusComplexIdList" item="complexId" separator="," open="(" close=")">
                 #{complexId}
             </foreach>

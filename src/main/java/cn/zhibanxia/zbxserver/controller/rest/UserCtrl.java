@@ -245,6 +245,8 @@ public class UserCtrl {
         huishouUserInfoRsp.setMobilePhone(userEntity.getMobilePhone());
         huishouUserInfoRsp.setVerifyLogo(userEntity.getVerifyLogo());
         huishouUserInfoRsp.setStatus(userEntity.getUserStatus());
+        huishouUserInfoRsp.setVoiceNotifyFlag(userEntity.getVoiceNotifyFlag());
+        huishouUserInfoRsp.setWxNotifyFlag(userEntity.getWxNotifyFlag());
 
         UserAddressEntity userAddressEntity = userAddrService.findOnlyAddr(userEntity.getId(), UserAddressEntity.BIZ_TYPE_HUISHOU);
         if (userAddressEntity == null) {
@@ -399,7 +401,7 @@ public class UserCtrl {
     }
 
 
-    @GetMapping("searchUser")
+    @PostMapping("searchUser")
     public Result<ListRsp<UserDetail4Admin>> searchUser(@RequestBody SearchUserReq searchUserReq) {
         if (!RequestLocal.get().isAdmin()) {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
