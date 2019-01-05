@@ -8,7 +8,7 @@
         </van-row>
         <van-row>
           <van-col><van-button @click="toggerField('userType',1)" size="small" :class="{'search-checked' : form.userType === 1}">业主</van-button></van-col>
-          <van-col offset="1"><van-button @click="toggerField('userType',2)" size="small" :class="{'search-checked' : form.userType === 2}">回收者</van-button></van-col>
+          <van-col offset="1"><van-button @click="toggerField('userType',2)" size="small" :class="{'search-checked' : form.userType === 2}">回收员</van-button></van-col>
         </van-row>
       </div>
       <div class="search-block">

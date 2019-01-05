@@ -138,7 +138,7 @@ export default {
       // 错误信息提示
       let hasError = []
       Object.keys(this.errors).map((key) => {
-        let err = this.errors[key] && this.errors[key].join('')
+        let err = this.errors[key] && (this.errors[key] instanceof Array && this.errors[key].join(''))
         err && hasError.push(err)
       })
       if (hasError.length) {

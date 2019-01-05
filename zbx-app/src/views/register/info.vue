@@ -131,12 +131,11 @@ export default {
           doorInfo: ''
         },
         // 电话通知订单
-        voiceNotifyFlag: 1,
+        voiceNotifyFlag: 0,
         // 微信通知订单
-        wxNotifyFlag: 1
+        wxNotifyFlag: 0
       },
       errors: {
-        area: '',
         mobilePhone: '',
         focusAddrList: [],
         defaultAddrTxt: '',
@@ -178,8 +177,14 @@ export default {
         if (!res.data.focusAddrList) {
           res.data.focusAddrList = []
         }
-        const { focusAddrList, mobilePhone, verifyLogo, wxNotifyFlag, voiceNotifyFlag } = res.data
-        
+        let { focusAddrList, mobilePhone, verifyLogo, wxNotifyFlag: wxNotifyFlag, voiceNotifyFlag } = res.data
+        if (!wxNotifyFlag) {
+          wxNotifyFlag = 0
+        }
+        if (!voiceNotifyFlag) {
+          voiceNotifyFlag = 0
+        }
+
         this.form = Object.assign({}, this.form, {focusAddrList, mobilePhone, verifyLogo, defaultAddr, wxNotifyFlag, voiceNotifyFlag })
         
         // 住址 回填 具体地址
@@ -277,7 +282,7 @@ export default {
       // 错误信息提示
       let hasError = []
       Object.keys(this.errors).map((key) => {
-        let err = this.errors[key] && this.errors[key].join('')
+        let err = this.errors[key] && (this.errors[key] instanceof Array && this.errors[key].join(''))
         err && hasError.push(err)
       })
       if (hasError.length) {
