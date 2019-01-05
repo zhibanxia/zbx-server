@@ -15,9 +15,9 @@ public class SearchUserBo implements Serializable {
     private Integer startPage;
 
     /**
-     * sql limit end
+     * sql limit size
      */
-    private Integer endPage;
+    private Integer size;
     /**
      * 用户类型：1.业主；2.回收人员；3.管理员
      */
@@ -54,12 +54,12 @@ public class SearchUserBo implements Serializable {
         this.startPage = startPage;
     }
 
-    public Integer getEndPage() {
-        return endPage;
+    public Integer getSize() {
+        return size;
     }
 
-    public void setEndPage(Integer endPage) {
-        this.endPage = endPage;
+    public void setSize(Integer size) {
+        this.size = size;
     }
 
     public Integer getUserType() {

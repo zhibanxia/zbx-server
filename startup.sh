@@ -2,7 +2,7 @@
 
 PROJECT_NAME=zbx-server
 LOG_PATH=$HOME/logs/$PROJECT_NAME
-JAR_FILE=./build/libs/$PROJECT_NAME-0.1.jar
+JAR_FILE=./build/libs/$PROJECT_NAME.jar
 PROP_FILE=./zbx.properties
 
 function start() {
