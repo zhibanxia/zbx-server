@@ -133,7 +133,7 @@ export default {
         // 电话通知订单
         voiceNotifyFlag: 0,
         // 微信通知订单
-        wxNotifyFlag: 0
+        wxNotifyFlag: 1
       },
       errors: {
         mobilePhone: '',
