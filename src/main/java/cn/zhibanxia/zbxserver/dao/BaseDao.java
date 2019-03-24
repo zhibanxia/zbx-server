@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class BaseDao {
 
     @Resource(name = "zhibanxiaSqlSessionTemplate")
-    private SqlSessionTemplate duibaSecretSqlSessionTemplate;
+    private SqlSessionTemplate sqlSessionTemplate;
 
     /**
      * 获取合适的sqlSessionTemplate
@@ -16,7 +16,7 @@ public abstract class BaseDao {
      * @return
      */
     protected SqlSessionTemplate getSqlSessionTemplate() {
-        return duibaSecretSqlSessionTemplate;
+        return sqlSessionTemplate;
     }
 
     /**

@@ -78,3 +78,23 @@ key inx_complex_name (complex_name),
 key inx_area (province_id,city_id,area_id,subdistrict_id),
 unique key unidx_complex (province_id,city_id,area_id,subdistrict_id,complex_name)
 )ENGINE=InnoDB default charset=utf8 comment='小区库';
+
+-- 小区服务信息
+drop table if exists tb_xiaoqu_service_info;
+create table tb_xiaoqu_service_info (
+id              		bigint(20)  	unsigned NOT NULL auto_increment 	comment '主键自增',
+type             		tinyint(2)   	unsigned not null comment '服务类别：1.回收；2.家政；3.团购；4.其他',
+service_areas			varchar(512)	not null				comment '服务区域，到区县一级，多个以逗号分隔，all表示全部',
+icon_img          		varchar(64)  	not null				comment '服务信息头像',
+detail_imgs  		    varchar(1024)   not null				comment '服务详情多图，以逗号分隔',
+service_desc			varchar(512)	not null				comment '服务详情介绍',
+contact_name            varchar(32)		not null				comment '联系人名称',
+contact_phone			varchar(16)		not null			    comment '联系电话',
+serv_star_value      	int(5)	 		unsigned   not null		comment '服务星级，使用时除以10',
+deleted                 tinyint(2)   	unsigned   not null  default 0 comment '删除状态：0.未删除；1.删除',
+gmt_create      		datetime        DEFAULT CURRENT_TIMESTAMP	comment '创建时间',
+gmt_modified    		datetime        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	comment '修改时间',
+primary key (id),
+key inx_type (type, serv_star_value),
+key inx_create (gmt_create),
+)ENGINE=InnoDB default charset=utf8 comment='小区服务信息';

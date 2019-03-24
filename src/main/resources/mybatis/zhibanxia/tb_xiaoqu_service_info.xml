@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="cn.zhibanxia.zbxserver.dao.xiaoqu_service.impl.XiaoquServiceDaoImpl">
+
+    <resultMap id="XiaoquServiceInfoEntityMapper"
+               type="cn.zhibanxia.zbxserver.entity.XiaoquServiceInfoEntity">
+        <result column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="service_areas" property="serviceAreas"/>
+        <result column="icon_img" property="iconImg"/>
+        <result column="detail_imgs" property="detailImgs"/>
+        <result column="service_desc" property="serviceDesc"/>
+        <result column="contact_name" property="contactName"/>
+        <result column="contact_phone" property="contactPhone"/>
+        <result column="serv_star_value" property="servStarValue"/>
+        <result column="deleted" property="deleted"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+    </resultMap>
+
+    <sql id="all_column">
+        id, type, service_areas, icon_img, detail_imgs, service_desc, contact_name, contact_phone, serv_star_value,
+        deleted,
+        gmt_create, gmt_modified
+    </sql>
+
+    <insert id="insert" parameterType="cn.zhibanxia.zbxserver.entity.XiaoquServiceInfoEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into tb_xiaoqu_service_info (type, service_areas, icon_img, detail_imgs, service_desc, contact_name,
+        contact_phone, serv_star_value)
+        values
+        (#{type}, #{serviceAreas},
+        #{iconImg}, #{detailImgs}, #{serviceDesc}, #{contactName}, #{contactPhone}, #{servStarValue})
+    </insert>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="XiaoquServiceInfoEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_xiaoqu_service_info
+        where id = #{id}
+    </select>
+
+    <update id="update" parameterType="cn.zhibanxia.zbxserver.entity.XiaoquServiceInfoEntity">
+        update tb_xiaoqu_service_info
+        set
+        <if test="type!=null">
+            type=#{type},
+        </if>
+        <if test="serviceAreas!=null">
+            service_areas=#{serviceAreas},
+        </if>
+        <if test="iconImg!=null">
+            icon_img=#{iconImg},
+        </if>
+        <if test="detailImgs!=null">
+            detail_imgs=#{detailImgs},
+        </if>
+        <if test="serviceDesc!=null">
+            service_desc=#{serviceDesc},
+        </if>
+        <if test="contactName!=null">
+            contact_name=#{contactName},
+        </if>
+        <if test="contactPhone!=null">
+            contact_phone=#{contactPhone},
+        </if>
+        <if test="servStarValue!=null">
+            serv_star_value=#{servStarValue},
+        </if>
+        where id=#{id}
+    </update>
+
+    <update id="delete" parameterType="java.lang.Long">
+        update tb_xiaoqu_service_info
+        set delete = 1
+        where id=#{id}
+    </update>
+
+    <select id="findList" resultMap="XiaoquServiceInfoEntityMapper">
+        select
+        <include refid="all_column"/>
+        from tb_xiaoqu_service_info
+        where
+        <if test="type!=null">
+            type=#{type}
+        </if>
+        limit #{startPage}, #{endPage}
+    </select>
+</mapper>
