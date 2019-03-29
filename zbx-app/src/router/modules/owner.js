@@ -23,6 +23,11 @@ export default {
       path: 'detail',
       meta: { title: '回收', auth: ['owner'] },
       component: _import('owner/ownerDetail')
+    },
+    {
+      path: 'warn/:id',
+      meta: { title: '订单提醒', auth: ['owner'] },
+      component: _import('owner/orderWarn')
     }
   ]
 }
