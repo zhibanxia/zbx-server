@@ -2,7 +2,7 @@
  * @Author: wangmangmang
  * @Date: 2018-10-07 11:16:29
  * @Last Modified by: wangmangmang
- * @Last Modified time: 2018-12-11 11:16:40
+ * @Last Modified time: 2019-03-23 20:05:40
  * 回收人员进入详情页
  */
 
@@ -19,7 +19,7 @@
   </div>
 </template>
 <script>
-import Detail from './components/Detail'
+import Detail from '../components/Detail'
 import areaList from '@/utils/area'
 export default {
   components: {

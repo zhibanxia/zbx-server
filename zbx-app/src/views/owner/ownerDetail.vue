@@ -2,7 +2,7 @@
  * @Author: wangmangmang 
  * @Date: 2018-10-07 11:33:20 
  * @Last Modified by: wangmangmang
- * @Last Modified time: 2018-12-11 11:49:58
+ * @Last Modified time: 2019-03-23 20:05:18
  * 业主进入自己的回收列表
  */
 
@@ -29,7 +29,7 @@
   </div>
 </template>
 <script>
-import Detail from './components/Detail'
+import Detail from '../components/Detail'
 import areaList from '@/utils/area'
 export default {
   components: {

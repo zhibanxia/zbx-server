@@ -11,8 +11,8 @@
 </div>
 </template>
 <script>
-import RecyleList from './components/RecyleList'
-import Empty from './components/Empty'
+import RecyleList from '../components/RecyleList'
+import Empty from '../components/Empty'
 export default {
   components: {
     RecyleList,
