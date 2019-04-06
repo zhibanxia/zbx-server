@@ -6,6 +6,7 @@ import cn.zhibanxia.zbxserver.dao.RecycleRequestDao;
 import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,19 @@ public class RecycleRequestDaoImpl extends BaseDao implements RecycleRequestDao 
     @Override
     public boolean delete(Long id) {
         int ret = update("delete", id);
+        return ret == 1;
+    }
+
+    @Override
+    public List<RecycleRequestEntity> selectRecomm(Date startTime) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("gmtCreate", startTime);
+        return selectList("selectRecomm", params);
+    }
+
+    @Override
+    public boolean updateRecommed(Long id) {
+        int ret = update("updateRecommed", id);
         return ret == 1;
     }
 }

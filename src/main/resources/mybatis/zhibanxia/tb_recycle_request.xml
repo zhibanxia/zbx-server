@@ -24,6 +24,7 @@
         <result column="publish_time" property="publishTime"/>
         <result column="confirm_recycle_time" property="confirmRecycleTime"/>
         <result column="complete_recycle_time" property="completeRecycleTime"/>
+        <result column="hsu_recomm_flag" property="hsuRecommFlag"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
     </resultMap>
@@ -32,7 +33,7 @@
         id, create_user_id, recycle_user_id, res_type, res_status, deleted, res_amount, res_images, take_garbage_flag,
         free_take_flag, res_note, door_serv_start_time, door_serv_end_time, complex_id, door_info, mobile_phone,
         publish_time, confirm_recycle_time,
-        complete_recycle_time,
+        complete_recycle_time, hsu_recomm_flag,
         gmt_create,
         gmt_modified
     </sql>
@@ -179,6 +180,21 @@
         update tb_recycle_request
         set deleted=1
         where id=#{id} and deleted=0
+    </update>
+
+    <!-- 推荐回收人员的业务 -->
+    <select id="select4Recomm" resultMap="RecycleRequestEntityMapper" parameterType="Map">
+        select
+        <include refid="all_column"/>
+        from tb_recycle_request
+        where deleted=0 and hsu_recomm_flag=0 and res_status=1 and gmt_create > #{gmtCreate} order by gmt_create
+    </select>
+
+    <!-- 已经推荐过的标记，下次不再推荐-->
+    <update id="updateRecommed" parameterType="Long">
+        update tb_recycle_request
+        set hsu_recomm_flag=1
+        where id=#{id} and hsu_recomm_flag=0
     </update>
 
 </mapper>

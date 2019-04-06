@@ -11,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,5 +73,15 @@ public class RecycleRequestServiceImpl implements RecycleRequestService {
     @Override
     public boolean update(RecycleRequestEntity entity) {
         return recycleRequestDao.update(entity);
+    }
+
+    @Override
+    public List<RecycleRequestEntity> selectRecomm(Date startTime) {
+        return recycleRequestDao.selectRecomm(startTime);
+    }
+
+    @Override
+    public boolean updateRecommed(Long id) {
+        return recycleRequestDao.updateRecommed(id);
     }
 }

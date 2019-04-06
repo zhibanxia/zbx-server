@@ -32,6 +32,9 @@ public class ZbxConfig {
     @Value("${zbx.push.templateId}")
     private String templateId;
 
+    @Value("${zbx.recomm.huishouyuan.templateId}")
+    private String recommHuishouYuanTemplateId;
+
     private final Splitter splitter = Splitter.on(',');
 
     private Set<String> adminOpenIdSet;
@@ -54,6 +57,10 @@ public class ZbxConfig {
 
     public String getTemplateId() {
         return templateId;
+    }
+
+    public String getRecommHuishouYuanTemplateId() {
+        return recommHuishouYuanTemplateId;
     }
 
     public Set<String> getAdminOpenIdSet() {

@@ -125,6 +125,11 @@ public class RecycleRequestEntity {
      * 业主手机号码，用于回收人员联系使用
      */
     private String mobilePhone;
+
+    /**
+     * 回收请求是否已经推荐回收人员
+     */
+    private Boolean hsuRecommFlag;
     /**
      * 发布时间
      */
@@ -291,6 +296,14 @@ public class RecycleRequestEntity {
 
     public void setConfirmRecycleTime(Date confirmRecycleTime) {
         this.confirmRecycleTime = confirmRecycleTime;
+    }
+
+    public Boolean getHsuRecommFlag() {
+        return hsuRecommFlag;
+    }
+
+    public void setHsuRecommFlag(Boolean hsuRecommFlag) {
+        this.hsuRecommFlag = hsuRecommFlag;
     }
 
     public Date getGmtCreate() {

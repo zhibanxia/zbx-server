@@ -66,7 +66,7 @@ public enum ErrorCode {
 
 
     /**
-     * 回收请求已经被处理
+     * 关注的回收地址过多
      */
     CODE_TOO_MANY_FOCUS_ADDR_ERROR("402001", "关注的回收地址过多"),
 
