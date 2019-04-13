@@ -16,6 +16,11 @@ export default {
       path: 'userdetail/:id/:userType/:userStatus',
       meta: { title: '用户详情页', auth: ['admin'] },
       component: _import('admin/userDetail')
+    },
+    {
+      path: 'addservice',
+      meta: { title: '添加服务类型', auth: ['admin'] },
+      component: _import('admin/addServiceType')
     }
   ]
 }

@@ -16,8 +16,11 @@
     "js-cookie": "^2.2.0",
     "lib-flexible": "^0.3.2",
     "nprogress": "^0.2.0",
+    "quill": "^1.3.6",
+    "quill-image-extend-module": "^1.1.2",
     "vant": "^1.4.8",
     "vue": "^2.5.2",
+    "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {

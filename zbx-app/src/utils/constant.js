@@ -47,3 +47,40 @@ export const DEFAULT_ADDR = {
   cityId: '330100',
   provinceId: '330000'
 }
+// 服务类型
+export const SERVICES_TYPE = [{
+  id: 1,
+  label: '回收'
+}, {
+  id: 2,
+  label: '家政'
+}, {
+  id: 3,
+  label: '团购'
+}, {
+  id: 4,
+  label: '其他'
+}]
+// 服务星级
+export const SERVICES_STAR = [{
+  id: 1,
+  label: '1星'
+}, {
+  id: 2,
+  label: '2星'
+}, {
+  id: 3,
+  label: '3星'
+}, {
+  id: 4,
+  label: '4星'
+}, {
+  id: 5,
+  label: '5星'
+}, {
+  id: 6,
+  label: '6星'
+}, {
+  id: 7,
+  label: '7星'
+}]

@@ -37,7 +37,8 @@ const urls = {
     // 管理员 -删除用户
     deleteUser: '/rest/user/deleteUser',
     // 管理员 -查询用户列表
-    searchUser: '/rest/user/searchUser'
+    searchUser: '/rest/user/searchUser',
+    '/rest/recycle/hsu_recomm': '/rest/recycle/hsu_recomm'
   },
   patch: {},
   delete: {}
