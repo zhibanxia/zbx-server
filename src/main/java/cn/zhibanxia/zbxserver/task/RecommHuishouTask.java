@@ -55,7 +55,7 @@ public class RecommHuishouTask implements InitializingBean, DisposableBean {
     /**
      * 详情页
      */
-    private static final String detailUrl = "https://wx.zhibanxia.cn/#/owner/warn/${recId}";
+    private static final String detailUrl = "https://wx.zhibanxia.cn/#/owner/warn/{0}";
 
     @Autowired
     private RecycleRequestService recycleRequestService;
