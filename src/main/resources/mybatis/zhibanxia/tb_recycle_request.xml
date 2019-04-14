@@ -183,7 +183,7 @@
     </update>
 
     <!-- 推荐回收人员的业务 -->
-    <select id="select4Recomm" resultMap="RecycleRequestEntityMapper" parameterType="Map">
+    <select id="selectRecomm" resultMap="RecycleRequestEntityMapper" parameterType="Map">
         select
         <include refid="all_column"/>
         from tb_recycle_request
