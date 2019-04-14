@@ -47,13 +47,13 @@ fi
 }
 
 function stop() {
-        process=`ps aux | grep java | grep $JAR_FILE | grep -v "grep"|grep -v "restart"|grep -v "stop"| wc -l`
+        process=`ps aux | grep java | grep $PROJECT_NAME | grep -v "grep"|grep -v "restart"|grep -v "stop"| wc -l`
         if [[ 0 != $process ]];then
-                ps -ef | grep $JAR_FILE | grep -v "grep"|grep -v "stop"|grep -v "restart"| awk '{print $2}' | xargs kill -15
+                ps -ef | grep $PROJECT_NAME | grep -v "grep"|grep -v "stop"|grep -v "restart"| awk '{print $2}' | xargs kill -15
         fi
         sleep 3
         if [[ 0 != $process ]];then
-                ps -ef | grep $JAR_FILE | grep -v "grep"|grep -v "stop"|grep -v "restart"| awk '{print $2}' | xargs kill -9
+                ps -ef | grep $PROJECT_NAME | grep -v "grep"|grep -v "stop"|grep -v "restart"| awk '{print $2}' | xargs kill -9
         fi
 }
 
@@ -64,7 +64,7 @@ function restart() {
 }
 
 function status() {
-        ps aux | grep java | grep $JAR_FILE | grep -v grep| awk '{print $2}'
+        ps aux | grep java | grep $PROJECT_NAME | grep -v grep| awk '{print $2}'
 }
 
 function help() {
