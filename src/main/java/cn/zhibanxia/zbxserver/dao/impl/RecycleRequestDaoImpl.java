@@ -72,7 +72,7 @@ public class RecycleRequestDaoImpl extends BaseDao implements RecycleRequestDao 
     public List<RecycleRequestEntity> selectRecomm(Date startTime) {
         Map<String, Object> params = new HashMap<>();
         params.put("gmtCreate", startTime);
-        return selectList("selectRecomm", params);
+        return selectList("select4Recomm", params);
     }
 
     @Override
