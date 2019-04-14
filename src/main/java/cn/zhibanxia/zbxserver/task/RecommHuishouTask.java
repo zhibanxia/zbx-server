@@ -83,7 +83,7 @@ public class RecommHuishouTask implements InitializingBean, DisposableBean {
     }
 
     // 每隔10分钟检测一次
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRate = 1200000)
     public void doWork() {
         // 找出过去12小时内创建的，仍然处于已发布，没有回收人员确认的，处于非删除状态的，并且没有推荐过的订单
         LocalDateTime localDateTime = LocalDateTime.now().minusHours(12);
