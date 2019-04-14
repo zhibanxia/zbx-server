@@ -34,7 +34,7 @@ drop table if exists tb_recycle_request;
 create table tb_recycle_request(
 id              		bigint(20)  	unsigned NOT NULL auto_increment 	comment '主键自增',
 create_user_id   		bigint(20)    	not null 				comment '发布用户id',
-recycle_user_id     		bigint(20)  	default null			comment '回收人员id，确认回收后填充',
+recycle_user_id     	bigint(20)  	default null			comment '回收人员id，确认回收后填充',
 res_type				tinyint(2)		not null   				comment '回收资源类型：1.纸板；2.塑料瓶; 3.纸板和塑料瓶',
 res_status				tinyint(2)		not null  				comment '回收资源状态：1.已发布；2.已确认待回收；3.已确认已回收',
 deleted					tinyint(2)		not null default 0		comment '删除状态：0否，1是',
@@ -59,6 +59,7 @@ key inx_recycle (recycle_user_id,res_status),
 key inx_status (res_status)
 )ENGINE=InnoDB default charset=utf8 comment='回收请求';
 
+alter table tb_recycle_request add column hsu_recomm_flag tinyint(1) not null default 0 comment '是否已经推荐过回收人员，0.没有，1.推荐过了' after complete_recycle_time;
 
 -- 小区库
 drop table if exists tb_complex_repo;
@@ -96,5 +97,21 @@ gmt_create      		datetime        DEFAULT CURRENT_TIMESTAMP	comment '创建时�
 gmt_modified    		datetime        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	comment '修改时间',
 primary key (id),
 key inx_type (type, serv_star_value),
-key inx_create (gmt_create),
+key inx_create (gmt_create)
 )ENGINE=InnoDB default charset=utf8 comment='小区服务信息';
+
+
+-- 回收人员与小区关联信息
+drop table if exists tb_huishou_complex_relation;
+create table tb_huishou_complex_relation (
+id              		bigint(20)  	unsigned NOT NULL auto_increment 	comment '主键自增',
+complex_id				bigint(20)		unsigned NOT null  comment '小区Id',
+contact_name            varchar(32)		not null				comment '联系人名称',
+contact_phone			varchar(16)		not null			    comment '联系电话',
+service_desc			varchar(512)	not null				comment '服务详情介绍',
+gmt_create      		datetime        DEFAULT CURRENT_TIMESTAMP	comment '创建时间',
+gmt_modified    		datetime        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	comment '修改时间',
+primary key (id),
+key inx_complex_id (complex_id),
+key inx_create (gmt_create)
+)ENGINE=InnoDB default charset=utf8 comment='回收人员与小区关联信息';

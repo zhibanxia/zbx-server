@@ -309,4 +309,34 @@ public class WeixinIndexCtrl {
             logger.warn("", e);
         }
     }
+
+    @GetMapping("redirectYezhu")
+    public void redirectYezhu(@RequestParam("url") String url, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            UserCookieVo userCookieVo;
+            try {
+                userCookieVo = UserCookieUtil.parserCookie(request, zbxConfig.getEncryptKey());
+            } catch (Exception e) {
+                UserCookieUtil.delCookie(response);
+                logger.warn("", e);
+                // cookie解析报错，走微信授权
+                index(1, request, response);
+                return;
+            }
+            if (userCookieVo == null) {
+                index(1, request, response);
+                return;
+            }
+            UserEntity userEntity = userService.findById(userCookieVo.getUid());
+            // 如果用户不存在，则重定向到授权页
+            if (userEntity == null || !Objects.equals(UserEntity.USER_TYPE_YEZHU, userEntity.getUserType())) {
+                UserCookieUtil.delCookie(response);
+                index(1, request, response);
+                return;
+            }
+            response.sendRedirect(url);
+        } catch (Exception e) {
+            logger.warn("", e);
+        }
+    }
 }

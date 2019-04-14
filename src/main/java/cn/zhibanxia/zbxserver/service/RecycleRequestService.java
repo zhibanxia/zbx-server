@@ -3,6 +3,7 @@ package cn.zhibanxia.zbxserver.service;
 import cn.zhibanxia.zbxserver.bo.ListRecycleRequestBo;
 import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -74,4 +75,20 @@ public interface RecycleRequestService {
      * @return
      */
     boolean update(RecycleRequestEntity entity);
+
+    /**
+     * 查找准备推荐回收员的订单
+     *
+     * @param startTime
+     * @return
+     */
+    List<RecycleRequestEntity> selectRecomm(Date startTime);
+
+    /**
+     * 回收请求更新为已推荐
+     *
+     * @param id
+     * @return
+     */
+    boolean updateRecommed(Long id);
 }

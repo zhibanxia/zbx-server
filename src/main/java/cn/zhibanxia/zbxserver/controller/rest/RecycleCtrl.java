@@ -7,14 +7,19 @@ import cn.zhibanxia.zbxserver.controller.param.CompleteRecycleReq;
 import cn.zhibanxia.zbxserver.controller.param.ComplexVo;
 import cn.zhibanxia.zbxserver.controller.param.ConfirmRecycleReq;
 import cn.zhibanxia.zbxserver.controller.param.DeleteRecycleReq;
+import cn.zhibanxia.zbxserver.controller.param.HsuRecommBo;
+import cn.zhibanxia.zbxserver.controller.param.HsuRecommReqVo;
+import cn.zhibanxia.zbxserver.controller.param.HsuRecommRsp;
 import cn.zhibanxia.zbxserver.controller.param.RecycleRequestVo;
 import cn.zhibanxia.zbxserver.controller.param.Result;
 import cn.zhibanxia.zbxserver.entity.ComplexEntity;
+import cn.zhibanxia.zbxserver.entity.HuishouComplexRelationEntity;
 import cn.zhibanxia.zbxserver.entity.RecycleRequestEntity;
 import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
 import cn.zhibanxia.zbxserver.entity.UserEntity;
 import cn.zhibanxia.zbxserver.filter.RequestLocal;
 import cn.zhibanxia.zbxserver.service.ComplexService;
+import cn.zhibanxia.zbxserver.service.HuishouComplexRelationService;
 import cn.zhibanxia.zbxserver.service.RecycleRequestService;
 import cn.zhibanxia.zbxserver.service.UserAddrService;
 import cn.zhibanxia.zbxserver.service.UserService;
@@ -56,6 +61,9 @@ public class RecycleCtrl {
     private UserService userService;
     @Autowired
     private ComplexService complexService;
+
+    @Autowired
+    private HuishouComplexRelationService huishouComplexRelationService;
 
     private final Cache<Long, AtomicInteger> createOrderCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).maximumSize(2000).build();
 
@@ -445,5 +453,42 @@ public class RecycleCtrl {
             addr.setDoorInfo("******");
         }
         return addr;
+    }
+
+    @PostMapping("hsu_recomm")
+    public Result<HsuRecommRsp> hsuRecomm(@RequestBody HsuRecommReqVo hsuRecommReqVo) {
+        // 如果不是业主则拒绝请求
+        if (!RequestLocal.get().isYezhu()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        if (hsuRecommReqVo == null || hsuRecommReqVo.getRecId() == null) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+        }
+        Long id = hsuRecommReqVo.getRecId();
+        RecycleRequestEntity recycleRequestEntity = recycleRequestService.find(id);
+        if (recycleRequestEntity == null) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_INVALID_PARAM_ERROR);
+        }
+        if (recycleRequestEntity.getResStatus() != RecycleRequestEntity.RES_STATUS_PUBLISH) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_RECYCLE_HAS_HANDLED_ERROR);
+        }
+        HsuRecommRsp recommRsp = new HsuRecommRsp();
+
+        Long complexId = recycleRequestEntity.getComplexId();
+        ComplexEntity complexEntity = complexService.find(complexId);
+        if (complexEntity != null) {
+            recommRsp.setComplexName(complexEntity.getComplexName());
+        } else {
+            recommRsp.setComplexName("未知小区");
+        }
+        List<HsuRecommBo> hsuRecommBoList = null;
+        List<HuishouComplexRelationEntity> huishouComplexRelationEntityList = huishouComplexRelationService.findByComplexId(complexId);
+        if (!CollectionUtils.isEmpty(huishouComplexRelationEntityList)) {
+            hsuRecommBoList = BeanUtil.copyList(huishouComplexRelationEntityList, HsuRecommBo.class);
+        } else {
+            hsuRecommBoList = Collections.emptyList();
+        }
+        recommRsp.setHsuRecommList(hsuRecommBoList);
+        return Result.ResultBuilder.success(recommRsp);
     }
 }

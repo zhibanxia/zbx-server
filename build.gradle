@@ -65,5 +65,8 @@ dependencies {
     // https://mvnrepository.com/artifact/cglib/cglib
     compile group: 'cglib', name: 'cglib', version: '3.2.8'
 
+    compile 'com.aliyun:aliyun-java-sdk-core:4.0.3'
+    
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
