@@ -12,6 +12,7 @@ export default {
     return new Promise(resolve => {
       // let type = +getCookie('type') // 1: 业主 2: 回收人员 3: 管理员
       this.requireUserInfo(iscache).then(userInfo => {
+        // debugger
         let type = userInfo.userType
         let authMap = null
         if (type) {

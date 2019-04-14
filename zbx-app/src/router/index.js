@@ -43,6 +43,7 @@ const router = new Router({
 })
 
 let hasCreateAsyncRouter = false
+// debugger
 router.beforeEach(async (to, from, next) => {
   NProgress.start()
   // 获取权限列表生成动态路由
