@@ -97,7 +97,7 @@ gmt_create      		datetime        DEFAULT CURRENT_TIMESTAMP	comment '创建时�
 gmt_modified    		datetime        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	comment '修改时间',
 primary key (id),
 key inx_type (type, serv_star_value),
-key inx_create (gmt_create),
+key inx_create (gmt_create)
 )ENGINE=InnoDB default charset=utf8 comment='小区服务信息';
 
 
@@ -113,5 +113,5 @@ gmt_create      		datetime        DEFAULT CURRENT_TIMESTAMP	comment '创建时�
 gmt_modified    		datetime        DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	comment '修改时间',
 primary key (id),
 key inx_complex_id (complex_id),
-key inx_create (gmt_create),
+key inx_create (gmt_create)
 )ENGINE=InnoDB default charset=utf8 comment='回收人员与小区关联信息';
