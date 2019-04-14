@@ -22,7 +22,7 @@ import java.util.Map;
 @Service
 public class SmsServiceImpl implements SmsService {
 
-    @Value("${zbx.sms.accessKeyId}")
+    @Value("${zbx.sms.accessId}")
     private String smsAccessKeyId;
     @Value("${zbx.sms.accessSecret}")
     private String smsAccessSecret;
