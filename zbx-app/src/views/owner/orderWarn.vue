@@ -1,15 +1,18 @@
 <template>
   <div id="owner-warn">
     <van-nav-bar title="超时订单" right-text="我的发布" left-arrow @click-right="rightHandle" />
-    <div v-if="infos.complexName" class="warn-title"><p>您在【<b>{{infos.complexName}}</b>】提交的回收请求较长时间没有被回收，我们帮您推荐了一些回收师傅，您可以电话联系。</p></div>
+    <div v-if="infos.complexName" class="warn-title"><p>您在【<b>{{infos.complexName}}</b>】提交的回收订单较长时间没有被回收，我们帮您推荐了一些回收员，您可以电话联系。</p></div>
     <!-- <van-notice-bar :wrapable="true" :scrollable="false">
       您在【{{infos.complexName}}】提交的回收请求较长时间没有被回收，我们帮您推荐了一些回收师傅，您可以电话联系。
     </van-notice-bar> -->
+    <van-row style="font-weight:bold;">
+      <p v-for="item in header" :key="item">{{item}}</p>
+    </van-row>
     <van-row v-for="(item, index) in infos.hsuRecommList" :key="index" >
       <p>{{item.contactName}}</p>
       <p>{{item.serviceDesc}}</p>
       <p>
-        <a :href="item.contactPhone" class="btn">拨打</a>
+        <a :href="'tel:'+item.contactPhone" class="btn">拨打</a>
         <!-- <van-button plain type="primary" size="mini"><a :href="item.contactPhone">拨打</a></van-button> -->
       </p>
     </van-row>
@@ -21,7 +24,7 @@ export default {
     return {
       infos: {},
       recId: this.$route.params.id,
-      aa:1
+      header: ['联系人', '服务描述', '联系电话']
     }
   },
   created() {
@@ -42,6 +45,7 @@ export default {
 </script>
 <style lang="less">
 #owner-warn {
+  font-size: 16px;
   color: #333;
   .warn-title {
     background: #f5f5f5;

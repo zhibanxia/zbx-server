@@ -18,6 +18,10 @@
             <van-row><span>类型：{{formatType(item.resType)}}</span></van-row>
             <van-row><span>数量：{{formatAmount(item.resAmount)}}</span></van-row>
             <van-row v-if="item.completeRecycleTime"><span>回收时间：{{item.completeRecycleTime}}</span></van-row>
+            <!-- 我的回收列表，如果没有回收完成，展示小区名称+房号 -->
+            <van-row v-else-if="biztype === 2 && !item.completeRecycleTime">
+              <span>地址：{{item.addr.complexVo.complexName}}{{item.addr.doorInfo}}</span>
+            </van-row>
           </van-col>
           <van-col span="4" class="status" :class="'status' + item.resStatus">{{formatStatus(item.resStatus)}}</van-col>
         </van-row>
@@ -34,7 +38,8 @@ export default {
   props: {
     data: {
       type: Array
-    }
+    },
+    biztype: Number
   },
   methods: {
     formatTime (time) {

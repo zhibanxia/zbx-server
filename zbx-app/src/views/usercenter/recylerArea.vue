@@ -99,7 +99,7 @@ export default {
         this.form = Object.assign({}, this.form, {focusAddrList, mobilePhone, verifyLogo, defaultAddr, wxNotifyFlag, voiceNotifyFlag })
         // 关注小区 过滤 具体地址和complexId
         if (focusAddrList && focusAddrList.length) {
-          this.villages = focusAddrList.map(v => ({ village: v.complexVo.addrDetail + v.complexVo.complexName, complexVo: v.complexVo }))
+          this.villages = focusAddrList.map(v => ({ addrId: v.addrId, village: v.complexVo.addrDetail + v.complexVo.complexName, complexVo: v.complexVo }))
         }
       })
     },
@@ -115,10 +115,12 @@ export default {
           return false
         }
         this.villages.push({})
+        this.form.focusAddrList[index] = {}
       }
       // 执行删除
       else {
         this.villages.splice(index, 1)
+        this.form.focusAddrList.splice(index, 1)
       }
     },
     onClickLeft () {
