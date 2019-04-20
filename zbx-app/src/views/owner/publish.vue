@@ -9,11 +9,10 @@
         <!-- icon="exchange" -->
         <van-cell title="数量"  :value="formatAmount(form.resAmount) " @click="amountPopShow = true"/>
         <!-- icon="photo" -->
-        <van-cell title="照片" >
+        <van-cell title="照片(可选)" >
           <van-uploader :after-read="onRead" slot="right-icon" v-if="!resImages || resImages.length < 3">
             <van-button type="default" size="small">上传</van-button>
           </van-uploader>
-
         </van-cell>
 
         <van-cell v-if="resImages && resImages.length">
@@ -148,7 +147,11 @@ export default {
       takeGarbagePopShow: false,
       doorServStartTimePopShow: false,
       doorServEndTimePopShow: false,
-      form: {addr: {}},
+      form: {
+        addr: {},
+        resType: 1,
+        resAmount: 3
+      },
       startDate: new Date(),
       endDate: new Date(),
       errors: {
@@ -195,7 +198,7 @@ export default {
         await this.$ajax('recyleDetail', params).then(res => {
           this.form = res.data
           // 图片
-          this.resImages = this.form.resImages.split(',')
+          this.resImages = this.form.resImages && this.form.resImages.split(',')
           // 地区
           this.form.addr = res.data.addr
           // 详细地址
@@ -345,10 +348,10 @@ export default {
         this.$dialog.alert({message: '请选择回收数量'})
         return false
       }
-      if (!this.resImages || !this.resImages.length) {
-        this.$dialog.alert({message: '请上传回收照片'})
-        return false
-      }
+      // if (!this.resImages || !this.resImages.length) {
+      //   this.$dialog.alert({message: '请上传回收照片'})
+      //   return false
+      // }
       if (typeof this.form.takeGarbageFlag !== 'boolean') {
         this.$dialog.alert({message: '请选择是否带仍垃圾'})
         return false
