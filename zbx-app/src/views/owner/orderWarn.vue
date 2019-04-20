@@ -1,7 +1,7 @@
 <template>
   <div id="owner-warn">
     <van-nav-bar title="超时订单" right-text="我的发布" left-arrow @click-right="rightHandle" />
-    <div v-if="infos.complexName" class="warn-title"><p>您在【<b>{{infos.complexName}}</b>】提交的回收订单较长时间没有被回收，我们帮您推荐了一些回收师傅，您可以电话联系。</p></div>
+    <div v-if="infos.complexName" class="warn-title"><p>您在【<b>{{infos.complexName}}</b>】提交的回收订单较长时间没有被回收，我们帮您推荐了一些回收员，您可以电话联系。</p></div>
     <!-- <van-notice-bar :wrapable="true" :scrollable="false">
       您在【{{infos.complexName}}】提交的回收请求较长时间没有被回收，我们帮您推荐了一些回收师傅，您可以电话联系。
     </van-notice-bar> -->
