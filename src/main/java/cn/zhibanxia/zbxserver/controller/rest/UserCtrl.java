@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -85,6 +86,51 @@ public class UserCtrl {
             return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
         }
     }
+
+
+    /**
+     * 仅用于审核通过后，回收员更新回收地址、通知设置
+     *
+     * @return
+     */
+    @PostMapping("updateHuishouDetail")
+    public Result<Boolean> updateHuishouDetail(@RequestBody UpdateHuishouDetailReq updateHuishouDetailReq) {
+        if (!RequestLocal.get().isHuishou()) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        if (!Objects.equals(RequestLocal.get().getHuishouUserEntity().getUserStatus(), UserEntity.USER_STATUS_NORMAL)) {
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNSUPPORTED_OPERATION_ERROR);
+        }
+        try {
+            // 资料已经审核通过，只能修改关注小区、通知配置
+            userService.updateNoticeConfig(RequestLocal.get().getHuishouUid(), updateHuishouDetailReq.getWxNotifyFlag(), updateHuishouDetailReq.getVoiceNotifyFlag());
+
+            if (CollectionUtils.isEmpty(updateHuishouDetailReq.getFocusAddrList())) {
+                return Result.ResultBuilder.success(true);
+            }
+            Set<Long> userAddrIds = updateHuishouDetailReq.getFocusAddrList().stream().map(Addr::getAddrId).filter(Objects::nonNull).collect(Collectors.toSet());
+            List<UserAddressEntity> userAddressEntityList = updateHuishouDetailReq.getFocusAddrList().stream()
+                    .filter(e -> e.getAddrId() == null)
+                    .map(e -> {
+                        UserAddressEntity temp = new UserAddressEntity();
+                        temp.setId(e.getAddrId());
+                        temp.setUserId(RequestLocal.get().getHuishouUid());
+                        temp.setBizType(UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
+                        temp.setComplexId(e.getComplexId());
+                        temp.setDoorInfo(e.getDoorInfo());
+                        return temp;
+                    }).collect(Collectors.toList());
+            userAddrService.batchUpdateFocusAddr(RequestLocal.get().getHuishouUid(), userAddrIds, userAddressEntityList);
+            return Result.ResultBuilder.success(true);
+        } catch (BizException e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(e.getErrorCode());
+        } catch (Exception e) {
+            logger.warn("", e);
+            return Result.ResultBuilder.fail(ErrorCode.CODE_UNKONWN_ERROR);
+        }
+    }
+
 
     private void modifyHuishouAddrInfo(AddUserDetailReq addUserDetailReq) throws BizException {
         UserAddressEntity userAddressEntity = new UserAddressEntity();

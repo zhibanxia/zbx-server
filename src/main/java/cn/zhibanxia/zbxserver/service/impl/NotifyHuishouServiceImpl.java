@@ -83,7 +83,11 @@ public class NotifyHuishouServiceImpl implements NotifyHuishouService, Initializ
     @Override
     public void notifyHuishou(RecycleRequestEntity recycleRequestEntity, List<Long> huishouUids) {
         List<UserEntity> userEntityList = userDao.selectByIds(huishouUids);
-        Set<String> wxOpenIds = userEntityList.stream().map(UserEntity::getWxOpenId).collect(Collectors.toSet());
+        Set<String> wxOpenIds = userEntityList.stream()
+                .filter(e -> Objects.equals(UserEntity.USER_STATUS_NORMAL, e.getUserStatus()))
+                .map(UserEntity::getWxOpenId)
+                .collect(Collectors.toSet());
+
         ImmutableMap<String, AtomicInteger> map = sentTempleatWxOpenId.getAllPresent(wxOpenIds);
         if (MapUtils.isNotEmpty(map)) {
             Set<String> needRemoveSet = map.entrySet().stream().filter(e -> {

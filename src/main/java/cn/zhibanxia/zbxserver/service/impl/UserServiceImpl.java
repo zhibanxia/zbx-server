@@ -71,4 +71,9 @@ public class UserServiceImpl implements UserService {
     public boolean delete(Long id) {
         return userDao.delete(id);
     }
+
+    @Override
+    public boolean updateNoticeConfig(Long id, Integer wxNotifyFlag, Integer voiceNotifyFlag) {
+        return userDao.addMobileAndVerify(id, null, null, wxNotifyFlag, voiceNotifyFlag);
+    }
 }

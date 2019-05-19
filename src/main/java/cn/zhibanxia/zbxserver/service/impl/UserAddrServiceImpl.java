@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -101,6 +103,21 @@ public class UserAddrServiceImpl implements UserAddrService {
         }
 
         return insertWithCheck(uid, insertList);
+    }
+
+    @Override
+    public boolean batchUpdateFocusAddr(Long uid, Set<Long> exitsIds, List<UserAddressEntity> userAddressEntityList) throws BizException {
+        List<UserAddressEntity> olds = userAddressDao.findAddrs(uid, UserAddressEntity.BIZ_TYPE_HUISHOU_FOCUS);
+        // 删除不再使用的地址
+        if (!CollectionUtils.isEmpty(exitsIds)) {
+            if (!CollectionUtils.isEmpty(olds)) {
+                Set<Long> oldIds = olds.stream().map(UserAddressEntity::getId).collect(Collectors.toSet());
+                oldIds.removeAll(exitsIds);
+                userAddressDao.batchDelete(new ArrayList<>(oldIds));
+            }
+        }
+        userAddressDao.batchInsert(userAddressEntityList);
+        return true;
     }
 
     private boolean insertWithCheck(Long uid, List<UserAddressEntity> userAddressEntityList) {
