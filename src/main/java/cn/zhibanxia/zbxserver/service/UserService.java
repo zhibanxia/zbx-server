@@ -102,4 +102,12 @@ public interface UserService {
      * @return
      */
     boolean delete(Long id);
+
+
+    /**
+     * 修改通知配置
+     *
+     * @return
+     */
+    boolean updateNoticeConfig(Long id, Integer wxNotifyFlag, Integer voiceNotifyFlag);
 }

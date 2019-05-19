@@ -4,6 +4,7 @@ import cn.zhibanxia.zbxserver.entity.UserAddressEntity;
 import cn.zhibanxia.zbxserver.exception.BizException;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by zzy on  2018/10/03 16:54
@@ -24,6 +25,17 @@ public interface UserAddrService {
      * @return
      */
     boolean batchAddAddr(Long uid, List<UserAddressEntity> userAddressEntityList) throws BizException;
+
+    /**
+     * 批量更新地址
+     *
+     * @param uid
+     * @param exitsIds
+     * @param userAddressEntityList
+     * @return
+     */
+    boolean batchUpdateFocusAddr(Long uid, Set<Long> exitsIds, List<UserAddressEntity> userAddressEntityList) throws BizException;
+
 
     /**
      * 获取默认住址
